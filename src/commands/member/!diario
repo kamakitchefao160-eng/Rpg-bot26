@@ -1,1 +1,46 @@
+import fs from "fs";
+import path from "path";
+import { PREFIX } from "../../config.js";
+
+const dbPath = path.resolve("banco de dados", "rpg-usuarios.json");
+
+export default {
+  name: "diario",
+  description: "Resgata suas 100 moedas de ouro diárias",
+  commands: ["diario", "daily"],
+  usage: `${PREFIX}diario`,
+
+  handle: async ({ socket, remoteJid, userLid, sendErrorReply }) => {
+    const numeroLimpo = userLid.split("@")[0];
+
+    let bancoRPG = {};
+    if (fs.existsSync(dbPath)) {
+      bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
+    }
+
+    const player = bancoRPG[numeroLimpo];
+    if (!player) return sendErrorReply("❌ Digite *!perfil* primeiro para criar sua conta!");
+
+    const agora = new Date().getTime();
+    const tempoEspera = 24 * 60 * 60 * 1000; // 24 horas em milissegundos
+
+    if (player.ultimoDiario && agora - player.ultimoDiario < tempoEspera) {
+      const tempoRestante = tempoEspera - (agora - player.ultimoDiario);
+      const horas = Math.floor(tempoRestante / (1000 * 60 * 60));
+      const minutos = Math.floor((tempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+      
+      return sendErrorReply(`❌ Você já resgatou seu ouro hoje! Volte em *${horas}h e ${minutos}m*.`);
+    }
+
+    // Aplica a recompensa
+    player.ouro += 100;
+    player.ultimoDiario = agora;
+
+    fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
+
+    await socket.sendMessage(remoteJid, {
+      text: `🪙 *RECOMPENSA DIÁRIA!* 🪙\n\n💰 @${player.nomeOficial} coletou suas *100 moedas de ouro* do dia!\n\nSaldo atual: 🪙 ${player.ouro} moedas.`
+    }, { mentions: [userLid] });
+  }
+};
 
