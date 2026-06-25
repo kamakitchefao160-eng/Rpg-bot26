@@ -8,14 +8,12 @@ const dbPath = path.resolve("banco de dados", "rpg-usuarios.json");
 
 export default {
   name: "comprar",
-  description: "Compra um item ou classe da loja de forma permanente",
+  description: "Compra uma raça, classe ou item da loja",
   commands: ["comprar"],
   usage: `${PREFIX}comprar [número]`,
 
   handle: async ({ args, socket, remoteJid, userLid, sendErrorReply }) => {
-    if (!isGroup(remoteJid)) {
-      return sendErrorReply("Este comando só pode ser usado em grupo.");
-    }
+    if (!isGroup(remoteJid)) return sendErrorReply("Este comando só pode ser usado em grupo.");
 
     const numeroLimpo = userLid.split("@")[0];
 
@@ -25,56 +23,62 @@ export default {
     }
 
     if (!bancoRPG[numeroLimpo]) {
-      return sendErrorReply("❌ Você precisa digitar *!perfil* primeiro para criar sua conta no RPG!");
+      return sendErrorReply("❌ Você precisa digitar *!perfil* primeiro para iniciar sua jornada!");
     }
 
     const idItem = args[0];
-
     if (!idItem || !ITENS_LOJA[idItem]) {
-      return sendErrorReply(`❌ ID inválido! Digite *!loja* para ver os números corretos dos itens.`);
+      return sendErrorReply(`❌ ID inválido! Digite *!loja* para ver os números corretos.`);
     }
 
     const itemEscolhido = ITENS_LOJA[idItem];
     const dadosUsuario = bancoRPG[numeroLimpo];
 
-    // Garante que a lista de inventário permanente exista
-    if (!dadosUsuario.inventario) {
-      dadosUsuario.inventario = [];
-    }
+    if (!dadosUsuario.inventario) dadosUsuario.inventario = [];
 
-    // Verifica se o jogador já possui esse item permanentemente (menos consumíveis)
+    // 🚨 TRAVA ANTI-REPETIÇÃO: Se o item já estiver no inventário permanente, dá ERRO!
     if (itemEscolhido.tipo !== "consumivel" && dadosUsuario.inventario.includes(itemEscolhido.nome)) {
-      return sendErrorReply(`❌ Você já possui *${itemEscolhido.nome}* no seu inventário permanente! Use *!equipar ${itemEscolhido.nome}* para usar.`);
+      return sendErrorReply(`❌ Erro: Você já possui permanentemente a opção *${itemEscolhido.nome}* no seu inventário! Não é possível comprar repetido.`);
     }
 
-    // Validação de Saldo
-    if (dadosUsuario.ouro < itemEscolhido.preco) {
-      return sendErrorReply(`❌ Saldo insuficiente! Custo: 🪙 ${itemEscolhido.preco} moedas. Seu saldo: 🪙 ${dadosUsuario.ouro}.`);
+    // 🌟 LÓGICA DE GRATUIDADE PARA O INICIANTE
+    let precoFinal = itemEscolhido.preco;
+
+    if (itemEscolhido.tipo === "raca" && dadosUsuario.raca.includes("Ainda não escolheu")) {
+      precoFinal = 0; // Primeira raça é grátis!
+    }
+    if (itemEscolhido.tipo === "classe" && dadosUsuario.classe.includes("Ainda não escolheu")) {
+      precoFinal = 0; // Primeira classe é grátis!
     }
 
-    // Processamento do pagamento
-    dadosUsuario.ouro -= itemEscolhido.preco;
+    // Validação de saldo (mantendo as 200 moedas iniciais intactas se for grátis)
+    if (dadosUsuario.ouro < precoFinal) {
+      return sendErrorReply(`❌ Saldo insuficiente! Custo: 🪙 ${precoFinal} moedas. Você possui: 🪙 ${dadosUsuario.ouro}.`);
+    }
 
-    // Adiciona ao inventário permanente
+    // Processa o pagamento e insere no inventário permanente
+    dadosUsuario.ouro -= precoFinal;
+
     if (itemEscolhido.tipo === "consumivel") {
-      // Se for consumível (como poção), acumula o texto ou quantidade
       dadosUsuario.consumivel = itemEscolhido.nome;
     } else {
-      dadosUsuario.inventario.push(itemEscolhido.nome);
+      dadosUsuario.inventario.push(itemEscolhido.nome); // Salva de forma permanente no inventário
     }
 
-    // Se for a primeira compra de Raça ou Classe, já deixa equipado direto para facilitar
+    // Equipa e aplica as mudanças visuais na ficha na hora
     if (itemEscolhido.tipo === "raca") dadosUsuario.raca = itemEscolhido.nome;
     if (itemEscolhido.tipo === "classe") dadosUsuario.classe = itemEscolhido.nome;
     if (itemEscolhido.tipo === "titulo") dadosUsuario.titulo = itemEscolhido.nome;
     if (itemEscolhido.tipo === "montaria") dadosUsuario.montaria = itemEscolhido.nome;
     if (itemEscolhido.tipo === "moldura") dadosUsuario.moldura = itemEscolhido.nome;
 
-    // Salva tudo de forma permanente no arquivo JSON
+    // Salva tudo no arquivo de texto JSON permanentemente
     fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
 
-    await socket.sendMessage(remoteJid, {
-      text: `🎉 *COMPRA CONCLUÍDA E SALVA!* 🎉\n\n👤 @${dadosUsuario.nomeOficial} adquiriu permanentemente:\n📦 *${itemEscolhido.nome}*\n\n🪙 Saldo restante: ${dadosUsuario.ouro} moedas.\n\n💡 _Dica: Se comprou uma raça/classe reserva, mude quando quiser digitando *!equipar [Nome]*!_`
-    }, { mentions: [userLid] });
+    const msgSucesso = precoFinal === 0 
+      ? `🎉 *ESCOLHA INICIAL GRÁTIS SALVA!* 🎉\n\n👤 @${dadosUsuario.nomeOficial} definiu permanentemente:\n📦 *${itemEscolhido.nome}* (🪙 Grátis)\n\nSeu saldo inicial de 🪙 ${dadosUsuario.ouro} moedas continuou intacto!`
+      : `🎉 *COMPRA PERMANENTE CONCLUÍDA!* 🎉\n\n👤 @${dadosUsuario.nomeOficial} adquiriu:\n📦 *${itemEscolhido.nome}*\n\n🪙 Saldo restante: ${dadosUsuario.ouro} moedas.`;
+
+    await socket.sendMessage(remoteJid, { text: msgSucesso }, { mentions: [userLid] });
   }
 };
