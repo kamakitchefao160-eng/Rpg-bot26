@@ -1,7 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { PREFIX } from "../../config.js";
-import { BATALHAS_ATIVAS } from "./lutar.js"; // Evita trocar em batalha caso use o mapa
+import { isGroup } from "../../utils/index.js"; 
+
+// 🎯 CAMINHOS CORRIGIDOS PARA A SUA PASTA REAL:
+import { HAB_CLASSES } from "../../utilitarios/habilidades.js";
+import { RACAS_RPG } from "../../utilitarios/racas.js";
+
 
 const dbPath = path.resolve("banco de dados", "rpg-usuarios.json");
 
