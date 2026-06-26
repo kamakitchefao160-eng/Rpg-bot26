@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import { PREFIX } from "../../config.js";
-import { onlyNumbers } from "../../utils/index.js";
 
 const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
 
@@ -11,13 +10,9 @@ export default {
   commands: ["perfil", "ficha"],
   usage: `${PREFIX}perfil`,
   
-  handle: async ({ args, socket, remoteJid, userLid, msg, sendErrorReply }) => {
-    // 🛡️ CORREÇÃO: Evita a quebra caso msg ou pushName não existam (comum no privado)
-    const nomeWhatsApp = msg?.pushName || `Lutador_${userLid.split("@")[0].slice(-4)}`;
-
-    // Pega o ID limpando qualquer sufixo para bater certinho com o comando de resgatar e transferir
-    const targetLid = args[0] ? `${onlyNumbers(args[0])}@lid` : userLid;
-    const numeroLimpo = targetLid.split("@")[0];
+  handle: async ({ args, socket, remoteJid, userLid, sendErrorReply }) => {
+    // Coleta o ID do usuário de forma limpa e compatível com o restante do bot
+    const numeroLimpo = userLid.split("@")[0];
 
     let bancoRPG = {};
     if (fs.existsSync(dbPath)) {
@@ -28,10 +23,10 @@ export default {
       }
     }
 
-    // CONTA TOTALMENTE LIMPA E INICIALIZADA
+    // Se a conta não existir, cria ela zerada (Sem raça/classe inicial)
     if (!bancoRPG[numeroLimpo]) {
       bancoRPG[numeroLimpo] = {
-        nomeOficial: nomeWhatsApp,
+        nomeOficial: `Lutador_${numeroLimpo.slice(-4)}`,
         personagem: "Não definido (Use /nome)",
         raca: "Ainda não escolheu (Use /loja racas)", 
         classe: "Ainda não escolheu (Use /loja classes)", 
@@ -52,12 +47,6 @@ export default {
     }
 
     const dados = bancoRPG[numeroLimpo];
-
-    // Atualiza o nome oficial caso a pessoa tenha mudado no WhatsApp
-    if (msg?.pushName && dados.nomeOficial !== msg.pushName && !args[0]) {
-      dados.nomeOficial = msg.pushName;
-      fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
-    }
 
     const mochilaVisivel = dados.inventario && dados.inventario.length > 0 
       ? dados.inventario.map(item => `• 📦 ${item}`).join("\n") 
@@ -90,7 +79,7 @@ ${mochilaVisivel}
 
     await socket.sendMessage(remoteJid, {
       text: mensagemFicha,
-      mentions: [targetLid]
+      mentions: [userLid]
     });
   }
 };
