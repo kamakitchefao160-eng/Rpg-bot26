@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { PREFIX } from "../../config.js";
-import { isGroup, onlyNumbers } from "../../utils/index.js";
+import { onlyNumbers } from "../../utils/index.js";
 
 const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
 
@@ -12,11 +12,12 @@ export default {
   usage: `${PREFIX}perfil`,
   
   handle: async ({ args, socket, remoteJid, userLid, msg, sendErrorReply }) => {
-    if (!isGroup(remoteJid)) return sendErrorReply("Este comando só pode ser usado em grupo.");
+    // 🛡️ CORREÇÃO: Evita a quebra caso msg ou pushName não existam (comum no privado)
+    const nomeWhatsApp = msg?.pushName || `Lutador_${userLid.split("@")[0].slice(-4)}`;
 
+    // Pega o ID limpando qualquer sufixo para bater certinho com o comando de resgatar e transferir
     const targetLid = args[0] ? `${onlyNumbers(args[0])}@lid` : userLid;
     const numeroLimpo = targetLid.split("@")[0];
-    const nomeWhatsApp = msg.pushName || `Lutador_${numeroLimpo.slice(-4)}`;
 
     let bancoRPG = {};
     if (fs.existsSync(dbPath)) {
@@ -27,7 +28,7 @@ export default {
       }
     }
 
-    // CRIA A CONTA PENDENTE DE ESCOLHA (Para ganhar o primeiro grátis na loja)
+    // CONTA TOTALMENTE LIMPA E INICIALIZADA
     if (!bancoRPG[numeroLimpo]) {
       bancoRPG[numeroLimpo] = {
         nomeOficial: nomeWhatsApp,
@@ -42,8 +43,8 @@ export default {
         ouro: 200, 
         hp: 100,
         escudo: 100,
-        racasCompradas: [], // Começa vazio para o sistema validar o histórico
-        classesCompradas: [], // Começa vazio
+        racasCompradas: [], 
+        classesCompradas: [], 
         inventario: []
       };
       
@@ -52,7 +53,12 @@ export default {
 
     const dados = bancoRPG[numeroLimpo];
 
-    // Renderiza os itens acumulados na mochila
+    // Atualiza o nome oficial caso a pessoa tenha mudado no WhatsApp
+    if (msg?.pushName && dados.nomeOficial !== msg.pushName && !args[0]) {
+      dados.nomeOficial = msg.pushName;
+      fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
+    }
+
     const mochilaVisivel = dados.inventario && dados.inventario.length > 0 
       ? dados.inventario.map(item => `• 📦 ${item}`).join("\n") 
       : "• Sua mochila está vazia no momento.";
@@ -83,7 +89,7 @@ ${mochilaVisivel}
 ╰━━─「🎋」─━━`;
 
     await socket.sendMessage(remoteJid, {
-      text: mensajeFicha,
+      text: mensagemFicha,
       mentions: [targetLid]
     });
   }
