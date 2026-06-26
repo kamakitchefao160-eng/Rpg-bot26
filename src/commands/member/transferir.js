@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import { PREFIX } from "../../config.js";
-import { onlyNumbers } from "../../utils/index.js";
 
 const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
 
@@ -11,18 +10,24 @@ export default {
   commands: ["transferir", "pagar", "pay"],
   usage: `${PREFIX}transferir [@marcar] [quantia]`,
 
-  handle: async ({ args, socket, remoteJid, userLid, sendErrorReply }) => {
+  handle: async ({ args, socket, remoteJid, userLid, mentions, sendErrorReply }) => {
     const remetenteId = userLid.split("@")[0];
 
-    if (!args[0] || !args[1]) {
+    if (!mentions || mentions.length === 0 || !args[1]) {
       return sendErrorReply(`❌ Uso incorreto! Exemplo: *${PREFIX}transferir @jogador 50*`);
     }
 
-    const destinatarioId = onlyNumbers(args[0]);
-    const quantia = parseInt(args[1]);
+    const destinatarioId = mentions[0].split("@")[0];
+    
+    // Filtra qual argumento representa a quantia (apenas números fora da menção)
+    const quantia = parseInt(args.find(arg => !arg.includes("@") && !isNaN(parseInt(arg))));
 
     if (isNaN(quantia) || quantia <= 0) {
       return sendErrorReply("❌ Insira uma quantia válida de ouro para transferir.");
+    }
+
+    if (remetenteId === destinatarioId) {
+      return sendErrorReply("❌ Você não pode transferir dinheiro para você mesmo.");
     }
 
     if (!fs.existsSync(dbPath)) return sendErrorReply("❌ Banco de dados offline.");
@@ -35,7 +40,6 @@ export default {
       return sendErrorReply(`❌ Você não tem saldo suficiente! Saldo atual: 🪙 ${bancoRPG[remetenteId].ouro}`);
     }
 
-    // Executa a transferência no JSON
     bancoRPG[remetenteId].ouro -= quantia;
     bancoRPG[destinatarioId].ouro += quantia;
 
@@ -43,7 +47,7 @@ export default {
 
     return await socket.sendMessage(remoteJid, {
       text: `🪙 *TRANSFERÊNCIA REALIZADA!* \n\n@${remetenteId} enviou *${quantia} moedas* para @${destinatarioId} com sucesso!`,
-      mentions: [userLid, `${destinatarioId}@lid`]
+      mentions: [remetenteId + "@s.whatsapp.net", destinatarioId + "@s.whatsapp.net"]
     });
   }
 };
