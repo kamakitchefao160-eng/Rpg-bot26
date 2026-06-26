@@ -11,7 +11,6 @@ export default {
   usage: `${PREFIX}perfil`,
   
   handle: async ({ args, socket, remoteJid, userLid, sendErrorReply }) => {
-    // Coleta o ID do usuário de forma limpa e compatível com o restante do bot
     const numeroLimpo = userLid.split("@")[0];
 
     let bancoRPG = {};
@@ -23,7 +22,6 @@ export default {
       }
     }
 
-    // Se a conta não existir, cria ela zerada (Sem raça/classe inicial)
     if (!bancoRPG[numeroLimpo]) {
       bancoRPG[numeroLimpo] = {
         nomeOficial: `Lutador_${numeroLimpo.slice(-4)}`,
@@ -49,33 +47,40 @@ export default {
     const dados = bancoRPG[numeroLimpo];
 
     const mochilaVisivel = dados.inventario && dados.inventario.length > 0 
-      ? dados.inventario.map(item => `• 📦 ${item}`).join("\n") 
-      : "• Sua mochila está vazia no momento.";
+      ? dados.inventario.map(item => `  📦 ${item}`).join("\n") 
+      : "   packing_box Sua mochila está vazia no momento.";
 
-    const mensagemFicha = `╭━━⪩ ⚔️ THE LEGENDARY ONLINE ⪨━━
-▢
-👤 *HERÓI:* ${dados.nomeOficial}
-🎭 *PERSONAGEM:* ${dados.personagem}
-• *Raça:* ${dados.raca} 
-• *Classe:* ${dados.classe}
-• *Título:* ${dados.titulo}
+    // Lógica simples para gerar barrinhas visuais baseadas no status atual
+    const barraHp = "█".repeat(Math.max(0, Math.floor(dados.hp / 10))).padEnd(10, "░");
+    const barraEscudo = "█".repeat(Math.max(0, Math.floor(dados.escudo / 10))).padEnd(10, "░");
 
-🏹 *STATUS DE COMBATE:*
-• *HP:* ❤️ ${dados.hp}/100
-• *ESCUDO:* 🛡️ ${dados.escudo}/100
+    const mensagemFicha = `✨ ═════ 🌎 *THE LEGENDARY ONLINE* 🌎 ═════ ✨
+👋 Bem-vindo ao universo de The Legendary! Aqui jaz sua jornada:
 
-🎒 *INVENTÁRIO EQUIPADO:*
-• *Arma:* ${dados.arma || "Nenhuma"}
-• *Montaria:* 🐎 ${dados.montaria || "Nenhuma"}
-• *Consumível:* 🧪 ${dados.consumivel || "Nenhum"}
+👑 *FICHA DO AVENTUREIRO*
+🌟 *Título:* ${dados.titulo}
+👤 *Nome:* ${dados.nomeOficial}
+🎭 *Personagem:* ${dados.personagem}
+🧬 *Raça:* ${dados.raca}
+⚔️ *Classe:* ${dados.classe}
 
-💰 *FINANÇAS:*
-• *Saldo:* 🪙 ${dados.ouro} moedas de ouro
+📊 *ATRIBUTOS DE COMBATE*
+❤️ *HP:* [${barraHp}] ${dados.hp}/100
+🛡️ *Escudo:* [${barraEscudo}] ${dados.escudo}/100
 
-🎒 *MOCHILA DO JOGADOR:*
+🛡️ *EQUIPAMENTOS ATIVOS*
+🗡️ *Arma:* ${dados.arma || "Nenhuma"}
+🐎 *Montaria:* ${dados.montaria || "Nenhuma"}
+🧪 *Consumível:* ${dados.consumivel || "Nenhum"}
+
+🪙 *BANCO & FINANÇAS*
+💰 *Saldo Atual:* 🪙 *${dados.ouro}* moedas de ouro
+
+🎒 *MOCHILA DE ITENS*
 ${mochilaVisivel}
-▢
-╰━━─「🎋」─━━`;
+
+⚡ _Explore novos horizontes usando ${PREFIX}aventura ou desafie alguém com ${PREFIX}lutar!_
+══════════════════════════════`;
 
     await socket.sendMessage(remoteJid, {
       text: mensagemFicha,
