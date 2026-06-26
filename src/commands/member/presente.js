@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { ITENS_LOJA } from "./loja.js";
 
-const dbPath = path.resolve("banco de dados", "rpg-usuarios.json");
+const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
 
 export default {
   name: "presente",
@@ -13,7 +13,8 @@ export default {
   handle: async ({ args, socket, remoteJid, userLid, mentions, sendErrorReply }) => {
     if (!mentions || mentions.length === 0) return sendErrorReply("❌ Você deve marcar o jogador que receberá o presente.");
     
-    const idItem = args[1]; // O primeiro argumento é a menção, o segundo é a ID
+    // Procura dinamicamente qual argumento é a ID numérica da loja
+    const idItem = args.find(arg => !arg.includes("@") && !isNaN(parseInt(arg)));
     const itemLoja = ITENS_LOJA[idItem];
 
     if (!itemLoja) return sendErrorReply("❌ ID inválida! Consulte as IDs na loja usando `/loja`.");
@@ -21,16 +22,17 @@ export default {
     const remetenteId = userLid.split("@")[0];
     const destinatarioId = mentions[0].split("@")[0];
 
-    if (!fs.existsSync(dbPath)) return sendErrorReply("❌ Banco de dados ausente.");
+    if (remetenteId === destinatarioId) return sendErrorReply("❌ Você não pode dar presentes para si mesmo.");
+
+    if (!fs.existsSync(dbPath)) return sendErrorReply("❌ Banco de dados offline.");
     let bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
 
     const remetente = bancoRPG[remetenteId];
     const destinatario = bancoRPG[destinatarioId];
 
     if (!remetente) return sendErrorReply("❌ Crie sua conta primeiro.");
-    if (!destinatario) return sendErrorReply("❌ O destinatário não tem uma conta ativa.");
+    if (!destinatario) return sendErrorReply("❌ O destinatário não tem uma conta ativa no RPG.");
 
-    // Inicializa campos essenciais
     if (!remetente.racasCompradas) remetente.racasCompradas = [remetente.raca || "Humano"];
     if (!destinatario.racasCompradas) destinatario.racasCompradas = [destinatario.raca || "Humano"];
     if (!remetente.classesCompradas) remetente.classesCompradas = [remetente.classe || "Guerreiro"];
@@ -38,27 +40,32 @@ export default {
     if (!remetente.inventario) remetente.inventario = [];
     if (!destinatario.inventario) destinatario.inventario = [];
 
-    // Processamento do Presente com base no tipo
     if (itemLoja.tipo === "raca") {
-      if (!remetente.racasCompradas.includes(itemLoja.nome)) return sendErrorReply("❌ Você não possui essa raça para enviar.");
+      if (!remetente.racasCompradas.includes(itemLoja.nome)) return sendErrorReply("❌ Você não possui essa raça comprada para enviar.");
       if (destinatario.racasCompradas.includes(itemLoja.nome)) return sendErrorReply("❌ O jogador já possui essa raça.");
+      
+      remetente.racasCompradas = remetente.racasCompradas.filter(r => r !== itemLoja.nome);
       destinatario.racasCompradas.push(itemLoja.nome);
     } 
     else if (itemLoja.tipo === "classe") {
-      if (!remetente.classesCompradas.includes(itemLoja.nome)) return sendErrorReply("❌ Você não possui essa classe para enviar.");
+      if (!remetente.classesCompradas.includes(itemLoja.nome)) return sendErrorReply("❌ Você não possui essa classe comprada para enviar.");
       if (destinatario.classesCompradas.includes(itemLoja.nome)) return sendErrorReply("❌ O jogador já possui essa classe.");
+      
+      remetente.classesCompradas = remetente.classesCompradas.filter(c => c !== itemLoja.nome);
       destinatario.classesCompradas.push(itemLoja.nome);
     } 
     else {
-      // Itens normais, títulos e consumíveis
       if (!remetente.inventario.includes(itemLoja.nome)) return sendErrorReply("❌ Você não possui esse item no seu inventário.");
       
-      // Remove do remetente e insere no destinatário
       remetente.inventario = remetente.inventario.filter(i => i !== itemLoja.nome);
       destinatario.inventario.push(itemLoja.nome);
     }
 
     fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
-    await socket.sendMessage(remoteJid, { text: `🎁 *SUCESSO!* O item *${itemLoja.nome}* foi enviado para o inventário de @${destinatarioId}!`, mentions: [mentions[0]] });
+    
+    return await socket.sendMessage(remoteJid, { 
+      text: `🎁 *SUCESSO!* O item *${itemLoja.nome}* foi enviado do inventário de @${remetenteId} para @${destinatarioId}!`, 
+      mentions: [userLid, mentions[0]] 
+    });
   }
 };
