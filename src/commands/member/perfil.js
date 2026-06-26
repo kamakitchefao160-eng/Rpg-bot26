@@ -7,7 +7,7 @@ const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
 
 export default {
   name: "perfil",
-  description: "Mostra sua ficha de herói",
+  description: "Mostra sua ficha de herói e mochila",
   commands: ["perfil", "ficha"],
   usage: `${PREFIX}perfil`,
   
@@ -16,7 +16,7 @@ export default {
 
     const targetLid = args[0] ? `${onlyNumbers(args[0])}@lid` : userLid;
     const numeroLimpo = targetLid.split("@")[0];
-    const nomeUsuario = msg.pushName || `Lutador_${numeroLimpo.slice(-4)}`;
+    const nomeWhatsApp = msg.pushName || `Lutador_${numeroLimpo.slice(-4)}`;
 
     let bancoRPG = {};
     if (fs.existsSync(dbPath)) {
@@ -27,21 +27,23 @@ export default {
       }
     }
 
-    // CRIA A CONTA DIRETO SEM TRAVAR NO FORMULÁRIO
+    // CRIA A CONTA PENDENTE DE ESCOLHA (Para ganhar o primeiro grátis na loja)
     if (!bancoRPG[numeroLimpo]) {
       bancoRPG[numeroLimpo] = {
-        nomeOficial: nomeUsuario,
-        personagem: "Recruta da Arena",
-        raca: "Humano", 
-        classe: "Guerreiro", 
+        nomeOficial: nomeWhatsApp,
+        personagem: "Não definido (Use /nome)",
+        raca: "Ainda não escolheu (Use /loja racas)", 
+        classe: "Ainda não escolheu (Use /loja classes)", 
         titulo: "🌱 Aventureiro Novato",
-        arma: "Espada de Treino 🗡️",
+        arma: "Nenhuma",
         moldura: "Nenhuma",
         consumivel: "Nenhum",
         montaria: "Nenhuma",
         ouro: 200, 
         hp: 100,
         escudo: 100,
+        racasCompradas: [], // Começa vazio para o sistema validar o histórico
+        classesCompradas: [], // Começa vazio
         inventario: []
       };
       
@@ -50,9 +52,14 @@ export default {
 
     const dados = bancoRPG[numeroLimpo];
 
+    // Renderiza os itens acumulados na mochila
+    const mochilaVisivel = dados.inventario && dados.inventario.length > 0 
+      ? dados.inventario.map(item => `• 📦 ${item}`).join("\n") 
+      : "• Sua mochila está vazia no momento.";
+
     const mensagemFicha = `╭━━⪩ ⚔️ THE LEGENDARY ONLINE ⪨━━
 ▢
-👤 *HERÓI:* @${dados.nomeOficial}
+👤 *HERÓI:* ${dados.nomeOficial}
 🎭 *PERSONAGEM:* ${dados.personagem}
 • *Raça:* ${dados.raca} 
 • *Classe:* ${dados.classe}
@@ -63,17 +70,20 @@ export default {
 • *ESCUDO:* 🛡️ ${dados.escudo}/100
 
 🎒 *INVENTÁRIO EQUIPADO:*
-• *Arma:* ${dados.arma}
-• *Montaria:* 🐎 ${dados.montaria}
-• *Consumível:* 🧪 ${dados.consumivel}
+• *Arma:* ${dados.arma || "Nenhuma"}
+• *Montaria:* 🐎 ${dados.montaria || "Nenhuma"}
+• *Consumível:* 🧪 ${dados.consumivel || "Nenhum"}
 
 💰 *FINANÇAS:*
 • *Saldo:* 🪙 ${dados.ouro} moedas de ouro
+
+🎒 *MOCHILA DO JOGADOR:*
+${mochilaVisivel}
 ▢
 ╰━━─「🎋」─━━`;
 
     await socket.sendMessage(remoteJid, {
-      text: mensagemFicha,
+      text: mensajeFicha,
       mentions: [targetLid]
     });
   }
