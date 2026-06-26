@@ -1,70 +1,49 @@
-import fs from "node:fs";
-import path from "node:path";
-import { DATABASE_DIR } from "../../config.js";
+import fs from "fs";
+import path from "path";
+import { PREFIX } from "../../config.js";
+import { onlyNumbers } from "../../utils/index.js";
 
-const dbPath = path.join(DATABASE_DIR, "rpg-usuarios.json");
+const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
 
 export default {
   name: "transferir",
-  description: "Transfere uma quantidade de moedas de ouro para outro jogador",
-  commands: ["transferir", "pagar", "enviarouro"],
-  usage: "/transferir @jogador [quantidade]",
+  description: "Transfere moedas de ouro para outro jogador",
+  commands: ["transferir", "pagar", "pay"],
+  usage: `${PREFIX}transferir [@marcar] [quantia]`,
 
-  handle: async ({ socket, remoteJid, userLid, args, mentions, sendErrorReply }) => {
+  handle: async ({ args, socket, remoteJid, userLid, sendErrorReply }) => {
     const remetenteId = userLid.split("@")[0];
 
-    // Validação 1: Verificar se marcou alguém
-    if (!mentions || mentions.length === 0) {
-      return sendErrorReply("❌ Você precisa marcar o jogador que vai receber as moedas! Exemplo: `/transferir @goku 100`");
+    if (!args[0] || !args[1]) {
+      return sendErrorReply(`❌ Uso incorreto! Exemplo: *${PREFIX}transferir @jogador 50*`);
     }
 
-    const destinatarioId = mentions[0].split("@")[0];
+    const destinatarioId = onlyNumbers(args[0]);
+    const quantia = parseInt(args[1]);
 
-    // Validação 2: Impedir de transferir para si mesmo
-    if (remetenteId === destinatarioId) {
-      return sendErrorReply("❌ Você não pode transferir moedas para você mesmo!");
+    if (isNaN(quantia) || quantia <= 0) {
+      return sendErrorReply("❌ Insira uma quantia válida de ouro para transferir.");
     }
 
-    // Validação 3: Pegar e validar a quantidade de moedas
-    // Como o primeiro argumento (args[0]) é a menção, a quantidade deve ser o args[1]
-    const quantidade = parseInt(args[1]);
-    if (isNaN(quantidade) || quantidade <= 0) {
-      return sendErrorReply("❌ Quantidade inválida! Insira um valor numérico maior que zero. Exemplo: `/transferir @goku 100`");
-    }
-
-    if (!fs.existsSync(dbPath)) {
-      return sendErrorReply("❌ Banco de dados de usuários não encontrado!");
-    }
-
+    if (!fs.existsSync(dbPath)) return sendErrorReply("❌ Banco de dados offline.");
     let bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
-    const remetente = bancoRPG[remetenteId];
-    const destinatario = bancoRPG[destinatarioId];
 
-    // Validação 4: Verificar se as contas existem
-    if (!remetente) {
-      return sendErrorReply("❌ Você precisa criar sua conta primeiro com `/perfil`.");
-    }
-    if (!destinatario) {
-      return sendErrorReply("❌ O jogador que vai receber as moedas ainda não tem uma conta no RPG.");
+    if (!bancoRPG[remetenteId]) return sendErrorReply("❌ Crie sua conta primeiro!");
+    if (!bancoRPG[destinatarioId]) return sendErrorReply("❌ O jogador de destino não possui uma conta no RPG.");
+
+    if (bancoRPG[remetenteId].ouro < quantia) {
+      return sendErrorReply(`❌ Você não tem saldo suficiente! Saldo atual: 🪙 ${bancoRPG[remetenteId].ouro}`);
     }
 
-    // Validação 5: Verificar se o remetente tem saldo suficiente
-    const saldoRemetente = remetente.ouro || 0;
-    if (saldoRemetente < quantidade) {
-      return sendErrorReply(`❌ Saldo insuficiente! Você tem apenas 🪙 *${saldoRemetente} moedas* de ouro.`);
-    }
+    // Executa a transferência no JSON
+    bancoRPG[remetenteId].ouro -= quantia;
+    bancoRPG[destinatarioId].ouro += quantia;
 
-    // Executa a transferência de valores
-    remetente.ouro = saldoRemetente - quantidade;
-    destinatario.ouro = (destinatario.ouro || 0) + quantidade;
-
-    // Grava as alterações de volta no arquivo JSON
     fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
 
-    // Envia a mensagem de sucesso marcando os dois envolvidos
-    await socket.sendMessage(remoteJid, {
-      text: `💸 *TRANSFERÊNCIA CONCLUÍDA!* 🌹\n\n🪙 *${remetente.nomeOficial}* enviou *${quantidade} moedas de ouro* para *${destinatario.nomeOficial}*!\n\n📉 Saldo de quem enviou: *${remetente.ouro} moedas*\n📈 Saldo de quem recebeu: *${destinatario.ouro} moedas*`,
-      mentions: [userLid, mentions[0]]
+    return await socket.sendMessage(remoteJid, {
+      text: `🪙 *TRANSFERÊNCIA REALIZADA!* \n\n@${remetenteId} enviou *${quantia} moedas* para @${destinatarioId} com sucesso!`,
+      mentions: [userLid, `${destinatarioId}@lid`]
     });
   }
 };
