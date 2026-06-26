@@ -60,8 +60,11 @@ export const ITENS_LOJA = {
   "45": { nome: "Vassoura Voadora Mística", preco: 500, tipo: "montaria" },
   "46": { nome: "Brisa de Sakura (Moldura)", preco: 150, tipo: "moldura" },
 
-  // 🧪 CONSUMÍVEIS
-  "47": { nome: "Poção de HP Maior", preco: 30, tipo: "consumivel" }
+  // 🧪 CONSUMÍVEIS & EVENTOS (Novos itens adicionados aqui!)
+  "47": { nome: "Poção de HP Maior", preco: 30, tipo: "consumivel" },
+  "48": { nome: "🎟️ Ticket Gojo [EM BREVE]", preco: 99999, tipo: "raro" },
+  "49": { nome: "🎟️ Ticket Deku [EM BREVE]", preco: 99999, tipo: "raro" },
+  "50": { nome: "🎫 Passe de Elite (Temporada 1)", preco: 1000, tipo: "passe" }
 };
 
 export default {
@@ -78,7 +81,14 @@ export default {
     let bancoRPG = {};
     if (fs.existsSync(dbPath)) bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
     const numeroLimpo = userLid.split("@")[0];
-    const saldo = bancoRPG[numeroLimpo] ? bancoRPG[numeroLimpo].ouro : 0;
+    
+    const p = bancoRPG[numeroLimpo] || {};
+    const saldo = p.ouro || 0;
+
+    // Pega o que o jogador já comprou para colocar o selo
+    const racasCompradas = p.racasCompradas || [p.raca || "Humano"];
+    const classesCompradas = p.classesCompradas || [p.classe || "Nenhuma"];
+    const inventario = p.inventario || [];
 
     let textoLoja = `🛒 *LOJA THE LEGENDARY ONLINE* 🛒\n`;
     textoLoja += `💰 *Seu Saldo:* 🪙 ${saldo} moedas de ouro\n`;
@@ -87,18 +97,25 @@ export default {
     if (categoria === "racas") {
       textoLoja += `🧬 *ABA DE RAÇAS (Custo: 🪙 200)*\n\n`;
       for (const [id, item] of Object.entries(ITENS_LOJA)) {
-        if (item.tipo === "raca") textoLoja += `*🆔 [${id}]* - ${item.nome}\n`;
+        if (item.tipo === "raca") {
+          const jaTem = racasCompradas.includes(item.nome) ? " ✅" : "";
+          textoLoja += `*🆔 [${id}]* - ${item.nome}${jaTem}\n`;
+        }
       }
     } else if (categoria === "classes") {
       textoLoja += `🛡️ *ABA DE CLASSES (Custo: 🪙 200)*\n\n`;
       for (const [id, item] of Object.entries(ITENS_LOJA)) {
-        if (item.tipo === "classe") textoLoja += `*🆔 [${id}]* - ${item.nome}\n`;
+        if (item.tipo === "classe") {
+          const jaTem = classesCompradas.includes(item.nome) ? " ✅" : "";
+          textoLoja += `*🆔 [${id}]* - ${item.nome}${jaTem}\n`;
+        }
       }
     } else {
       textoLoja += `📜 *PRODUTOS GERAIS*\n\n`;
       for (const [id, item] of Object.entries(ITENS_LOJA)) {
-        if (["titulo", "montaria", "moldura", "consumivel"].includes(item.tipo)) {
-          textoLoja += `*🆔 [${id}]* - ${item.nome}\n• Preço: 🪙 ${item.preco} moedas\n\n`;
+        if (["titulo", "montaria", "moldura", "consumivel", "raro", "passe"].includes(item.tipo)) {
+          const jaTem = inventario.includes(item.nome) ? " ✅" : "";
+          textoLoja += `*🆔 [${id}]* - ${item.nome}${jaTem}\n• Preço: 🪙 ${item.preco} moedas\n\n`;
         }
       }
       textoLoja += `─────────────────────────\n`;
