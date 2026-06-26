@@ -4,7 +4,14 @@ import { PREFIX } from "../../config.js";
 import { isGroup, onlyNumbers } from "../../utils/index.js";
 import { ITENS_LOJA } from "./loja.js";
 
-const dbPath = path.resolve("banco de dados", "rpg-usuarios.json");
+// Correção dinâmica para o Termux encontrar a pasta independentemente de onde o bot iniciar
+const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
+
+// Garante que a pasta física exista no celular
+const pastaDb = path.join(process.cwd(), "banco de dados");
+if (!fs.existsSync(pastaDb)) {
+  fs.mkdirSync(pastaDb, { recursive: true });
+}
 
 export default {
   name: "perfil",
@@ -20,7 +27,11 @@ export default {
 
     let bancoRPG = {};
     if (fs.existsSync(dbPath)) {
-      bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
+      try {
+        bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
+      } catch (e) {
+        bancoRPG = {};
+      }
     }
 
     // 📋 SE O USUÁRIO NÃO EXISTIR: CRIA A CONTA E ENVIA O FORMULÁRIO COMPLETO COM RAÇAS E CLASSES
@@ -35,7 +46,7 @@ export default {
         moldura: "Nenhuma",
         consumivel: "Nenhum",
         montaria: "Nenhuma",
-        ouro: 200, // Começa com as 200 moedas salvas
+        ouro: 200, 
         hp: 100,
         escudo: 100,
         inventario: []
@@ -59,7 +70,6 @@ export default {
         }
       }
 
-      // Montando a mensagem final do Formulário de Entrada
       let msgCriacao = `👋 *BEM-VINDO AO THE LEGENDARY ONLINE!*
 ───────────────────────────
 Sua conta foi gerada no banco de dados. Como este é o seu primeiro acesso, você precisa preencher o seu formulário de criação de personagem!
