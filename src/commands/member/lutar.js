@@ -40,7 +40,6 @@ export default {
 
       let msgTurno = `⚔️ *AÇÃO NA ARENA* ⚔️\n───────────────────────────\n`;
 
-      // Formatação de compatibilidade para os nomes das classes
       let classeChave = atacante.classe;
       if (classeChave === "Bardo") classeChave = "Bardo (Músico Mágico)";
       if (classeChave === "Druida") classeChave = "Druida (Mago da Natureza)";
@@ -51,7 +50,6 @@ export default {
       const golpesClasse = HAB_CLASSES[classeChave] || HAB_CLASSES["Guerreiro"];
       const passivaRacaAtacante = RACAS_RPG[atacante.raca] || { danoBonus: 0, criticoBonus: 0 };
 
-      // 🛡️ ESCOLHA 3: DEFESA OU CURA
       if (escolha === 3) {
         const p3 = golpesClasse.p3;
         if (p3.curaBase) {
@@ -62,7 +60,6 @@ export default {
           msgTurno += `🛡️ *${atacante.nome}* ativou *${p3.nome}* e vai bloquear o próximo golpe!\n`;
         }
       } else {
-        // ⚔️ ESCOLHA 1 OU 2: ATAQUES DIRETOS
         const golpe = escolha === 1 ? golpesClasse.p1 : golpesClasse.p2;
 
         if (defensor.escudoAbsoluto) {
@@ -70,25 +67,17 @@ export default {
           defensor.escudoAbsoluto = false; 
         } else {
           const sorteio = Math.random() * 100;
-          // Aplica o Dano Base da Classe + O Dano Bônus da Raça do Atacante!
           let danoFinal = golpe.danoBase + (passivaRacaAtacante.danoBonus || 0);
 
-          // Adiciona bônus de crítico da raça (ex: Elfo ganha +10% de chance de crítico)
-          const taxaCritico = 10 + (passivaRacaAtacante.criticoBonus || 0);
-
           if (sorteio <= 30) {
-            // ❌ 30% de Chance de Errar
             danoFinal = 0;
             msgTurno += `💨 *${atacante.nome}* tentou usar *${golpe.nome}*, mas errou o golpe!\n`;
           } else if (sorteio <= 50) {
-            // 💥 20% de Chance de Raspão
             danoFinal = Math.floor(danoFinal * 0.5);
             msgTurno += `💥 *DE RASPÃO!* O golpe *${golpe.nome}* de *${atacante.nome}* pegou de raspão: Causou *${danoFinal} de dano*.\n`;
           } else if (sorteio <= (90 - (passivaRacaAtacante.criticoBonus || 0))) {
-            // ⚔️ Chance de Dano Normal
             msgTurno += `⚔️ *IMPACTO!* *${atacante.nome}* acertou *${golpe.nome}*: Causou *${danoFinal} de dano*.\n`;
           } else {
-            // ⚡ Chance de Crítico (Ampliada pela Raça)
             danoFinal = Math.floor(danoFinal * 1.5);
             msgTurno += `⚡ *🚨 CRÍTICO!* *${atacante.nome}* (Passiva de *${atacante.raca}*) acertou um ponto vital com *${golpe.nome}*: Causou *${danoFinal} de dano Letal*!\n`;
           }
@@ -97,7 +86,6 @@ export default {
         }
       }
 
-      // FIM DE JOGO
       if (defensor.hp <= 0) {
         msgTurno += `\n💀 *${defensor.nome}* foi nocauteado!\n🏆 *VENCEDOR:* *${atacante.nome}*! (+150 Moedas de Ouro)`;
         BATALHAS_ATIVAS.delete(remoteJid);
@@ -164,7 +152,6 @@ export default {
     const classeP1 = p1.classe || "Guerreiro";
     const classeP2 = p2.classe || "Guerreiro";
 
-    // Pega as passivas de HP das Raças que você configurou (Ex: Titã ganha +50 HP, Orc ganha +30 HP)
     const passivaP1 = RACAS_RPG[racaP1] || { hpBonus: 0 };
     const passivaP2 = RACAS_RPG[racaP2] || { hpBonus: 0 };
 
@@ -205,6 +192,7 @@ export default {
       BATALHAS_ATIVAS.delete(remoteJid);
     }, 30000);
 
-    await socket.sendMessage(remoteJid, { text: painelInicial, mentions: [userLid] });
+    // FIX: Agora o bot marca tanto quem desafiou quanto o defensor na mensagem inicial!
+    await socket.sendMessage(remoteJid, { text: painelInicial, mentions: [userLid, defensorId + "@s.whatsapp.net"] });
   }
 };
