@@ -2,13 +2,10 @@ import fs from "fs";
 import path from "path";
 import { PREFIX } from "../../config.js";
 import { isGroup } from "../../utils/index.js";
-// 🎯 CAMINHO CORRIGIDO PARA A SUA PASTA REAL:
 import { RACAS_RPG } from "../../utilitarios/racas.js";
-
 
 const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
 
-// 👾 LISTA DE MONSTROS DA AVENTURA
 const MONSTROS = [
   { nome: "Slime de Ácido 🟢", hp: 60, dano: 12 },
   { nome: "Goblin Saqueador 👺", hp: 80, dano: 15 },
@@ -34,7 +31,6 @@ export default {
     const player = bancoRPG[jogadorId];
     if (!player) return sendErrorReply(`❌ Crie sua conta primeiro digitando *${PREFIX}perfil*!`);
 
-    // 📅 CONTROLE DE LIMITE DIÁRIO (3 POR DIA)
     const hoje = new Date().toISOString().slice(0, 10);
     
     if (!player.limitesDiarios) player.limitesDiarios = {};
@@ -49,10 +45,8 @@ export default {
       });
     }
 
-    // 🎲 SORTEAR UM MONSTRO
     const monstro = MONSTROS[Math.floor(Math.random() * MONSTROS.length)];
     
-    // 🧬 PEGAR ATRIBUTOS DO JOGADOR BASEADO NA RAÇA
     const passiva = RACAS_RPG[player.raca] || { hpBonus: 0, danoBonus: 0 };
     let playerHp = 100 + (passiva.hpBonus || 0);
     let playerDanoBonus = passiva.danoBonus || 0;
@@ -65,7 +59,6 @@ export default {
     logBatalha += `❤️ Seu HP: *${playerHp}* | 👾 HP do Monstro: *${monstroHp}*\n`;
     logBatalha += `───────────────────────────\n\n`;
 
-    // ⚔️ SIMULAÇÃO RÁPIDA DA BATALHA
     let turno = 1;
     while (playerHp > 0 && monstroHp > 0 && turno <= 6) {
       let danoPlayer = Math.floor(Math.random() * 15) + 15 + playerDanoBonus;
@@ -83,11 +76,8 @@ export default {
 
     logBatalha += `\n───────────────────────────\n`;
 
-    // 🏆 RESULTADO DA AVENTURA COM RECOMPENSA DE OURO VARIÁVEL
     if (monstroHp <= 0) {
-      // 💰 Sorteia um valor inteiro entre 30 e 100 moedas
       const ouroSorteado = Math.floor(Math.random() * (100 - 30 + 1)) + 30;
-      
       player.ouro = (player.ouro || 0) + ouroSorteado;
       player.limitesDiarios.aventuras += 1;
       
@@ -107,4 +97,3 @@ export default {
     return await socket.sendMessage(remoteJid, { text: logBatalha });
   }
 };
-
