@@ -2,7 +2,9 @@ import fs from "fs";
 import path from "path";
 import { PREFIX } from "../../config.js";
 import { isGroup } from "../../utils/index.js";
-import { RACAS_RPG } from "../utils/Racas.js";
+// 🎯 CAMINHO CORRIGIDO PARA A SUA PASTA REAL:
+import { RACAS_RPG } from "../../utilitarios/racas.js";
+
 
 const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
 
