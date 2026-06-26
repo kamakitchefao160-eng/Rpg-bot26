@@ -3,7 +3,7 @@ import path from "path";
 import { PREFIX } from "../../config.js";
 import { isGroup } from "../../utils/index.js";
 
-const dbPath = path.resolve("banco de dados", "rpg-usuarios.json");
+const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
 
 export const ITENS_LOJA = {
   // 🧬 RAÇAS (Custo: 200)
@@ -60,7 +60,7 @@ export const ITENS_LOJA = {
   "45": { nome: "Vassoura Voadora Mística", preco: 500, tipo: "montaria" },
   "46": { nome: "Brisa de Sakura (Moldura)", preco: 150, tipo: "moldura" },
 
-  // 🧪 CONSUMÍVEIS & EVENTOS (Novos itens adicionados aqui!)
+  // 🧪 CONSUMÍVEIS & EVENTOS
   "47": { nome: "Poção de HP Maior", preco: 30, tipo: "consumivel" },
   "48": { nome: "🎟️ Ticket Gojo [EM BREVE]", preco: 99999, tipo: "raro" },
   "49": { nome: "🎟️ Ticket Deku [EM BREVE]", preco: 99999, tipo: "raro" },
@@ -85,16 +85,16 @@ export default {
     const p = bancoRPG[numeroLimpo] || {};
     const saldo = p.ouro || 0;
 
-    // Pega o que o jogador já comprou para colocar o selo
+    // Configura os arrays com backups automáticos caso as chaves estejam ausentes
     const racasCompradas = p.racasCompradas || [p.raca || "Humano"];
-    const classesCompradas = p.classesCompradas || [p.classe || "Nenhuma"];
+    const classesCompradas = p.classesCompradas || [p.classe || "Guerreiro"];
     const inventario = p.inventario || [];
 
     let textoLoja = `🛒 *LOJA THE LEGENDARY ONLINE* 🛒\n`;
     textoLoja += `💰 *Seu Saldo:* 🪙 ${saldo} moedas de ouro\n`;
     textoLoja += `─────────────────────────\n\n`;
 
-    if (categoria === "racas") {
+    if (categoria === "racas" || categoria === "raca") {
       textoLoja += `🧬 *ABA DE RAÇAS (Custo: 🪙 200)*\n\n`;
       for (const [id, item] of Object.entries(ITENS_LOJA)) {
         if (item.tipo === "raca") {
@@ -102,7 +102,7 @@ export default {
           textoLoja += `*🆔 [${id}]* - ${item.nome}${jaTem}\n`;
         }
       }
-    } else if (categoria === "classes") {
+    } else if (categoria === "classes" || categoria === "classe") {
       textoLoja += `🛡️ *ABA DE CLASSES (Custo: 🪙 200)*\n\n`;
       for (const [id, item] of Object.entries(ITENS_LOJA)) {
         if (item.tipo === "classe") {
@@ -114,7 +114,8 @@ export default {
       textoLoja += `📜 *PRODUTOS GERAIS*\n\n`;
       for (const [id, item] of Object.entries(ITENS_LOJA)) {
         if (["titulo", "montaria", "moldura", "consumivel", "raro", "passe"].includes(item.tipo)) {
-          const jaTem = inventario.includes(item.nome) ? " ✅" : "";
+          // Títulos, molduras e montarias são itens fixos verificados no inventário
+          const jaTem = ["consumivel", "raro", "passe"].includes(item.tipo) ? "" : (inventario.includes(item.nome) ? " ✅" : "");
           textoLoja += `*🆔 [${id}]* - ${item.nome}${jaTem}\n• Preço: 🪙 ${item.preco} moedas\n\n`;
         }
       }
