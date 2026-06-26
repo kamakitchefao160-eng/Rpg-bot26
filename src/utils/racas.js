@@ -1,0 +1,26 @@
+// 🧬 BÔNUS PASSIVOS DAS 20 RAÇAS DO RPG
+export const RACAS_RPG = {
+  "Humano": { hpBonus: 0, danoBonus: 5, descrição: "Versátil e equilibrado em combates." },
+  "Elfo": { hpBonus: 0, danoBonus: 3, criticoBonus: 10, descrição: "Alta precisão e agilidade." },
+  "Oni": { hpBonus: 15, danoBonus: 5, descrição: "Força bruta demoníaca e resistência." },
+  "Meio-Fera": { hpBonus: 5, danoBonus: 4, descrição: "Instintos aguçados e velocidade." },
+  "Anão": { hpBonus: 25, danoBonus: 0, descrição: "Resistência massiva a golpes." },
+  "Morto-Vivo": { hpBonus: 10, drenoBonus: 3, descrição: "Não sente dor e absorve energia vital." },
+  "Vampiro": { hpBonus: 0, danoBonus: 6, drenoBonus: 4, descrição: "Causa dano alto e cura-se com o sangue." },
+  "Anjo Caído": { hpBonus: 5, danoBonus: 7, descrição: "Poderes sombrios e celestiais combinados." },
+  "Fada": { hpBonus: -10, curaBonus: 10, descrição: "Frágil, mas com alta capacidade mágica." },
+  "Sereia": { hpBonus: 10, escudoBonus: 5, descrição: "Domínio das águas e barreiras fluídas." },
+  "Tritão": { hpBonus: 10, escudoBonus: 5, descrição: "Domínio das águas e barreiras fluídas." },
+  "Goblin": { hpBonus: -15, ouroBonus: 20, descrição: "Fraco em combate, mas ganha mais ouro por vitória." },
+  "Orc": { hpBonus: 30, danoBonus: 2, descrição: "Pele espessa e fúria de combate." },
+  "Ciborgue": { hpBonus: 20, escudoBonus: 10, descrição: "Partes mecânicas que geram blindagem." },
+  "Autômato": { hpBonus: 20, escudoBonus: 10, descrição: "Partes mecânicas que geram blindagem." },
+  "Espírito": { hpBonus: 0, esquivaBonus: 15, descrição: "Incorpóreo, difícil de ser atingido." },
+  "Fantasma": { hpBonus: 0, esquivaBonus: 15, descrição: "Incorpóreo, difícil de ser atingido." },
+  "Draconato": { hpBonus: 15, danoBonus: 6, descrição: "Resistência elemental e sopro destrutivo." },
+  "Elfo Negro": { hpBonus: 0, danoBonus: 8, descrição: "Mestre das emboscadas e venenos." },
+  "Slime Humanóide": { hpBonus: 35, danoBonus: -5, descrição: "Corpo maleável que absorve muito impacto." },
+  "Metamorfo": { hpBonus: 5, danoBonus: 5, descrição: "Capacidade de se adaptar ao oponente." },
+  "Titã": { hpBonus: 50, danoBonus: 10, descrição: "Tamanho colossal, vida gigantesca, mas lento." },
+  "Ser Estelar": { hpBonus: 10, danoBonus: 10, descrição: "Poder cósmico puro vindo do espaço." }
+};
