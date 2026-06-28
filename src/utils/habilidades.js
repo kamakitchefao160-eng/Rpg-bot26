@@ -1,4 +1,4 @@
-// 🛡️ PODERES ATIVOS DAS 20 CLASSES REESTRUTURADOS PARA O COMBATE INTERATIVO
+// habilidades.js
 export const HAB_CLASSES = {
   "Guerreiro": {
     p1: { nome: "👊 Golpe de Espada", danoBase: 25 },
@@ -50,7 +50,7 @@ export const HAB_CLASSES = {
     p2: { nome: "🎰 Golpe de Sorte", danoBase: 46 },
     p3: { nome: "💨 Bomba de Fumaça", escudoBase: 30 }
   },
-  "Bardo (Músico Mágico)": {
+  "Bardo": { // Corrigido aqui
     p1: { nome: "🎵 Acorde Disruptivo", danoBase: 19 },
     p2: { nome: "⚡ Acorde do Trovão", danoBase: 38 },
     p3: { nome: "🛡️ Balada Protetora", escudoBase: 35 }
@@ -75,7 +75,7 @@ export const HAB_CLASSES = {
     p2: { nome: "⚡ Impacto Elemental", danoBase: 40 },
     p3: { nome: "🛡️ Runa Protetora", escudoBase: 38 }
   },
-  "Druida (Mago da Natureza)": {
+  "Druida": { // Corrigido aqui
     p1: { nome: "🌿 Raízes Sufocantes", danoBase: 20 },
     p2: { nome: "🐻 Ira da Natureza", danoBase: 39 },
     p3: { nome: "🌸 Forma de Urso", escudoBase: 35 }
@@ -101,4 +101,3 @@ export const HAB_CLASSES = {
     p3: { nome: "🛡️ Vontade Indomável", escudoBase: 25 }
   }
 };
-
