@@ -1,2 +1,5 @@
 assets/auth/baileys
 .vscode
+.env
+node_modules
+database/rpg-usuarios.json
