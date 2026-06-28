@@ -1,11 +1,13 @@
 import fs from "fs";
 import path from "path";
 import { Groq } from "groq-sdk";
-import { MARIDO_DA_RAIDEN } from "../../config.js";
+import { MARIDO_DA_RAIDEN, GROQ_API_KEY, DATABASE_DIR } from "../../config.js"; // ⚡ Puxa tudo certinho do config
 
-// Caminho correto do banco para ela consultar os dados do jogador
-const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+// Usa o caminho padrão correto (pasta database) do seu projeto
+const dbPath = path.join(DATABASE_DIR, "rpg-usuarios.json");
+
+// Inicializa o Groq com a chave global blindada do config
+const groq = new Groq({ apiKey: GROQ_API_KEY });
 
 export default {
   name: "raiden",
@@ -40,7 +42,6 @@ export default {
     const contextoGeral = `Você é a Raiden Shogun (Ei) de Genshin Impact. Você fala em português e está em um chat de RPG do WhatsApp. 
     Seu comportamento muda drasticamente dependendo de quem fala com você.`;
 
-    // Agora ela sabe a classe e raça do usuário para usar nos diálogos!
     const contextoPersonalizado = ehMarido 
       ? `A pessoa que está falando com você é o seu amado esposo (Nome no RPG: ${dadosJogador.nomeOficial}). Seja extremamente carinhosa, fofa, protetora, ciumenta saudável e demonstre muito amor por ele.`
       : `A pessoa que está falando com você NÃO é seu marido. O nome dele é ${dadosJogador.nomeOficial}, ele é um ${dadosJogador.raca} da classe ${dadosJogador.classe}. Seja fria, distante, arrogante, use respostas curtas e dê patadas diretas caso tentem gracinhas ou intimidade. Trate-o apenas como um mero mortal inferior.`;
