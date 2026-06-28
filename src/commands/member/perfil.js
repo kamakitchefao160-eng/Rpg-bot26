@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
-import { PREFIX } from "../../config.js";
+import { PREFIX, DATABASE_DIR } from "../../config.js"; // Puxa o DATABASE_DIR correto do config
 
-const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
+// Agora ele aponta direto para a pasta 'database' que está no seu GitHub
+const dbPath = path.join(DATABASE_DIR, "rpg-usuarios.json");
 
 export default {
   name: "perfil",
@@ -41,6 +42,10 @@ export default {
         inventario: []
       };
       
+      // Garante que a pasta database existe antes de criar o arquivo
+      if (!fs.existsSync(DATABASE_DIR)) {
+        fs.mkdirSync(DATABASE_DIR, { recursive: true });
+      }
       fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
     }
 
@@ -48,9 +53,8 @@ export default {
 
     const mochilaVisivel = dados.inventario && dados.inventario.length > 0 
       ? dados.inventario.map(item => `  📦 ${item}`).join("\n") 
-      : "   packing_box Sua mochila está vazia no momento.";
+      : "   📦 Sua mochila está vazia no momento."; // Corrigido o texto 'packing_box' para o emoji direto
 
-    // Lógica simples para gerar barrinhas visuais baseadas no status atual
     const barraHp = "█".repeat(Math.max(0, Math.floor(dados.hp / 10))).padEnd(10, "░");
     const barraEscudo = "█".repeat(Math.max(0, Math.floor(dados.escudo / 10))).padEnd(10, "░");
 
