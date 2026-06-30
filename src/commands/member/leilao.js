@@ -1,9 +1,9 @@
-class SistemaLeilao {
+export class SistemaLeilao {
     constructor() {
         this.itensLeiloados = new Map(); // Armazena os itens ativos (ID -> Dados)
-        self.taxaAnuncio = 500;
-        self.incrementoMinimo = 200;
-        self.proibidos = ["raca", "classes", "raças", "classe"];
+        this.taxaAnuncio = 500;
+        this.incrementoMinimo = 200;
+        this.proibidos = ["raca", "classes", "raças", "classe"];
     }
 
     verificarHorarioLeilao() {
@@ -112,5 +112,3 @@ class SistemaLeilao {
         return `⚔️ **LANCE ACEITO!** ${jogador.nome} deu um lance de 🪙 ${valorLance} no item '${item.item}'!`;
     }
 }
-
-module.exports = SistemaLeilao;
