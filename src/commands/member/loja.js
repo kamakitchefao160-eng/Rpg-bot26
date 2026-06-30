@@ -512,16 +512,22 @@ export const ITENS_LOJA = {
 
 export default {
   name: "loja",
-  description: "Mostra as abas de itens do RPG",
+  description: "Mostra as abas de itens do RPG com paginação",
   commands: ["loja", "shop"],
-  usage: `${PREFIX}loja [categoria]`,
+  usage: `${PREFIX}loja [categoria] [página]`,
 
   handle: async ({ args, socket, remoteJid, userLid, sendErrorReply }) => {
     if (!isGroup(remoteJid)) return sendErrorReply("Este comando só pode ser usado em grupo.");
 
-    // Normaliza a entrada removendo acentos para evitar erros com 'montarias', 'chapeus', etc.
     const categoria = args[0] ? args[0].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
     
+    // Captura a página digitada (Ex: /loja montarias 2) ou define 1 por padrão
+    let pagina = args[1] ? parseInt(args[1]) : 1;
+    if (isNaN(pagina) || pagina < 1) pagina = 1;
+
+    // Define quantos itens aparecem de uma vez só (15 por página resolve o erro do WhatsApp)
+    const ITENS_POR_PAGINA = 15;
+
     let bancoRPG = {};
     if (fs.existsSync(dbPath)) bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
     const numeroLimpo = userLid.split("@")[0];
@@ -529,7 +535,6 @@ export default {
     const p = bancoRPG[numeroLimpo] || {};
     const saldo = p.ouro || 0;
 
-    // Backups automáticos de coleções do jogador
     const racasCompradas = p.racasCompradas || [p.raca || "Humano"];
     const classesCompradas = p.classesCompradas || [p.classe || "Guerreiro"];
     const inventario = p.inventario || [];
@@ -538,12 +543,11 @@ export default {
     textoLoja += `💰 *Seu Saldo:* 🪙 ${saldo} moedas de ouro\n`;
     textoLoja += `─────────────────────────\n\n`;
 
-    // Mapeador de cabeçalhos e tipos para deixar o código enxuto e dinâmico
     const mapeamentoAbas = {
-      "raca": { tipo: "raca", titulo: "🧬 ABA DE RAÇAS", custoFixo: 250 },
-      "racas": { tipo: "raca", titulo: "🧬 ABA DE RAÇAS", custoFixo: 250 },
-      "classe": { tipo: "classe", titulo: "🛡️ ABA DE CLASSES", custoFixo: 200 },
-      "classes": { tipo: "classe", titulo: "🛡️ ABA DE CLASSES", custoFixo: 200 },
+      "raca": { tipo: "raca", titulo: "🧬 ABA DE RAÇAS" },
+      "racas": { tipo: "raca", titulo: "🧬 ABA DE RAÇAS" },
+      "classe": { tipo: "classe", titulo: "🛡️ ABA DE CLASSES" },
+      "classes": { tipo: "classe", titulo: "🛡️ ABA DE CLASSES" },
       "titulo": { tipo: "titulo", titulo: "🏅 ABA DE TÍTULOS" },
       "titulos": { tipo: "titulo", titulo: "🏅 ABA DE TÍTULOS" },
       "montaria": { tipo: "montaria", titulo: "🐎 ABA DE MONTARIAS" },
@@ -560,22 +564,39 @@ export default {
 
     if (mapeamentoAbas[categoria]) {
       const aba = mapeamentoAbas[categoria];
-      textoLoja += `*${aba.titulo}*\n\n`;
+      
+      // Filtra os itens que pertencem a essa aba
+      const itensFiltrados = Object.entries(ITENS_LOJA).filter(([id, item]) => item.tipo === aba.tipo);
+      
+      const totalItens = itensFiltrados.length;
+      const totalPaginas = Math.ceil(totalItens / ITENS_POR_PAGINA);
+      
+      if (pagina > totalPaginas) pagina = totalPaginas;
+      if (pagina < 1) pagina = 1;
 
-      for (const [id, item] of Object.entries(ITENS_LOJA)) {
-        if (item.tipo === aba.tipo) {
-          let jaTem = "";
-          
-          // Verificação de posse customizada baseada no tipo do item
-          if (item.tipo === "raca") jaTem = racasCompradas.includes(item.nome) ? " ✅" : "";
-          else if (item.tipo === "classe") jaTem = classesCompradas.includes(item.nome) ? " ✅" : "";
-          else jaTem = inventario.includes(item.nome) ? " ✅" : "";
+      textoLoja += `*${aba.titulo}* (Pág. ${pagina}/${totalPaginas})\n\n`;
 
-          textoLoja += `*🆔 [${id}]* - ${item.nome}${jaTem}\n• Preço: 🪙 ${item.preco} moedas\n\n`;
-        }
+      // Calcula quais itens vão aparecer nessa página específica
+      const inicio = (pagina - 1) * ITENS_POR_PAGINA;
+      const fim = inicio + ITENS_POR_PAGINA;
+      const itensPagina = itensFiltrados.slice(inicio, fim);
+
+      for (const [id, item] of itensPagina) {
+        let jaTem = "";
+        
+        if (item.tipo === "raca") jaTem = racasCompradas.includes(item.nome) ? " ✅" : "";
+        else if (item.tipo === "classe") jaTem = classesCompradas.includes(item.nome) ? " ✅" : "";
+        else jaTem = inventario.includes(item.nome) ? " ✅" : "";
+
+        textoLoja += `*🆔 [${id}]* - ${item.nome}${jaTem}\n• Preço: 🪙 ${item.preco} moedas\n\n`;
       }
+
+      if (totalPaginas > 1) {
+        textoLoja += `─────────────────────────\n`;
+        textoLoja += `💡 Veja a próxima página usando: \`${PREFIX}loja ${categoria} ${pagina + 1 > totalPaginas ? 1 : pagina + 1}\`\n`;
+      }
+
     } else {
-      // Menu Principal da Loja (Caso o usuário digite apenas /loja)
       textoLoja += `📜 *CATEGORIAS DISPONÍVEIS*\n\n`;
       textoLoja += `🧬 \`${PREFIX}loja racas\` - Escolha sua linhagem\n`;
       textoLoja += `🛡️ \`${PREFIX}loja classes\` - Defina sua profissão de combate\n`;
@@ -586,7 +607,7 @@ export default {
       textoLoja += `🖼️ \`${PREFIX}loja molduras\` - Bordas personalizadas para o seu perfil\n`;
       textoLoja += `✨ \`${PREFIX}loja cosmeticos\` - Auras e pegadas com efeitos místico\n`;
       textoLoja += `─────────────────────────\n`;
-      textoLoja += `💡 *Exemplo:* Use \`${PREFIX}loja montarias\` para ver os animais disponíveis!`;
+      textoLoja += `💡 *Exemplo:* Use \`${PREFIX}loja montarias\` ou \`${PREFIX}loja montarias 2\``;
     }
 
     textoLoja += `\n\n🛒 Para comprar use: *${PREFIX}comprar [número]*`;
