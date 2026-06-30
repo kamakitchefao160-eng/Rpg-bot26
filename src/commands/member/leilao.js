@@ -6,7 +6,7 @@ const pastaDados = path.resolve('./database');
 const arquivoLeilao = path.join(pastaDados, 'leilao.json');
 const arquivoPlayers = path.join(pastaDados, 'players.json');
 
-// Garante que a pasta database e os arquivos existam
+// Garante que a pasta database e os arquivos existam (Simula o mkdir automaticamente)
 if (!fs.existsSync(pastaDados)) {
     fs.mkdirSync(pastaDados, { recursive: true });
 }
@@ -43,8 +43,8 @@ function verificarHorarioLeilao() {
 export const commands = ['leilao', 'leilão', 'lance', 'leiloar']; 
 export const description = 'Sistema de Leilão Semanal';
 
-// Função de execução do comando
-export async function run(sock, message, args) {
+// A FUNÇÃO QUE ESTAVA FALTANDO COM O NOME CORRETO PARA O HANDLER:
+export async function handle(sock, message, args) {
     const jid = message.key?.remoteJid || message.chat;
     if (!jid) return;
 
