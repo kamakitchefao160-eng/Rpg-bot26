@@ -221,7 +221,7 @@ export const ITENS_LOJA = {
   "204": { nome: "Coroa do Rei Decaído", preco: 1200, tipo: "chapeu" },
   "205": { nome: "Yasa (Chapéu de Palha Samurai)", preco: 450, tipo: "chapeu" },
   "206": { nome: "Boina do Detetive Arcano", preco: 400, tipo: "chapeu" },
-  "207": { nome: "Elmo do Cavaleiro de Sangue", preco: 850, tipo: "chapeu" },
+  "207": { elmo: "Elmo do Cavaleiro de Sangue", preco: 850, tipo: "chapeu" },
   "208": { nome: "Tiara da Princesa Élfica", preco: 900, tipo: "chapeu" },
   "209": { nome: "Bandana do Pirata Caçador", preco: 400, tipo: "chapeu" },
   "210": { nome: "Capacete de Mineração com Lanterna", preco: 450, tipo: "chapeu" },
@@ -364,7 +364,7 @@ export const ITENS_LOJA = {
   "345": { "nome": "Amuleto de Sangue Vampírico", "preco": 1500, "tipo": "acessorio" },
   "346": { "nome": "Capa do Executor de Almas", "preco": 1700, "tipo": "acessorio" },
   "347": { "nome": "Luvas de Toque Macabro", "preco": 900, "tipo": "acessorio" },
-  "348": { "nome": "Cinto Espinhoso", "preco": 600, "tipo": "acessorio" },
+  "348": { "nome": "Cinto Emspinhoso", "preco": 600, "tipo": "acessorio" },
   "349": { "nome": "Brincos de Topázio Imperial", "preco": 750, "tipo": "acessorio" },
   "350": { "nome": "Colar de Pena de Grifo", "preco": 900, "tipo": "acessorio" },
   "351": { "nome": "Anel de Comunicação à Distância", "preco": 1000, "tipo": "acessorio" },
@@ -534,11 +534,20 @@ export default {
   handle: async ({ args, socket, remoteJid, userLid, sendErrorReply }) => {
     if (!isGroup(remoteJid)) return sendErrorReply("❌ Este comando só pode ser usado em grupos.");
 
-    const categoria = args[0] ? args[0].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
-    let pagina = args[1] ? parseInt(args[1]) : 1;
+    // Tratamento extra para aceitar strings com underline caso o usuário digite "racas_2" por engano
+    let argumentoCategoria = args[0] || "";
+    let argumentoPagina = args[1] || "";
+
+    if (argumentoCategoria.includes("_")) {
+      const partes = argumentoCategoria.split("_");
+      argumentoCategoria = partes[0];
+      argumentoPagina = partes[1];
+    }
+
+    const categoria = argumentoCategoria.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    let pagina = argumentoPagina ? parseInt(argumentoPagina) : 1;
     if (isNaN(pagina) || pagina < 1) pagina = 1;
 
-    // Reduzi para 10 itens por página: garante 100% que o WhatsApp não vai dar crash no celular dos players!
     const ITENS_POR_PAGINA = 10;
 
     let bancoRPG = {};
@@ -565,22 +574,22 @@ export default {
     textoLoja += `─────────────────────────\n\n`;
 
     const mapeamentoAbas = {
-      "raca": { tipo: "raca", titulo: "🧬 LINHAGEM DE RAÇAS" },
-      "racas": { tipo: "raca", titulo: "🧬 LINHAGEM DE RAÇAS" },
-      "classe": { tipo: "classe", titulo: "🛡️ ARTES DE COMBATE (CLASSES)" },
-      "classes": { tipo: "classe", titulo: "🛡️ ARTES DE COMBATE (CLASSES)" },
-      "titulo": { tipo: "titulo", titulo: "🏅 ALCUNHAS & TÍTULOS" },
-      "titulos": { tipo: "titulo", titulo: "🏅 ALCUNHAS & TÍTULOS" },
-      "montaria": { tipo: "montaria", titulo: "🐎 ESTÁBULO DE MONTARIAS" },
-      "montarias": { tipo: "montaria", titulo: "🐎 ESTÁBULO DE MONTARIAS" },
-      "chapeu": { tipo: "chapeu", titulo: "🎩 FORJA DE ELMOS & CHAPÉUS" },
-      "chapeus": { tipo: "chapeu", titulo: "🎩 FORJA DE ELMOS & CHAPÉUS" },
-      "acessorio": { tipo: "acessorio", titulo: "📿 RELÍQUIAS & ACESSÓRIOS" },
-      "acessorios": { tipo: "acessorio", titulo: "📿 RELÍQUIAS & ACESSÓRIOS" },
-      "moldura": { tipo: "moldura", titulo: "🖼️ PINTURAS & MOLDURAS" },
-      "molduras": { tipo: "moldura", titulo: "🖼️ PINTURAS & MOLDURAS" },
-      "cosmetico": { tipo: "cosmetico", titulo: "✨ AURAS & COSMÉTICOS" },
-      "cosmeticos": { tipo: "cosmetico", titulo: "✨ AURAS & COSMÉTICOS" }
+      "raca": { tipo: "raca", titulo: "🧬 LINHAGEM DE RAÇAS", comandoBase: "racas" },
+      "racas": { tipo: "raca", titulo: "🧬 LINHAGEM DE RAÇAS", comandoBase: "racas" },
+      "classe": { tipo: "classe", titulo: "🛡️ ARTES DE COMBATE (CLASSES)", comandoBase: "classes" },
+      "classes": { tipo: "classe", titulo: "🛡️ ARTES DE COMBATE (CLASSES)", comandoBase: "classes" },
+      "titulo": { tipo: "titulo", titulo: "🏅 ALCUNHAS & TÍTULOS", comandoBase: "titulos" },
+      "titulos": { tipo: "titulo", titulo: "🏅 ALCUNHAS & TÍTULOS", comandoBase: "titulos" },
+      "montaria": { tipo: "montaria", titulo: "🐎 ESTÁBULO DE MONTARIAS", comandoBase: "montarias" },
+      "montarias": { tipo: "montaria", titulo: "🐎 ESTÁBULO DE MONTARIAS", comandoBase: "montarias" },
+      "chapeu": { tipo: "chapeu", titulo: "🎩 FORJA DE ELMOS & CHAPÉUS", comandoBase: "chapeus" },
+      "chapeus": { tipo: "chapeu", titulo: "🎩 FORJA DE ELMOS & CHAPÉUS", comandoBase: "chapeus" },
+      "acessorio": { tipo: "acessorio", titulo: "📿 RELÍQUIAS & ACESSÓRIOS", comandoBase: "acessorios" },
+      "acessorios": { tipo: "acessorio", titulo: "📿 RELÍQUIAS & ACESSÓRIOS", comandoBase: "acessorios" },
+      "moldura": { tipo: "moldura", titulo: "🖼️ PINTURAS & MOLDURAS", comandoBase: "molduras" },
+      "molduras": { tipo: "moldura", titulo: "🖼️ PINTURAS & MOLDURAS", comandoBase: "molduras" },
+      "cosmetico": { tipo: "cosmetico", titulo: "✨ AURAS & COSMÉTICOS", comandoBase: "cosmeticos" },
+      "cosmeticos": { tipo: "cosmetico", titulo: "✨ AURAS & COSMÉTICOS", comandoBase: "cosmeticos" }
     };
 
     if (mapeamentoAbas[categoria]) {
@@ -616,7 +625,8 @@ export default {
       textoLoja += `─────────────────────────\n`;
       if (totalPaginas > 1) {
         const proxPag = pagina + 1 > totalPaginas ? 1 : pagina + 1;
-        textoLoja += `📖 Próxima Página: \`${PREFIX}loja ${categoria} ${proxPag}\`\n`;
+        // CORREÇÃO AQUI: Garante o uso do comando fixo e correto mapeado no bot (ex: "racas" ao invés de "raca")
+        textoLoja += `📖 Próxima Página: \`${PREFIX}loja ${aba.comandoBase} ${proxPag}\`\n`;
       }
     } else {
       textoLoja += `🏛️ *DIRETÓRIO DO MERCADO*\n_Digite o comando correspondente para abrir a aba:_\n\n`;
