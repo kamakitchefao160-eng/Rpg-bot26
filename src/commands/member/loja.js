@@ -182,37 +182,37 @@ export const ITENS_LOJA = {
   "167": { nome: "Alpaca Mágica Arco-Íris", preco: 1450, tipo: "montaria" },
   "168": { nome: "Foca do Ártico Deslizante", preco: 850, tipo: "montaria" },
   "169": { nome: "Panda Monge Sábio", preco: 1600, tipo: "montaria" },
-  "170": { "nome": "Hipopótamo de Armadura", "preco": 1300, "tipo": "montaria" },
-  "171": { "nome": "Rinoceronte de Chifre de Diamante", "preco": 1800, "tipo": "montaria" },
-  "172": { "nome": "Galo de Briga Gigante", "preco": 850, "tipo": "montaria" },
-  "173": { "nome": "Pavão Majestoso de Cristal", "preco": 1500, "tipo": "montaria" },
-  "174": { "nome": "Búfalo Enfurecido", "preco": 950, "tipo": "montaria" },
-  "175": { "nome": "Gafanhoto Saltador do Deserto", "preco": 800, "tipo": "montaria" },
-  "176": { "nome": "Álvaro, o Carneiro Destemido", "preco": 1000, "tipo": "montaria" },
-  "177": { "nome": "Condor dos Andes Mutante", "preco": 1400, "tipo": "montaria" },
-  "178": { "nome": "Chocobo Amarelo", "preco": 1200, "tipo": "montaria" },
-  "179": { "nome": "Chocobo Preto Sombrio", "preco": 1800, "tipo": "montaria" },
-  "180": { "nome": "Chocobo Dourado Lendário", "preco": 3500, "tipo": "montaria" },
-  "181": { "nome": "Lagarto Monitor do Pântano", "preco": 900, "tipo": "montaria" },
-  "182": { "nome": "Verme da Areia Miniatura", "preco": 1300, "tipo": "montaria" },
-  "183": { "nome": "Centopeia Gigante Huskar", "preco": 1150, "tipo": "montaria" },
-  "184": { "nome": "Besta do Caos Infernal", "preco": 2700, "tipo": "montaria" },
-  "185": { "nome": "Basilisco Petrificador", "preco": 2200, "tipo": "montaria" },
-  "186": { "nome": "Cérbero Filhote", "preco": 2500, "tipo": "montaria" },
-  "187": { "nome": "Pterodáctilo Mecânico", "preco": 1900, "tipo": "montaria" },
-  "188": { "nome": "T-Rex Domado com Sela", "preco": 3400, "tipo": "montaria" },
-  "189": { "nome": "Velociraptor Ágil", "preco": 1600, "tipo": "montaria" },
-  "190": { "nome": "Tricerátops Canhão de Assalto", "preco": 2800, "tipo": "montaria" },
-  "191": { "nome": "Cachorro Caramelo Lendário", "preco": 5000, "tipo": "montaria" },
-  "192": { "nome": "Capivara Suprema da Paz", "preco": 4500, "tipo": "montaria" },
-  "193": { "nome": "Boto Cor-de-Rosa Encantado", "preco": 1500, "tipo": "montaria" },
-  "194": { "nome": "Urso Polar de Gelo", "preco": 1400, "tipo": "montaria" },
-  "195": { "nome": "Besta Espiritual de Jade", "preco": 2600, "tipo": "montaria" },
-  "196": { "nome": "Foguete de Bolso Goblínico", "preco": 2000, "tipo": "montaria" },
-  "197": { "nome": "Submarino Steampunk de Bolso", "preco": 1850, "tipo": "montaria" },
-  "198": { "nome": "Disco Voador Alienígena", "preco": 4000, "tipo": "montaria" },
-  "199": { "nome": "Esfera de Energia Flutuante", "preco": 2100, "tipo": "montaria" },
-  "200": { "nome": "Vassoura de Limpeza Veloz", "preco": 700, "tipo": "montaria" },
+  "170": { nome: "Hipopótamo de Armadura", preco: 1300, tipo: "montaria" },
+  "171": { nome: "Rinoceronte de Chifre de Diamante", preco: 1800, tipo: "montaria" },
+  "172": { nome: "Galo de Briga Gigante", preco: 850, tipo: "montaria" },
+  "173": { nome: "Pavão Majestoso de Cristal", preco: 1500, tipo: "montaria" },
+  "174": { nome: "Búfalo Enfurecido", preco: 950, tipo: "montaria" },
+  "175": { nome: "Gafanhoto Saltador do Deserto", preco: 800, tipo: "montaria" },
+  "176": { nome: "Álvaro, o Carneiro Destemido", preco: 1000, tipo: "montaria" },
+  "177": { nome: "Condor dos Andes Mutante", preco: 1400, tipo: "montaria" },
+  "178": { nome: "Chocobo Amarelo", preco: 1200, tipo: "montaria" },
+  "179": { nome: "Chocobo Preto Sombrio", preco: 1800, tipo: "montaria" },
+  "180": { nome: "Chocobo Dourado Lendário", preco: 3500, tipo: "montaria" },
+  "181": { nome: "Lagarto Monitor do Pântano", preco: 900, tipo: "montaria" },
+  "182": { nome: "Verme da Areia Miniatura", preco: 1300, tipo: "montaria" },
+  "183": { nome: "Centopeia Gigante Huskar", preco: 1150, tipo: "montaria" },
+  "184": { nome: "Besta do Caos Infernal", preco: 2700, tipo: "montaria" },
+  "185": { nome: "Basilisco Petrificador", preco: 2200, tipo: "montaria" },
+  "186": { nome: "Cérbero Filhote", preco: 2500, tipo: "montaria" },
+  "187": { nome: "Pterodáctilo Mecânico", preco: 1900, tipo: "montaria" },
+  "188": { nome: "T-Rex Domado com Sela", preco: 3400, tipo: "montaria" },
+  "189": { nome: "Velociraptor Ágil", preco: 1600, tipo: "montaria" },
+  "190": { nome: "Tricerátops Canhão de Assalto", preco: 2800, tipo: "montaria" },
+  "191": { nome: "Cachorro Caramelo Lendário", preco: 5000, tipo: "montaria" },
+  "192": { nome: "Capivara Suprema da Paz", preco: 4500, tipo: "montaria" },
+  "193": { nome: "Boto Cor-de-Rosa Encantado", preco: 1500, tipo: "montaria" },
+  "194": { nome: "Urso Polar de Gelo", preco: 1400, tipo: "montaria" },
+  "195": { nome: "Besta Espiritual de Jade", preco: 2600, tipo: "montaria" },
+  "196": { nome: "Foguete de Bolso Goblínico", preco: 2000, tipo: "montaria" },
+  "197": { nome: "Submarino Steampunk de Bolso", preco: 1850, tipo: "montaria" },
+  "198": { nome: "Disco Voador Alienígena", preco: 4000, tipo: "montaria" },
+  "199": { nome: "Esfera de Energia Flutuante", preco: 2100, tipo: "montaria" },
+  "200": { nome: "Vassoura de Limpeza Veloz", preco: 700, tipo: "montaria" },
 
   // 🎩 CHAPÉUS (Custo: 400 - 1500)
   "201": { nome: "Chapéu de Bruxo Estelar", preco: 650, tipo: "chapeu" },
@@ -221,7 +221,7 @@ export const ITENS_LOJA = {
   "204": { nome: "Coroa do Rei Decaído", preco: 1200, tipo: "chapeu" },
   "205": { nome: "Yasa (Chapéu de Palha Samurai)", preco: 450, tipo: "chapeu" },
   "206": { nome: "Boina do Detetive Arcano", preco: 400, tipo: "chapeu" },
-  "207": { elmo: "Elmo do Cavaleiro de Sangue", preco: 850, tipo: "chapeu" },
+  "207": { nome: "Elmo do Cavaleiro de Sangue", preco: 850, tipo: "chapeu" }, // Corrigido de 'elmo' para 'nome'
   "208": { nome: "Tiara da Princesa Élfica", preco: 900, tipo: "chapeu" },
   "209": { nome: "Bandana do Pirata Caçador", preco: 400, tipo: "chapeu" },
   "210": { nome: "Capacete de Mineração com Lanterna", preco: 450, tipo: "chapeu" },
@@ -265,36 +265,36 @@ export const ITENS_LOJA = {
   "248": { nome: "Capacete Primitivo de Crânio", preco: 500, tipo: "chapeu" },
   "249": { nome: "Boina de Artista Pintor", preco: 400, tipo: "chapeu" },
   "250": { nome: "Cartola Steampunk de Latão", preco: 600, tipo: "chapeu" },
-  "251": { "nome": "Bandana de Renegado", "preco": 550, "tipo": "chapeu" },
-  "252": { "nome": "Chifres de Dragão Ancião", "preco": 1300, "tipo": "chapeu" },
-  "253": { "nome": "Auréola Negra Corrompida", "preco": 1200, "tipo": "chapeu" },
-  "254": { "nome": "Orelhas de Raposa de Fogo", "preco": 650, "tipo": "chapeu" },
-  "255": { "nome": "Gorro de Bobo da Corte Colorido", "preco": 450, "tipo": "chapeu" },
-  "256": { "nome": "Elmo de Paladino Iluminado", "preco": 950, "tipo": "chapeu" },
-  "257": { "nome": "Capuz de Gatuno Furtivo", "preco": 500, "tipo": "chapeu" },
-  "258": { "nome": "Máscara de Palhaço Macabro", "preco": 600, "tipo": "chapeu" },
-  "259": { "nome": "Tiara da Lua Crescente", "preco": 750, "tipo": "chapeu" },
-  "260": { "nome": "Coroa de Ouro Maciço", "preco": 2000, "tipo": "chapeu" },
-  "261": { "nome": "Chapéu de Explorador da Selva", "preco": 400, "tipo": "chapeu" },
-  "262": { "nome": "Máscara de Oni Azul", "preco": 700, "tipo": "chapeu" },
-  "263": { "nome": "Máscara de Oni Vermelho", "preco": 700, "tipo": "chapeu" },
-  "264": { "nome": "Elmo Samurai Clássico", "preco": 800, "tipo": "chapeu" },
-  "265": { "nome": "Capacete de Guarda Real", "preco": 600, "tipo": "chapeu" },
-  "266": { "nome": "Gorro de Pirata com Caveira", "preco": 450, "tipo": "chapeu" },
-  "267": { "nome": "Máscara de Hacker Anônimo", "preco": 650, "tipo": "chapeu" },
-  "268": { "nome": "Tiara de Conchas do Mar", "preco": 450, "tipo": "chapeu" },
-  "269": { "nome": "Chapéu de Pescador Velho", "preco": 400, "tipo": "chapeu" },
-  "270": { "nome": "Boina de Marinheiro", "preco": 400, "tipo": "chapeu" },
-  "271": { "nome": "Capuz de Necromante Sombrio", "preco": 850, "tipo": "chapeu" },
-  "272": { "nome": "Chifres de Touro Furioso", "preco": 600, "tipo": "chapeu" },
-  "273": { "nome": "Orelhas de Lobo Feroz", "preco": 550, "tipo": "chapeu" },
-  "274": { "nome": "Capacete de Samurai Futurista", "preco": 1100, "tipo": "chapeu" },
-  "275": { "nome": "Diadema de Esmeralda Mística", "preco": 950, "tipo": "chapeu" },
-  "276": { "nome": "Coroa de Gelo do Lich", "preco": 1400, "tipo": "chapeu" },
-  "277": { "nome": "Chapéu de Alquimista Supremo", "preco": 900, "tipo": "chapeu" },
-  "278": { "nome": "Máscara de Abóbora de Halloween", "preco": 500, "tipo": "chapeu" },
-  "279": { "nome": "Elmo de Cavaleiro Rúnico", "preco": 850, "tipo": "chapeu" },
-  "280": { "nome": "Gorro de Elfo Ajudante", "preco": 400, "tipo": "chapeu" },
+  "251": { nome: "Bandana de Renegado", preco: 550, tipo: "chapeu" },
+  "252": { nome: "Chifres de Dragão Ancião", preco: 1300, tipo: "chapeu" },
+  "253": { nome: "Auréola Negra Corrompida", preco: 1200, tipo: "chapeu" },
+  "254": { nome: "Orelhas de Raposa de Fogo", preco: 650, tipo: "chapeu" },
+  "255": { nome: "Gorro de Bobo da Corte Colorido", preco: 450, tipo: "chapeu" },
+  "256": { nome: "Elmo de Paladino Iluminado", preco: 950, tipo: "chapeu" },
+  "257": { nome: "Capuz de Gatuno Furtivo", preco: 500, tipo: "chapeu" },
+  "258": { nome: "Máscara de Palhaço Macabro", preco: 600, tipo: "chapeu" },
+  "259": { nome: "Tiara da Lua Crescente", preco: 750, tipo: "chapeu" },
+  "260": { nome: "Coroa de Ouro Maciço", preco: 2000, tipo: "chapeu" },
+  "261": { nome: "Chapéu de Explorador da Selva", preco: 400, tipo: "chapeu" },
+  "262": { nome: "Máscara de Oni Azul", preco: 700, tipo: "chapeu" },
+  "263": { nome: "Máscara de Oni Vermelho", preco: 700, tipo: "chapeu" },
+  "264": { nome: "Elmo Samurai Clássico", preco: 800, tipo: "chapeu" },
+  "265": { nome: "Capacete de Guarda Real", preco: 600, tipo: "chapeu" },
+  "266": { nome: "Gorro de Pirata com Caveira", preco: 450, tipo: "chapeu" },
+  "267": { nome: "Máscara de Hacker Anônimo", preco: 650, tipo: "chapeu" },
+  "268": { nome: "Tiara de Conchas do Mar", preco: 450, tipo: "chapeu" },
+  "269": { nome: "Chapéu de Pescador Velho", preco: 400, tipo: "chapeu" },
+  "270": { nome: "Boina de Marinheiro", preco: 400, tipo: "chapeu" },
+  "271": { nome: "Capuz de Necromante Sombrio", preco: 850, tipo: "chapeu" },
+  "272": { nome: "Chifres de Touro Furioso", preco: 600, tipo: "chapeu" },
+  "273": { nome: "Orelhas de Lobo Feroz", preco: 550, tipo: "chapeu" },
+  "274": { nome: "Capacete de Samurai Futurista", preco: 1100, tipo: "chapeu" },
+  "275": { nome: "Diadema de Esmeralda Mística", preco: 950, tipo: "chapeu" },
+  "276": { nome: "Coroa de Gelo do Lich", preco: 1400, tipo: "chapeu" },
+  "277": { nome: "Chapéu de Alquimista Supremo", preco: 900, tipo: "chapeu" },
+  "278": { nome: "Máscara de Abóbora de Halloween", preco: 500, tipo: "chapeu" },
+  "279": { nome: "Elmo de Cavaleiro Rúnico", preco: 850, tipo: "chapeu" },
+  "280": { nome: "Gorro de Elfo Ajudante", preco: 400, tipo: "chapeu" },
 
   // 📿 ACESSÓRIOS (Custo: 500 - 2500)
   "281": { nome: "Anel do Lorde Vampiro", preco: 1200, tipo: "acessorio" },
@@ -317,66 +317,66 @@ export const ITENS_LOJA = {
   "298": { nome: "Luvas de Ferro do Titã", preco: 1000, tipo: "acessorio" },
   "299": { nome: "Cinto de Força do Gigante", preco: 950, tipo: "acessorio" },
   "300": { nome: "Brincos de Rubi Sangrento", preco: 750, tipo: "acessorio" },
-  "301": { "nome": "Colar de Runas Antigas", "preco": 800, "tipo": "acessorio" },
-  "302": { "nome": "Anel de Invisibilidade Temporária", "preco": 2200, "tipo": "acessorio" },
-  "303": { "nome": "Amuleto do Sol Nascente", "preco": 900, "tipo": "acessorio" },
-  "304": { "nome": "Capa de Sombras Furtivas", "preco": 1250, "tipo": "acessorio" },
-  "305": { "nome": "Luvas de Silk Mágica", "preco": 600, "tipo": "acessorio" },
-  "306": { "nome": "Cinto de Gravidade Zero", "preco": 1500, "tipo": "acessorio" },
-  "307": { "nome": "Brincos de Safira Estelar", "preco": 950, "tipo": "acessorio" },
-  "308": { "nome": "Colar de Ossos de Dragão", "preco": 1100, "tipo": "acessorio" },
-  "309": { "nome": "Anel do Rei Salomão", "preco": 1750, "tipo": "acessorio" },
-  "310": { "nome": "Amuleto da Noite Eterna", "preco": 1200, "tipo": "acessorio" },
-  "311": { "nome": "Capa da Tempestade Elétrica", "preco": 1600, "tipo": "acessorio" },
-  "312": { "nome": "Luvas do Arqueiro de Elite", "preco": 700, "tipo": "acessorio" },
-  "313": { "nome": "Cinto de Armazenamento Infinito", "preco": 2400, "tipo": "acessorio" },
-  "314": { "nome": "Brincos de Pérola Negra", "preco": 800, "tipo": "acessorio" },
-  "315": { "nome": "Colar de Pingente de Espada", "preco": 500, "tipo": "acessorio" },
-  "316": { "nome": "Anel de Gelo Eterno", "preco": 1150, "tipo": "acessorio" },
-  "317": { "nome": "Amuleto do Olho que Tudo Vê", "preco": 1350, "tipo": "acessorio" },
-  "318": { "nome": "Capa do Rei Decaído", "preco": 1900, "tipo": "acessorio" },
-  "319": { "nome": "Luvas de Combate de Boxer", "preco": 550, "tipo": "acessorio" },
-  "320": { "nome": "Cinto de Fivelas Steampunk", "preco": 650, "tipo": "acessorio" },
-  "321": { "nome": "Brincos de Quartzo Rosa", "preco": 500, "tipo": "acessorio" },
-  "322": { "nome": "Colar de Medalhão Antigo", "preco": 700, "tipo": "acessorio" },
-  "323": { "nome": "Anel de Ilusão Óptica", "preco": 1000, "tipo": "acessorio" },
-  "324": { "nome": "Amuleto do Tempo Estagnado", "preco": 2000, "tipo": "acessorio" },
-  "325": { "nome": "Capa de Asas de Morcego", "preco": 1300, "tipo": "acessorio" },
-  "326": { "nome": "Luvas de Garra de Gato", "preco": 600, "tipo": "acessorio" },
-  "327": { "nome": "Cinto de Chamas Ardentes", "preco": 1100, "tipo": "acessorio" },
-  "328": { "nome": "Brincos de Diamante Puro", "preco": 1500, "tipo": "acessorio" },
-  "329": { "nome": "Colar de Corrente de Prata", "preco": 500, "tipo": "acessorio" },
-  "330": { "nome": "Anel do Sacrifício", "preco": 1250, "tipo": "acessorio" },
-  "331": { "nome": "Amuleto da Fênix de Fogo", "preco": 1650, "tipo": "acessorio" },
-  "332": { "nome": "Capa de Pele de Lobo", "preco": 850, "tipo": "acessorio" },
-  "333": { "nome": "Luvas de Proteção Térmica", "preco": 500, "tipo": "acessorio" },
-  "334": { "nome": "Cinto Escudo de Força", "preco": 1400, "tipo": "acessorio" },
-  "335": { "nome": "Brincos de Âmbar Antigo", "preco": 700, "tipo": "acessorio" },
-  "336": { "nome": "Colar de Presa de Lobo", "preco": 550, "tipo": "acessorio" },
-  "337": { "nome": "Anel de Gravidade Aumentada", "preco": 1450, "tipo": "acessorio" },
-  "338": { "nome": "Amuleto de Mana Infinito", "preco": 2500, "tipo": "acessorio" },
-  "339": { "nome": "Capa do Mago Supremo", "preco": 2100, "tipo": "acessorio" },
-  "340": { "nome": "Luvas do Mestre Maçom", "preco": 600, "tipo": "acessorio" },
-  "341": { "nome": "Cinto de Cavaleiro Sagrado", "preco": 1100, "tipo": "acessorio" },
-  "342": { "nome": "Brincos de Jade Mística", "preco": 800, "tipo": "acessorio" },
-  "343": { "nome": "Colar de Pingente de Cruz", "preco": 500, "tipo": "acessorio" },
-  "344": { "nome": "Anel de Casamento Amaldiçoado", "preco": 1300, "tipo": "acessorio" },
-  "345": { "nome": "Amuleto de Sangue Vampírico", "preco": 1500, "tipo": "acessorio" },
-  "346": { "nome": "Capa do Executor de Almas", "preco": 1700, "tipo": "acessorio" },
-  "347": { "nome": "Luvas de Toque Macabro", "preco": 900, "tipo": "acessorio" },
-  "348": { "nome": "Cinto Emspinhoso", "preco": 600, "tipo": "acessorio" },
-  "349": { "nome": "Brincos de Topázio Imperial", "preco": 750, "tipo": "acessorio" },
-  "350": { "nome": "Colar de Pena de Grifo", "preco": 900, "tipo": "acessorio" },
-  "351": { "nome": "Anel de Comunicação à Distância", "preco": 1000, "tipo": "acessorio" },
-  "352": { "nome": "Amuleto do Caos Profundo", "preco": 1600, "tipo": "acessorio" },
-  "353": { "nome": "Capa de Seda Estelar", "preco": 1800, "tipo": "acessorio" },
-  "354": { "nome": "Luvas Gravitacionais", "preco": 1350, "tipo": "acessorio" },
-  "355": { "nome": "Cinto de Moedas de Ouro", "preco": 800, "tipo": "acessorio" },
-  "356": { "nome": "Brincos de Opala de Fogo", "preco": 900, "tipo": "acessorio" },
-  "357": { "nome": "Colar de Pingente de Âncora", "preco": 550, "tipo": "acessorio" },
-  "358": { "nome": "Anel da Destruição", "preco": 2200, "tipo": "acessorio" },
-  "359": { "nome": "Amuleto de Sorte do Gato", "preco": 700, "tipo": "acessorio" },
-  "360": { "nome": "Capa de Tecido rúnico", "preco": 1200, "tipo": "acessorio" },
+  "301": { nome: "Colar de Runas Antigas", preco: 800, tipo: "acessorio" },
+  "302": { nome: "Anel de Invisibilidade Temporária", preco: 2200, tipo: "acessorio" },
+  "303": { nome: "Amuleto do Sol Nascente", preco: 900, tipo: "acessorio" },
+  "304": { nome: "Capa de Sombras Furtivas", preco: 1250, tipo: "acessorio" },
+  "305": { nome: "Luvas de Silk Mágica", preco: 600, tipo: "acessorio" },
+  "306": { nome: "Cinto de Gravidade Zero", preco: 1500, tipo: "acessorio" },
+  "307": { nome: "Brincos de Safira Estelar", preco: 950, tipo: "acessorio" },
+  "308": { nome: "Colar de Ossos de Dragão", preco: 1100, tipo: "acessorio" },
+  "309": { nome: "Anel do Rei Salomão", preco: 1750, tipo: "acessorio" },
+  "310": { nome: "Amuleto da Noite Eterna", preco: 1200, tipo: "acessorio" },
+  "311": { nome: "Capa da Tempestade Elétrica", preco: 1600, tipo: "acessorio" },
+  "312": { nome: "Luvas do Arqueiro de Elite", preco: 700, tipo: "acessorio" },
+  "313": { nome: "Cinto de Armazenamento Infinito", preco: 2400, tipo: "acessorio" },
+  "314": { nome: "Brincos de Pérola Negra", preco: 800, tipo: "acessorio" },
+  "315": { nome: "Colar de Pingente de Espada", preco: 500, tipo: "acessorio" },
+  "316": { nome: "Anel de Gelo Eterno", preco: 1150, tipo: "acessorio" },
+  "317": { nome: "Amuleto do Olho que Tudo Vê", preco: 1350, tipo: "acessorio" },
+  "318": { nome: "Capa do Rei Decaído", preco: 1900, tipo: "acessorio" },
+  "319": { nome: "Luvas de Combate de Boxer", preco: 550, tipo: "acessorio" },
+  "320": { nome: "Cinto de Fivelas Steampunk", preco: 650, tipo: "acessorio" },
+  "321": { nome: "Brincos de Quartzo Rosa", preco: 500, tipo: "acessorio" },
+  "322": { nome: "Colar de Medalhão Antigo", preco: 700, tipo: "acessorio" },
+  "323": { nome: "Anel de Ilusão Óptica", preco: 1000, tipo: "acessorio" },
+  "324": { nome: "Amuleto do Tempo Estagnado", preco: 2000, tipo: "acessorio" },
+  "325": { nome: "Capa de Asas de Morcego", preco: 1300, tipo: "acessorio" },
+  "326": { nome: "Luvas de Garra de Gato", preco: 600, tipo: "acessorio" },
+  "327": { nome: "Cinto de Chamas Ardentes", preco: 1100, tipo: "acessorio" },
+  "328": { nome: "Brincos de Diamante Puro", preco: 1500, tipo: "acessorio" },
+  "329": { nome: "Colar de Corrente de Prata", preco: 500, tipo: "acessorio" },
+  "330": { nome: "Anel do Sacrifício", preco: 1250, tipo: "acessorio" },
+  "331": { nome: "Amuleto da Fênix de Fogo", preco: 1650, tipo: "acessorio" },
+  "332": { nome: "Capa de Pele de Lobo", preco: 850, tipo: "acessorio" },
+  "333": { nome: "Luvas de Proteção Térmica", preco: 500, tipo: "acessorio" },
+  "334": { nome: "Cinto Escudo de Força", preco: 1400, tipo: "acessorio" },
+  "335": { nome: "Brincos de Âmbar Antigo", preco: 700, tipo: "acessorio" },
+  "336": { nome: "Colar de Presa de Lobo", preco: 550, tipo: "acessorio" },
+  "337": { nome: "Anel de Gravidade Aumentada", preco: 1450, tipo: "acessorio" },
+  "338": { nome: "Amuleto de Mana Infinito", preco: 2500, tipo: "acessorio" },
+  "339": { nome: "Capa do Mago Supremo", preco: 2100, tipo: "acessorio" },
+  "340": { nome: "Luvas do Mestre Maçom", preco: 600, tipo: "acessorio" },
+  "341": { nome: "Cinto de Cavaleiro Sagrado", preco: 1100, tipo: "acessorio" },
+  "342": { nome: "Brincos de Jade Mística", preco: 800, tipo: "acessorio" },
+  "343": { nome: "Colar de Pingente de Cruz", preco: 500, tipo: "acessorio" },
+  "344": { nome: "Anel de Casamento Amaldiçoado", preco: 1300, tipo: "acessorio" },
+  "345": { nome: "Amuleto de Sangue Vampírico", preco: 1500, tipo: "acessorio" },
+  "346": { nome: "Capa do Executor de Almas", preco: 1700, tipo: "acessorio" },
+  "347": { nome: "Luvas de Toque Macabro", preco: 900, tipo: "acessorio" },
+  "348": { nome: "Cinto Emspinhoso", preco: 600, tipo: "acessorio" },
+  "349": { nome: "Brincos de Topázio Imperial", preco: 750, tipo: "acessorio" },
+  "350": { nome: "Colar de Pena de Grifo", preco: 900, tipo: "acessorio" },
+  "351": { nome: "Anel de Comunicação à Distância", preco: 1000, tipo: "acessorio" },
+  "352": { nome: "Amuleto do Caos Profundo", preco: 1600, tipo: "acessorio" },
+  "353": { nome: "Capa de Seda Estelar", preco: 1800, tipo: "acessorio" },
+  "354": { nome: "Luvas Gravitacionais", preco: 1350, tipo: "acessorio" },
+  "355": { nome: "Cinto de Moedas de Ouro", preco: 800, tipo: "acessorio" },
+  "356": { nome: "Brincos de Opala de Fogo", preco: 900, tipo: "acessorio" },
+  "357": { nome: "Colar de Pingente de Âncora", preco: 550, tipo: "acessorio" },
+  "358": { nome: "Anel da Destruinação", preco: 2200, tipo: "acessorio" },
+  "359": { nome: "Amuleto de Sorte do Gato", preco: 700, tipo: "acessorio" },
+  "360": { nome: "Capa de Tecido rúnico", preco: 1200, tipo: "acessorio" },
 
   // 🖼️ MOLDURAS (Custo: 300 - 1000)
   "361": { nome: "Brisa de Sakura (Moldura)", preco: 400, tipo: "moldura" },
@@ -389,66 +389,66 @@ export const ITENS_LOJA = {
   "368": { nome: "Vampiro Sangrento (Moldura)", preco: 600, tipo: "moldura" },
   "369": { nome: "Galáxia Estelar (Moldura)", preco: 750, tipo: "moldura" },
   "370": { nome: "Pirata dos Mares (Moldura)", preco: 350, tipo: "moldura" },
-  "371": { "nome": "Zumbi Decomposto (Moldura)", "preco": 300, "tipo": "moldura" },
-  "372": { "nome": "Anjo de Luz (Moldura)", "preco": 750, "tipo": "moldura" },
-  "373": { "nome": "Demônio de Chifres (Moldura)", "preco": 600, "tipo": "moldura" },
-  "374": { "nome": "Samurai de Aço (Moldura)", "preco": 450, "tipo": "moldura" },
-  "375": { "nome": "Ninja Furtivo (Moldura)", "preco": 500, "tipo": "moldura" },
-  "376": { "nome": "Mago Arcano (Moldura)", "preco": 550, "tipo": "moldura" },
-  "377": { "nome": "Ferreiro de Ferro (Moldura)", "preco": 350, "tipo": "moldura" },
-  "378": { "nome": "Alquimista Tóxico (Moldura)", "preco": 400, "tipo": "moldura" },
-  "379": { "nome": "Steampunk Bronze (Moldura)", "preco": 450, "tipo": "moldura" },
-  "380": { "nome": "Halloween Abóbora (Moldura)", "preco": 350, "tipo": "moldura" },
-  "381": { "nome": "Natal Festivo (Moldura)", "preco": 300, "tipo": "moldura" },
-  "382": { "nome": "Arco-Íris Mágico (Moldura)", "preco": 600, "tipo": "moldura" },
-  "383": { "nome": "Deserto de Areia (Moldura)", "preco": 350, "tipo": "moldura" },
-  "384": { "nome": "Oceano Profundo (Moldura)", "preco": 450, "tipo": "moldura" },
-  "385": { "nome": "Vulcão em Erupção (Moldura)", "preco": 550, "tipo": "moldura" },
-  "386": { "nome": "Relâmpago Tempestuoso (Moldura)", "preco": 600, "tipo": "moldura" },
-  "387": { "nome": "Sombras Sombrias (Moldura)", "preco": 500, "tipo": "moldura" },
-  "388": { "nome": "Luz Sagrada (Moldura)", "preco": 700, "tipo": "moldura" },
-  "389": { "nome": "Esmeralda Antiga (Moldura)", "preco": 650, "tipo": "moldura" },
-  "390": { "nome": "Rubi Flamejante (Moldura)", "preco": 700, "tipo": "moldura" },
-  "391": { "nome": "Safira de Gelo (Moldura)", "preco": 650, "tipo": "moldura" },
-  "392": { "nome": "Diamante Brilhante (Moldura)", "preco": 1000, "tipo": "moldura" },
-  "393": { "nome": "Ametista Mística (Moldura)", "preco": 600, "tipo": "moldura" },
-  "394": { "nome": "Obsidiana Negra (Moldura)", "preco": 550, "tipo": "moldura" },
-  "395": { "nome": "Osso Antigo (Moldura)", "preco": 400, "tipo": "moldura" },
-  "396": { "nome": "Teia de Aranha (Moldura)", "preco": 350, "tipo": "moldura" },
-  "397": { "nome": "Vento Veloz (Moldura)", "preco": 450, "tipo": "moldura" },
-  "398": { "nome": "Terra Firme (Moldura)", "preco": 350, "tipo": "moldura" },
-  "399": { "nome": "Planta Carnívora (Moldura)", "preco": 400, "tipo": "moldura" },
-  "400": { "nome": "Coração Apaixonado (Moldura)", "preco": 500, "tipo": "moldura" },
-  "401": { "nome": "Estrela Cadente (Moldura)", "preco": 600, "tipo": "moldura" },
-  "402": { "nome": "Lua Cheia (Moldura)", "preco": 550, "tipo": "moldura" },
-  "403": { "nome": "Sol Radiante (Moldura)", "preco": 650, "tipo": "moldura" },
-  "404": { "nome": "Nuvem Voadora (Moldura)", "preco": 700, "tipo": "moldura" },
-  "405": { "nome": "Engrenagem Mecânica (Moldura)", "preco": 450, "tipo": "moldura" },
-  "406": { "nome": "Asas de Fênix (Moldura)", "preco": 850, "tipo": "moldura" },
-  "407": { "nome": "Escasmas de Dragão (Moldura)", "preco": 800, "tipo": "moldura" },
-  "408": { "nome": "Garras de Lobo (Moldura)", "preco": 500, "tipo": "moldura" },
-  "409": { "nome": "Pena de Grifo (Moldura)", "preco": 600, "tipo": "moldura" },
-  "410": { "nome": "Lágrima de Sereia (Moldura)", "preco": 550, "tipo": "moldura" },
-  "411": { "nome": "Olho de Gato (Moldura)", "preco": 450, "tipo": "moldura" },
-  "412": { "nome": "Moeda de Ouro (Moldura)", "preco": 500, "tipo": "moldura" },
-  "413": { "nome": "Cálice Sagrado (Moldura)", "preco": 750, "tipo": "moldura" },
-  "414": { "nome": "Espada Lendária (Moldura)", "preco": 800, "tipo": "moldura" },
-  "415": { "nome": "Escudo Inabalável (Moldura)", "preco": 650, "tipo": "moldura" },
-  "416": { "nome": "Arco Certeiro (Moldura)", "preco": 600, "tipo": "moldura" },
-  "417": { "nome": "Cajado Mágico (Moldura)", "preco": 700, "tipo": "moldura" },
-  "418": { "nome": "Livro de Feitiços (Moldura)", "preco": 600, "tipo": "moldura" },
-  "419": { "nome": "Poção de Vida (Moldura)", "preco": 400, "tipo": "moldura" },
-  "420": { "nome": "Poção de Mana (Moldura)", "preco": 400, "tipo": "moldura" },
-  "421": { "nome": "Cristal de Energia (Moldura)", "preco": 550, "tipo": "moldura" },
-  "422": { "nome": "Runa Antiga (Moldura)", "preco": 600, "tipo": "moldura" },
-  "423": { "nome": "Pergaminho Sagrado (Moldura)", "preco": 650, "tipo": "moldura" },
-  "424": { "nome": "Coroa Real (Moldura)", "preco": 900, "tipo": "moldura" },
-  "425": { "nome": "Tridente dos Mares (Moldura)", "preco": 750, "tipo": "moldura" },
-  "426": { "nome": "Foice da Morte (Moldura)", "preco": 850, "tipo": "moldura" },
-  "427": { "nome": "Martelo de Thor (Moldura)", "preco": 950, "tipo": "moldura" },
-  "428": { "nome": "Anel do Poder (Moldura)", "preco": 1000, "tipo": "moldura" },
-  "429": { "nome": "Bandeira de Guerra (Moldura)", "preco": 500, "tipo": "moldura" },
-  "430": { "nome": "Taverna do RPG (Moldura)", "preco": 400, "tipo": "moldura" },
+  "371": { nome: "Zumbi Decomposto (Moldura)", preco: 300, tipo: "moldura" },
+  "372": { nome: "Anjo de Luz (Moldura)", preco: 750, tipo: "moldura" },
+  "373": { nome: "Demônio de Chifres (Moldura)", preco: 600, tipo: "moldura" },
+  "374": { nome: "Samurai de Aço (Moldura)", preco: 450, tipo: "moldura" },
+  "375": { nome: "Ninja Furtivo (Moldura)", preco: 500, tipo: "moldura" },
+  "376": { nome: "Mago Arcano (Moldura)", preco: 550, tipo: "moldura" },
+  "377": { nome: "Ferreiro de Ferro (Moldura)", preco: 350, tipo: "moldura" },
+  "378": { nome: "Alquimista Tóxico (Moldura)", preco: 400, tipo: "moldura" },
+  "379": { nome: "Steampunk Bronze (Moldura)", preco: 450, tipo: "moldura" },
+  "380": { nome: "Halloween Abóbora (Moldura)", preco: 350, tipo: "moldura" },
+  "381": { nome: "Natal Festivo (Moldura)", preco: 300, tipo: "moldura" },
+  "382": { nome: "Arco-Íris Mágico (Moldura)", preco: 600, tipo: "moldura" },
+  "383": { nome: "Deserto de Areia (Moldura)", preco: 350, tipo: "moldura" },
+  "384": { nome: "Oceano Profundo (Moldura)", preco: 450, tipo: "moldura" },
+  "385": { nome: "Vulcão em Erupção (Moldura)", preco: 550, tipo: "moldura" },
+  "386": { nome: "Relâmpago Tempestuoso (Moldura)", preco: 600, tipo: "moldura" },
+  "387": { nome: "Sombras Sombrias (Moldura)", preco: 500, tipo: "moldura" },
+  "388": { nome: "Luz Sagrada (Moldura)", preco: 700, tipo: "moldura" },
+  "389": { nome: "Esmeralda Antiga (Moldura)", preco: 650, tipo: "moldura" },
+  "390": { nome: "Rubi Flamejante (Moldura)", preco: 700, tipo: "moldura" },
+  "391": { nome: "Safira de Gelo (Moldura)", preco: 650, tipo: "moldura" },
+  "392": { nome: "Diamante Brilhante (Moldura)", preco: 1000, tipo: "moldura" },
+  "393": { nome: "Ametista Mística (Moldura)", preco: 600, tipo: "moldura" },
+  "394": { nome: "Obsidiana Negra (Moldura)", preco: 550, tipo: "moldura" },
+  "395": { nome: "Osso Antigo (Moldura)", preco: 400, tipo: "moldura" },
+  "396": { nome: "Teia de Aranha (Moldura)", preco: 350, tipo: "moldura" },
+  "397": { nome: "Vento Veloz (Moldura)", preco: 450, tipo: "moldura" },
+  "398": { nome: "Terra Firme (Moldura)", preco: 350, tipo: "moldura" },
+  "399": { nome: "Planta Carnívora (Moldura)", preco: 400, tipo: "moldura" },
+  "400": { nome: "Coração Apaixonado (Moldura)", preco: 500, tipo: "moldura" },
+  "401": { nome: "Estrela Cadente (Moldura)", preco: 600, tipo: "moldura" },
+  "402": { nome: "Lua Cheia (Moldura)", preco: 550, tipo: "moldura" },
+  "403": { nome: "Sol Radiante (Moldura)", preco: 650, tipo: "moldura" },
+  "404": { nome: "Nuvem Voadora (Moldura)", preco: 700, tipo: "moldura" },
+  "405": { nome: "Engrenagem Mecânica (Moldura)", preco: 450, tipo: "moldura" },
+  "406": { nome: "Asas de Fênix (Moldura)", preco: 850, tipo: "moldura" },
+  "407": { nome: "Escasmas de Dragão (Moldura)", preco: 800, tipo: "moldura" },
+  "408": { nome: "Garras de Lobo (Moldura)", preco: 500, tipo: "moldura" },
+  "409": { nome: "Pena de Grifo (Moldura)", preco: 600, tipo: "moldura" },
+  "410": { nome: "Lágrima de Sereia (Moldura)", preco: 550, tipo: "moldura" },
+  "411": { nome: "Olho de Gato (Moldura)", preco: 450, tipo: "moldura" },
+  "412": { nome: "Moeda de Ouro (Moldura)", preco: 500, tipo: "moldura" },
+  "413": { nome: "Cálice Sagrado (Moldura)", preco: 750, tipo: "moldura" },
+  "414": { nome: "Espada Lendária (Moldura)", preco: 800, tipo: "moldura" },
+  "415": { nome: "Escudo Inabalável (Moldura)", preco: 650, tipo: "moldura" },
+  "416": { nome: "Arco Certeiro (Moldura)", preco: 600, tipo: "moldura" },
+  "417": { nome: "Cajado Mágico (Moldura)", preco: 700, tipo: "moldura" },
+  "418": { nome: "Livro de Feitiços (Moldura)", preco: 600, tipo: "moldura" },
+  "419": { nome: "Poção de Vida (Moldura)", preco: 400, tipo: "moldura" },
+  "420": { nome: "Poção de Mana (Moldura)", preco: 400, tipo: "moldura" },
+  "421": { nome: "Cristal de Energia (Moldura)", preco: 550, tipo: "moldura" },
+  "422": { nome: "Runa Antiga (Moldura)", preco: 600, tipo: "moldura" },
+  "423": { nome: "Pergaminho Sagrado (Moldura)", preco: 650, tipo: "moldura" },
+  "424": { nome: "Coroa Real (Moldura)", preco: 900, tipo: "moldura" },
+  "425": { nome: "Tridente dos Mares (Moldura)", preco: 750, tipo: "moldura" },
+  "426": { nome: "Foice da Morte (Moldura)", preco: 850, tipo: "moldura" },
+  "427": { nome: "Martelo de Thor (Moldura)", preco: 950, tipo: "moldura" },
+  "428": { nome: "Anel do Poder (Moldura)", preco: 1000, tipo: "moldura" },
+  "429": { nome: "Bandeira de Guerra (Moldura)", preco: 500, tipo: "moldura" },
+  "430": { nome: "Taverna do RPG (Moldura)", preco: 400, tipo: "moldura" },
 
   // ✨ COSMÉTICOS (Custo: 1200 - 5000)
   "431": { nome: "Aura de Partículas de Ouro", preco: 2500, tipo: "cosmetico" },
@@ -461,94 +461,86 @@ export const ITENS_LOJA = {
   "438": { nome: "Efeito de Brilho Estelar", preco: 1800, tipo: "cosmetico" },
   "439": { nome: "Aura de Raios Elétricos", preco: 2600, tipo: "cosmetico" },
   "440": { nome: "Pegadas de Folhas de Sakura", preco: 1300, tipo: "cosmetico" },
-  "441": { "nome": "Asas de Fênix Ardente", "preco": 5000, "tipo": "cosmetico" },
-  "442": { "nome": "Efeito de Névoa Mística", "preco": 1200, "tipo": "cosmetico" },
-  "443": { "nome": "Aura de Folhas de Outono", "preco": 1600, "tipo": "cosmetico" },
-  "444": { "nome": "Pegadas de Lama do Pântano", "preco": 1000, "tipo": "cosmetico" },
-  "445": { "nome": "Asas de Borboleta Mágica", "preco": 3000, "tipo": "cosmetico" },
-  "446": { "nome": "Efeito de Luz Divina", "preco": 2000, "tipo": "cosmetico" },
-  "447": { "nome": "Aura de Bolhas de Água", "preco": 1500, "tipo": "cosmetico" },
-  "448": { "nome": "Pegadas de Areia do Deserto", "preco": 1100, "tipo": "cosmetico" },
-  "449": { "nome": "Asas de Morcego Sombrio", "preco": 3200, "tipo": "cosmetico" },
-  "450": { "nome": "Efeito de Eco Fantasmagórico", "preco": 1200, "tipo": "cosmetico" },
-  "451": { "nome": "Aura de Pétalas de Rosa", "preco": 1800, "tipo": "cosmetico" },
-  "452": { "nome": "Pegadas de Sangue Vampírico", "preco": 1600, "tipo": "cosmetico" },
-  "453": { "nome": "Asas de Fada Brilhante", "preco": 3500, "tipo": "cosmetico" },
-  "454": { "nome": "Efeito de Escuridão Profunda", "preco": 1400, "tipo": "cosmetico" },
-  "455": { "nome": "Aura de Engrenagens Steampunk", "preco": 2000, "tipo": "cosmetico" },
-  "456": { "nome": "Pegadas de Faíscas Mecânicas", "preco": 1300, "tipo": "cosmetico" },
-  "457": { "nome": "Asas Mecânicas de Ícaro", "preco": 4200, "tipo": "cosmetico" },
-  "458": { "nome": "Efeito de Som Cyberpunk", "preco": 1500, "tipo": "cosmetico" },
-  "459": { "nome": "Aura de Cristais de Mana", "preco": 2400, "tipo": "cosmetico" },
-  "460": { "nome": "Pegadas de Luz Sagrada", "preco": 1500, "tipo": "cosmetico" },
-  "461": { "nome": "Asas de Dragão Ancião", "preco": 5000, "tipo": "cosmetico" },
-  "462": { "nome": "Efeito de Voz de Dragão", "preco": 2500, "tipo": "cosmetico" },
-  "463": { "nome": "Aura de Moedas Flutuantes", "preco": 3000, "tipo": "cosmetico" },
-  "464": { "nome": "Pegadas de Ouro Maciço", "preco": 2200, "tipo": "cosmetico" },
-  "465": { "nome": "Asas de Anjo Caído", "preco": 4500, "tipo": "cosmetico" },
-  "466": { "nome": "Efeito de Sussurro das Sombras", "preco": 1300, "tipo": "cosmetico" },
-  "467": { "nome": "Aura de Espíritos Brcalhões", "preco": 1900, "tipo": "cosmetico" },
-  "468": { "nome": "Pegadas de Fantasma Alado", "preco": 1500, "tipo": "cosmetico" },
-  "469": { "nome": "Asas de Pixels Retro", "preco": 2800, "tipo": "cosmetico" },
-  "470": { "nome": "Efeito de Glitch Digital", "preco": 1600, "tipo": "cosmetico" },
-  "471": { "nome": "Aura de Fumaça Negra", "preco": 1700, "tipo": "cosmetico" },
-  "472": { "nome": "Pegadas Tóxicas Verdes", "preco": 1200, "tipo": "cosmetico" },
-  "473": { "nome": "Asas de Corvo da Morte", "preco": 3800, "tipo": "cosmetico" },
-  "474": { "nome": "Efeito de Riso Macabro", "preco": 1200, "tipo": "cosmetico" },
-  "475": { "nome": "Aura de Estrelas Cadentes", "preco": 2700, "tipo": "cosmetico" },
-  "476": { "nome": "Pegadas Radiantes", "preco": 1500, "tipo": "cosmetico" },
-  "477": { "nome": "Asas de Seda Celestial", "preco": 4000, "tipo": "cosmetico" },
-  "478": { "nome": "Efeito de Melodia de Bardo", "preco": 1800, "tipo": "cosmetico" },
-  "479": { "nome": "Aura de Runas Flutuantes", "preco": 2300, "tipo": "cosmetico" },
-  "480": { "nome": "Pegadas rúnicas de Fogo", "preco": 1600, "tipo": "cosmetico" },
-  "481": { "nome": "Asas de Gelo Glacial", "preco": 4200, "tipo": "cosmetico" },
-  "482": { "nome": "Efeito de Rugido de Urso", "preco": 1200, "tipo": "cosmetico" },
-  "483": { "nome": "Aura de Teias de Aranha", "preco": 1600, "tipo": "cosmetico" },
-  "484": { "nome": "Pegadas de Veneno Roxo", "preco": 1100, "tipo": "cosmetico" },
-  "485": { "nome": "Asas de Inseto Gigante", "preco": 2900, "tipo": "cosmetico" },
-  "486": { "nome": "Efeito de Som de Tambores", "preco": 1200, "tipo": "cosmetico" },
-  "487": { "nome": "Aura de Laser Cyber", "preco": 2500, "tipo": "cosmetico" },
-  "488": { "nome": "Pegadas de Neon Fluorescente", "preco": 1400, "tipo": "cosmetico" },
-  "489": { "nome": "Asas de Holograma Azul", "preco": 3600, "tipo": "cosmetico" },
-  "490": { "nome": "Efeito de Alarme de Intrusão", "preco": 1300, "tipo": "cosmetico" },
-  "491": { "nome": "Aura de Fogo Fátuo", "preco": 2000, "tipo": "cosmetico" },
-  "492": { "nome": "Pegadas de Alma Penada", "preco": 1300, "tipo": "cosmetico" },
-  "493": { "nome": "Asas de Luz de Neon", "preco": 3400, "tipo": "cosmetico" },
-  "494": { "nome": "Efeito de Voz Metalizada", "preco": 1500, "tipo": "cosmetico" },
-  "495": { "nome": "Aura Cósmica de Nebulosa", "preco": 3500, "tipo": "cosmetico" },
-  "496": { "nome": "Pegadas de Poeira Estelar", "preco": 1800, "tipo": "cosmetico" },
-  "497": { "nome": "Asas Cósmicas Roxas", "preco": 4800, "tipo": "cosmetico" },
-  "498": { "nome": "Efeito de Silêncio do Vácuo", "preco": 1600, "tipo": "cosmetico" },
-  "499": { "nome": "Aura de Arco-Íris Radiante", "preco": 3000, "tipo": "cosmetico" },
-  "500": { "nome": "Pegadas Coloridas da Sorte", "preco": 1700, "tipo": "cosmetico" },
-  "501": { "nome": "Asas de Algodão Doce", "preco": 2800, "tipo": "cosmetico" },
-  "502": { "nome": "Efeito de Risada de Criança", "preco": 1200, "tipo": "cosmetico" }
+  "441": { nome: "Asas de Fênix Ardente", preco: 5000, tipo: "cosmetico" },
+  "442": { nome: "Efeito de Névoa Mística", preco: 1200, tipo: "cosmetico" },
+  "443": { nome: "Aura de Folhas de Outono", preco: 1600, tipo: "cosmetico" },
+  "444": { nome: "Pegadas de Lama do Pântano", preco: 1000, tipo: "cosmetico" },
+  "445": { nome: "Asas de Borboleta Mágica", preco: 3000, tipo: "cosmetico" },
+  "446": { nome: "Efeito de Luz Divina", preco: 2000, tipo: "cosmetico" },
+  "447": { nome: "Aura de Bolhas de Água", preco: 1500, tipo: "cosmetico" },
+  "448": { nome: "Pegadas de Areia do Deserto", preco: 1100, tipo: "cosmetico" },
+  "449": { nome: "Asas de Morcego Sombrio", preco: 3200, tipo: "cosmetico" },
+  "450": { nome: "Efeito de Eco Fantasmagórico", preco: 1200, tipo: "cosmetico" },
+  "451": { nome: "Aura de Pétalas de Rosa", preco: 1800, tipo: "cosmetico" },
+  "452": { nome: "Pegadas de Sangue Vampírico", preco: 1600, tipo: "cosmetico" },
+  "453": { nome: "Asas de Fada Brilhante", preco: 3500, tipo: "cosmetico" },
+  "454": { nome: "Efeito de Escuridão Profunda", preco: 1400, tipo: "cosmetico" },
+  "455": { nome: "Aura de Engrenagens Steampunk", preco: 2000, tipo: "cosmetico" },
+  "456": { nome: "Pegadas de Faíscas Mecânicas", preco: 1300, tipo: "cosmetico" },
+  "457": { nome: "Asas Mecânicas de Ícaro", preco: 4200, tipo: "cosmetico" },
+  "458": { nome: "Efeito de Som Cyberpunk", preco: 1500, tipo: "cosmetico" },
+  "459": { nome: "Aura de Cristais de Mana", preco: 2400, tipo: "cosmetico" },
+  "460": { nome: "Pegadas de Luz Sagrada", preco: 1500, tipo: "cosmetico" },
+  "461": { nome: "Asas de Dragão Ancião", preco: 5000, tipo: "cosmetico" },
+  "462": { nome: "Efeito de Voz de Dragão", preco: 2500, tipo: "cosmetico" },
+  "463": { nome: "Aura de Moedas Flutuantes", preco: 3000, tipo: "cosmetico" },
+  "464": { nome: "Pegadas de Ouro Maciço", preco: 2200, tipo: "cosmetico" },
+  "465": { nome: "Asas de Anjo Caído", preco: 4500, tipo: "cosmetico" },
+  "466": { nome: "Efeito de Sussurro das Sombras", preco: 1300, tipo: "cosmetico" },
+  "467": { nome: "Aura de Espíritos Brcalhões", preco: 1900, tipo: "cosmetico" },
+  "468": { nome: "Pegadas de Fantasma Alado", preco: 1500, tipo: "cosmetico" },
+  "469": { nome: "Asas de Pixels Retro", preco: 2800, tipo: "cosmetico" },
+  "470": { nome: "Efeito de Glitch Digital", preco: 1600, tipo: "cosmetico" },
+  "471": { nome: "Aura de Fumaça Negra", preco: 1700, tipo: "cosmetico" },
+  "472": { nome: "Pegadas Tóxicas Verdes", preco: 1200, tipo: "cosmetico" },
+  "473": { nome: "Asas de Corvo da Morte", preco: 3800, tipo: "cosmetico" },
+  "474": { nome: "Efeito de Riso Macabro", preco: 1200, tipo: "cosmetico" },
+  "475": { nome: "Aura de Estrelas Cadentes", preco: 2700, tipo: "cosmetico" },
+  "476": { nome: "Pegadas Radiantes", preco: 1500, tipo: "cosmetico" },
+  "477": { nome: "Asas de Seda Celestial", preco: 4000, tipo: "cosmetico" },
+  "478": { nome: "Efeito de Melodia de Bardo", preco: 1800, tipo: "cosmetico" },
+  "479": { nome: "Aura de Runas Flutuantes", preco: 2300, tipo: "cosmetico" },
+  "480": { nome: "Pegadas rúnicas de Fogo", preco: 1600, tipo: "cosmetico" },
+  "481": { nome: "Asas de Gelo Glacial", preco: 4200, tipo: "cosmetico" },
+  "482": { nome: "Efeito de Rugido de Urso", preco: 1200, tipo: "cosmetico" },
+  "483": { nome: "Aura de Teias de Aranha", preco: 1600, tipo: "cosmetico" },
+  "484": { nome: "Pegadas de Veneno Roxo", preco: 1100, tipo: "cosmetico" },
+  "485": { nome: "Asas de Inseto Gigante", preco: 2900, tipo: "cosmetico" },
+  "486": { nome: "Efeito de Som de Tambores", preco: 1200, tipo: "cosmetico" },
+  "487": { nome: "Aura de Laser Cyber", preco: 2500, tipo: "cosmetico" },
+  "488": { nome: "Pegadas de Neon Fluorescente", preco: 1400, tipo: "cosmetico" },
+  "489": { nome: "Asas de Holograma Azul", preco: 3600, tipo: "cosmetico" },
+  "490": { nome: "Efeito de Alarme de Intrusão", preco: 1300, tipo: "cosmetico" },
+  "491": { nome: "Aura de Fogo Fátuo", preco: 2000, tipo: "cosmetico" },
+  "492": { nome: "Pegadas de Alma Penada", preco: 1300, tipo: "cosmetico" },
+  "493": { nome: "Asas de Luz de Neon", preco: 3400, tipo: "cosmetico" },
+  "494": { nome: "Efeito de Voz Metalizada", preco: 1500, tipo: "cosmetico" },
+  "495": { nome: "Aura Cósmica de Nebulosa", preco: 3500, tipo: "cosmetico" },
+  "496": { nome: "Pegadas de Poeira Estelar", preco: 1800, tipo: "cosmetico" },
+  "497": { nome: "Asas Cósmicas Roxas", preco: 4800, tipo: "cosmetico" },
+  "498": { nome: "Efeito de Silêncio do Vácuo", preco: 1600, tipo: "cosmetico" },
+  "499": { nome: "Aura de Arco-Íris Radiante", preco: 3000, tipo: "cosmetico" },
+  "500": { nome: "Pegadas Coloridas da Sorte", preco: 1700, tipo: "cosmetico" },
+  "501": { nome: "Asas de Algodão Doce", preco: 2800, tipo: "cosmetico" },
+  "502": { nome: "Efeito de Risada de Criança", preco: 1200, tipo: "cosmetico" }
 };
 
 export default {
   name: "loja",
-  description: "Mostra as abas de itens do RPG com paginação",
+  description: "Mostra todos os itens temáticos disponíveis na Loja The Legendary Online",
   commands: ["loja", "shop"],
-  usage: `${PREFIX}loja [categoria] [página]`,
+  usage: `${PREFIX}loja [categoria]`,
 
   handle: async ({ args, socket, remoteJid, userLid, sendErrorReply }) => {
     if (!isGroup(remoteJid)) return sendErrorReply("❌ Este comando só pode ser usado em grupos.");
 
-    // Tratamento extra para aceitar strings com underline caso o usuário digite "racas_2" por engano
+    // Ajustado para remover a necessidade de lógica de página separada por underline
     let argumentoCategoria = args[0] || "";
-    let argumentoPagina = args[1] || "";
-
     if (argumentoCategoria.includes("_")) {
-      const partes = argumentoCategoria.split("_");
-      argumentoCategoria = partes[0];
-      argumentoPagina = partes[1];
+      argumentoCategoria = argumentoCategoria.split("_")[0];
     }
 
     const categoria = argumentoCategoria.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    let pagina = argumentoPagina ? parseInt(argumentoPagina) : 1;
-    if (isNaN(pagina) || pagina < 1) pagina = 1;
-
-    const ITENS_POR_PAGINA = 10;
 
     let bancoRPG = {};
     if (fs.existsSync(dbPath)) {
@@ -567,82 +559,72 @@ export default {
     const classesCompradas = p.classesCompradas || [p.classe || "Guerreiro"];
     const inventario = p.inventario || [];
 
-    let textoLoja = `╔════════════════════╗\n`;
-    textoLoja += `   ⚔️ *MERCADO DE VALORAN* ⚔️\n`;
-    textoLoja += `╚════════════════════╝\n\n`;
-    textoLoja += `💰 *Bolsa de Ouro:* 🪙 ${saldo} moedas\n`;
-    textoLoja += `─────────────────────────\n\n`;
+    // Header Bonito e Temático
+    let textoLoja = `✨ ▬▬▬▬▬ 🌟 ▬▬▬▬▬ ✨\n`;
+    textoLoja += `🛒  *LOJA THE LEGENDARY ONLINE* 🛒\n`;
+    textoLoja += `✨ ▬▬▬▬▬ 🌟 ▬▬▬▬▬ ✨\n\n`;
+    textoLoja += `💰 *Sua Bolsa:* 🪙 ${saldo.toLocaleString('pt-BR')} moedas de ouro\n`;
+    textoLoja += `🤖 *Status:* Conexão Estável com o Mercado\n`;
+    textoLoja += `⚡ ─────────────────────── ⚡\n\n`;
 
     const mapeamentoAbas = {
-      "raca": { tipo: "raca", titulo: "🧬 LINHAGEM DE RAÇAS", comandoBase: "racas" },
-      "racas": { tipo: "raca", titulo: "🧬 LINHAGEM DE RAÇAS", comandoBase: "racas" },
-      "classe": { tipo: "classe", titulo: "🛡️ ARTES DE COMBATE (CLASSES)", comandoBase: "classes" },
-      "classes": { tipo: "classe", titulo: "🛡️ ARTES DE COMBATE (CLASSES)", comandoBase: "classes" },
-      "titulo": { tipo: "titulo", titulo: "🏅 ALCUNHAS & TÍTULOS", comandoBase: "titulos" },
-      "titulos": { tipo: "titulo", titulo: "🏅 ALCUNHAS & TÍTULOS", comandoBase: "titulos" },
-      "montaria": { tipo: "montaria", titulo: "🐎 ESTÁBULO DE MONTARIAS", comandoBase: "montarias" },
-      "montarias": { tipo: "montaria", titulo: "🐎 ESTÁBULO DE MONTARIAS", comandoBase: "montarias" },
-      "chapeu": { tipo: "chapeu", titulo: "🎩 FORJA DE ELMOS & CHAPÉUS", comandoBase: "chapeus" },
-      "chapeus": { tipo: "chapeu", titulo: "🎩 FORJA DE ELMOS & CHAPÉUS", comandoBase: "chapeus" },
-      "acessorio": { tipo: "acessorio", titulo: "📿 RELÍQUIAS & ACESSÓRIOS", comandoBase: "acessorios" },
-      "acessorios": { tipo: "acessorio", titulo: "📿 RELÍQUIAS & ACESSÓRIOS", comandoBase: "acessorios" },
-      "moldura": { tipo: "moldura", titulo: "🖼️ PINTURAS & MOLDURAS", comandoBase: "molduras" },
-      "molduras": { tipo: "moldura", titulo: "🖼️ PINTURAS & MOLDURAS", comandoBase: "molduras" },
-      "cosmetico": { tipo: "cosmetico", titulo: "✨ AURAS & COSMÉTICOS", comandoBase: "cosmeticos" },
-      "cosmeticos": { tipo: "cosmetico", titulo: "✨ AURAS & COSMÉTICOS", comandoBase: "cosmeticos" }
+      "raca": { tipo: "raca", titulo: "🧬 LINHAGENS & RAÇAS ANCESTRAIS" },
+      "racas": { tipo: "raca", titulo: "🧬 LINHAGENS & RAÇAS ANCESTRAIS" },
+      "classe": { tipo: "classe", titulo: "🛡️ CLASSES & ARTES DE COMBATE" },
+      "classes": { tipo: "classe", titulo: "🛡️ CLASSES & ARTES DE COMBATE" },
+      "titulo": { tipo: "titulo", titulo: "🏅 ALCUNHAS & TÍTULOS DE GLÓRIA" },
+      "titulos": { tipo: "titulo", titulo: "🏅 ALCUNHAS & TÍTULOS DE GLÓRIA" },
+      "montaria": { tipo: "montaria", titulo: "🐎 ESTÁBULO DE MONTARIAS REAIS" },
+      "montarias": { tipo: "montaria", titulo: "🐎 ESTÁBULO DE MONTARIAS REAIS" },
+      "chapeu": { tipo: "chapeu", titulo: "🎩 ELMOS, CAPUZES & CHAPÉUS MÍSTICOS" },
+      "chapeus": { tipo: "chapeu", titulo: "🎩 ELMOS, CAPUZES & CHAPÉUS MÍSTICOS" },
+      "acessorio": { tipo: "acessorio", titulo: "📿 RELÍQUIAS & ACESSÓRIOS RÚNICOS" },
+      "acessorios": { tipo: "acessorio", titulo: "📿 RELÍQUIAS & ACESSÓRIOS RÚNICOS" },
+      "moldura": { tipo: "moldura", titulo: "🖼️ PINTURAS & MOLDURAS DE AVATAR" },
+      "molduras": { tipo: "moldura", titulo: "🖼️ PINTURAS & MOLDURAS DE AVATAR" },
+      "cosmetico": { tipo: "cosmetico", titulo: "✨ AURAS, RASTROS & COSMÉTICOS" },
+      "cosmeticos": { tipo: "cosmetico", titulo: "✨ AURAS, RASTROS & COSMÉTICOS" }
     };
 
     if (mapeamentoAbas[categoria]) {
       const aba = mapeamentoAbas[categoria];
       
+      // Filtra e exibe TODOS os itens sem paginação
       const itensFiltrados = Object.entries(ITENS_LOJA).filter(([id, item]) => item.tipo === aba.tipo);
-      
-      const totalItens = itensFiltrados.length;
-      const totalPaginas = Math.ceil(totalItens / ITENS_POR_PAGINA);
-      
-      if (pagina > totalPaginas) pagina = totalPaginas;
-      if (pagina < 1) pagina = 1;
 
-      textoLoja += `*${aba.titulo}*\n`;
-      textoLoja += `📜 _Página [ ${pagina} de ${totalPaginas} ]_\n`;
-      textoLoja += `─────────────────────────\n\n`;
+      textoLoja += `*🌟 ${aba.titulo} 🌟*\n`;
+      textoLoja += `📦 _Mostrando todos os itens disponíveis_:\n`;
+      textoLoja += `⚡ ─────────────────────── ⚡\n\n`;
 
-      const inicio = (pagina - 1) * ITENS_POR_PAGINA;
-      const fim = inicio + ITENS_POR_PAGINA;
-      const itensPagina = itensFiltrados.slice(inicio, fim);
-
-      for (const [id, item] of itensPagina) {
+      for (const [id, item] of itensFiltrados) {
         let jaTem = "";
         
-        if (item.tipo === "raca") jaTem = racasCompradas.includes(item.nome) ? " ⚜️ _(Adquirido)_" : "";
-        else if (item.tipo === "classe") jaTem = classesCompradas.includes(item.nome) ? " ⚜️ _(Adquirido)_" : "";
-        else jaTem = inventario.includes(item.nome) ? " ⚜️ _(No Inventário)_" : "";
+        if (item.tipo === "raca") jaTem = racasCompradas.includes(item.nome) ? " ✨ _[Desbloqueado]_" : "";
+        else if (item.tipo === "classe") jaTem = classesCompradas.includes(item.nome) ? " ✨ _[Desbloqueado]_" : "";
+        else jaTem = inventario.includes(item.nome) ? " 📦 _[No Inventário]_" : "";
 
-        textoLoja += `*🆔 [${id}]* ➔ ${item.nome}${jaTem}\n`;
-        textoLoja += `   └─ 💰 Custo: 🪙 *${item.preco}* moedas\n\n`;
+        textoLoja += `*🔹 [${id}]* ➔ ${item.nome}${jaTem}\n`;
+        textoLoja += `   └─ 🪙 Preço: *${item.preco}* moedas\n\n`;
       }
 
-      textoLoja += `─────────────────────────\n`;
-      if (totalPaginas > 1) {
-        const proxPag = pagina + 1 > totalPaginas ? 1 : pagina + 1;
-        // CORREÇÃO AQUI: Garante o uso do comando fixo e correto mapeado no bot (ex: "racas" ao invés de "raca")
-        textoLoja += `📖 Próxima Página: \`${PREFIX}loja ${aba.comandoBase} ${proxPag}\`\n`;
-      }
+      textoLoja += `⚡ ─────────────────────── ⚡\n`;
     } else {
-      textoLoja += `🏛️ *DIRETÓRIO DO MERCADO*\n_Digite o comando correspondente para abrir a aba:_\n\n`;
-      textoLoja += `🧬 \`${PREFIX}loja racas\`\n └─ _Descendências e Linhagens místicas._\n\n`;
-      textoLoja += `🛡️ \`${PREFIX}loja classes\`\n └─ _Estilos, vocações e treinos de combate._\n\n`;
-      textoLoja += `🏅 \`${PREFIX}loja titulos\`\n └─ _Alcunhas e glórias para seu perfil._\n\n`;
-      textoLoja += `🐎 \`${PREFIX}loja montarias\`\n └─ _Bestas e transportes lendários._\n\n`;
-      textoLoja += `🎩 \`${PREFIX}loja chapeus\`\n └─ _Elmos, capuzes e adereços de cabeça._\n\n`;
-      textoLoja += `📿 \`${PREFIX}loja acessorios\`\n └─ _Anéis rúnicos, colares e capas mágicas._\n\n`;
-      textoLoja += `🖼️ \`${PREFIX}loja molduras\`\n └─ _Bordas artísticas para exibição do avatar._\n\n`;
-      textoLoja += `✨ \`${PREFIX}loja cosmeticos\`\n └─ _Efeitos visuais, rastros e auras místicas._\n\n`;
-      textoLoja += `─────────────────────────\n`;
-      textoLoja += `💡 *Exemplo:* \`${PREFIX}loja montarias 2\``;
+      // Menu Principal mais bonito e imersivo
+      textoLoja += `🏛️  *DIRETÓRIO INTERATIVO DA LOJA* 🏛️\n`;
+      textoLoja += `_Selecione um departamento digitando o comando correspondente:_\n\n`;
+      textoLoja += `🧬 \`${PREFIX}loja racas\`\n └─ _Desbloqueie linhagens místicas e novas heranças._\n\n`;
+      textoLoja += `🛡️ \`${PREFIX}loja classes\`\n └─ _Aprenda novos estilos e vocações de combate._\n\n`;
+      textoLoja += `🏅 \`${PREFIX}loja titulos\`\n └─ _Alcunhas gloriosas para ostentar no perfil._\n\n`;
+      textoLoja += `🐎 \`${PREFIX}loja montarias\`\n └─ _Compre animais de carga e feras colossais._\n\n`;
+      textoLoja += `🎩 \`${PREFIX}loja chapeus\`\n └─ _Equipamentos estéticos para a sua cabeça._\n\n`;
+      textoLoja += `📿 \`${PREFIX}loja acessorios\`\n └─ _Capas mágicas, anéis de mana e amuletos._\n\n`;
+      textoLoja += `🖼️ \`${PREFIX}loja molduras\`\n └─ _Bordas lendárias para destacar seu avatar._\n\n`;
+      textoLoja += `✨ \`${PREFIX}loja cosmeticos\`\n └─ _Auras brutais, efeitos de voz e pegadas de fogo._\n\n`;
+      textoLoja += `⚡ ─────────────────────── ⚡\n`;
+      textoLoja += `💡 *Dica:* Digite o comando acima e veja a lista completa sem se preocupar com páginas!`;
     }
 
-    textoLoja += `\n🛒 Para adquirir um item use: *${PREFIX}comprar [ID]*`;
+    textoLoja += `\n🛒 *Para Adquirir:* Digite \`${PREFIX}comprar [ID]\``;
 
     await socket.sendMessage(remoteJid, { text: textoLoja });
   }
