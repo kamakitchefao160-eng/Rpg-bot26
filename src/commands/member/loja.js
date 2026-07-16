@@ -221,7 +221,7 @@ export const ITENS_LOJA = {
   "204": { nome: "Coroa do Rei Decaído", preco: 1200, tipo: "chapeu" },
   "205": { nome: "Yasa (Chapéu de Palha Samurai)", preco: 450, tipo: "chapeu" },
   "206": { nome: "Boina do Detetive Arcano", preco: 400, tipo: "chapeu" },
-  "207": { nome: "Elmo do Cavaleiro de Sangue", preco: 850, tipo: "chapeu" }, // Corrigido de 'elmo' para 'nome'
+  "207": { nome: "Elmo do Cavaleiro de Sangue", preco: 850, tipo: "chapeu" },
   "208": { nome: "Tiara da Princesa Élfica", preco: 900, tipo: "chapeu" },
   "209": { nome: "Bandana do Pirata Caçador", preco: 400, tipo: "chapeu" },
   "210": { nome: "Capacete de Mineração com Lanterna", preco: 450, tipo: "chapeu" },
@@ -534,7 +534,6 @@ export default {
   handle: async ({ args, socket, remoteJid, userLid, sendErrorReply }) => {
     if (!isGroup(remoteJid)) return sendErrorReply("❌ Este comando só pode ser usado em grupos.");
 
-    // Ajustado para remover a necessidade de lógica de página separada por underline
     let argumentoCategoria = args[0] || "";
     if (argumentoCategoria.includes("_")) {
       argumentoCategoria = argumentoCategoria.split("_")[0];
@@ -559,72 +558,94 @@ export default {
     const classesCompradas = p.classesCompradas || [p.classe || "Guerreiro"];
     const inventario = p.inventario || [];
 
-    // Header Bonito e Temático
-    let textoLoja = `✨ ▬▬▬▬▬ 🌟 ▬▬▬▬▬ ✨\n`;
-    textoLoja += `🛒  *LOJA THE LEGENDARY ONLINE* 🛒\n`;
-    textoLoja += `✨ ▬▬▬▬▬ 🌟 ▬▬▬▬▬ ✨\n\n`;
-    textoLoja += `💰 *Sua Bolsa:* 🪙 ${saldo.toLocaleString('pt-BR')} moedas de ouro\n`;
-    textoLoja += `🤖 *Status:* Conexão Estável com o Mercado\n`;
-    textoLoja += `⚡ ─────────────────────── ⚡\n\n`;
+    // Header Bonito e Extremamente Temático (RPG Medieval)
+    let textoLoja = `╔═════ ❖ ═════╗\n`;
+    textoLoja += `   ⚔️  *MERCADO DE VALOR* ⚔️\n`;
+    textoLoja += `      _The Legendary Online_\n`;
+    textoLoja += `╚═════ ❖ ═════╝\n\n`;
+    textoLoja += `🎒 *Sua Bolsa:* 🪙 *${saldo.toLocaleString('pt-BR')}* moedas de ouro\n`;
+    textoLoja += `🟢 *Mercador:* _"Procurando algo especial, aventureiro?"_\n`;
+    textoLoja += `📜 ═══════════════════ 📜\n\n`;
 
     const mapeamentoAbas = {
-      "raca": { tipo: "raca", titulo: "🧬 LINHAGENS & RAÇAS ANCESTRAIS" },
-      "racas": { tipo: "raca", titulo: "🧬 LINHAGENS & RAÇAS ANCESTRAIS" },
-      "classe": { tipo: "classe", titulo: "🛡️ CLASSES & ARTES DE COMBATE" },
-      "classes": { tipo: "classe", titulo: "🛡️ CLASSES & ARTES DE COMBATE" },
-      "titulo": { tipo: "titulo", titulo: "🏅 ALCUNHAS & TÍTULOS DE GLÓRIA" },
-      "titulos": { tipo: "titulo", titulo: "🏅 ALCUNHAS & TÍTULOS DE GLÓRIA" },
-      "montaria": { tipo: "montaria", titulo: "🐎 ESTÁBULO DE MONTARIAS REAIS" },
-      "montarias": { tipo: "montaria", titulo: "🐎 ESTÁBULO DE MONTARIAS REAIS" },
-      "chapeu": { tipo: "chapeu", titulo: "🎩 ELMOS, CAPUZES & CHAPÉUS MÍSTICOS" },
-      "chapeus": { tipo: "chapeu", titulo: "🎩 ELMOS, CAPUZES & CHAPÉUS MÍSTICOS" },
-      "acessorio": { tipo: "acessorio", titulo: "📿 RELÍQUIAS & ACESSÓRIOS RÚNICOS" },
-      "acessorios": { tipo: "acessorio", titulo: "📿 RELÍQUIAS & ACESSÓRIOS RÚNICOS" },
-      "moldura": { tipo: "moldura", titulo: "🖼️ PINTURAS & MOLDURAS DE AVATAR" },
-      "molduras": { tipo: "moldura", titulo: "🖼️ PINTURAS & MOLDURAS DE AVATAR" },
-      "cosmetico": { tipo: "cosmetico", titulo: "✨ AURAS, RASTROS & COSMÉTICOS" },
-      "cosmeticos": { tipo: "cosmetico", titulo: "✨ AURAS, RASTROS & COSMÉTICOS" }
+      "raca": { tipo: "raca", titulo: "🧬 Linhagens & Raças Ancestrais" },
+      "racas": { tipo: "raca", titulo: "🧬 Linhagens & Raças Ancestrais" },
+      "classe": { tipo: "classe", titulo: "🛡️ Classes & Vocações de Combate" },
+      "classes": { tipo: "classe", titulo: "🛡️ Classes & Vocações de Combate" },
+      "titulo": { tipo: "titulo", titulo: "🏅 Alcunhas & Títulos de Glória" },
+      "titulos": { tipo: "titulo", titulo: "🏅 Alcunhas & Títulos de Glória" },
+      "montaria": { tipo: "montaria", titulo: "🐎 Estábulo de Montarias Reais" },
+      "montarias": { tipo: "montaria", titulo: "🐎 Estábulo de Montarias Reais" },
+      "chapeu": { tipo: "chapeu", titulo: "🎩 Elmos, Capuzes & Chapéus" },
+      "chapeus": { tipo: "chapeu", titulo: "🎩 Elmos, Capuzes & Chapéus" },
+      "acessorio": { tipo: "acessorio", titulo: "📿 Relíquias & Acessórios" },
+      "acessorios": { tipo: "acessorio", titulo: "📿 Relíquias & Acessórios" },
+      "moldura": { tipo: "moldura", titulo: "🖼️ Pinturas & Molduras de Avatar" },
+      "molduras": { tipo: "moldura", titulo: "🖼️ Pinturas & Molduras de Avatar" },
+      "cosmetico": { tipo: "cosmetico", titulo: "✨ Auras, Rastros & Cosméticos" },
+      "cosmeticos": { tipo: "cosmetico", titulo: "✨ Auras, Rastros & Cosméticos" }
     };
 
     if (mapeamentoAbas[categoria]) {
       const aba = mapeamentoAbas[categoria];
       
-      // Filtra e exibe TODOS os itens sem paginação
       const itensFiltrados = Object.entries(ITENS_LOJA).filter(([id, item]) => item.tipo === aba.tipo);
 
-      textoLoja += `*🌟 ${aba.titulo} 🌟*\n`;
-      textoLoja += `📦 _Mostrando todos os itens disponíveis_:\n`;
-      textoLoja += `⚡ ─────────────────────── ⚡\n\n`;
+      textoLoja += `✨ *${aba.titulo.toUpperCase()}* ✨\n`;
+      textoLoja += `📜 _Estoque disponível no reino_:\n`;
+      textoLoja += `▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n\n`;
 
       for (const [id, item] of itensFiltrados) {
-        let jaTem = "";
+        let status = "🛒 Adquirir";
         
-        if (item.tipo === "raca") jaTem = racasCompradas.includes(item.nome) ? " ✨ _[Desbloqueado]_" : "";
-        else if (item.tipo === "classe") jaTem = classesCompradas.includes(item.nome) ? " ✨ _[Desbloqueado]_" : "";
-        else jaTem = inventario.includes(item.nome) ? " 📦 _[No Inventário]_" : "";
+        if (item.tipo === "raca") {
+          status = racasCompradas.includes(item.nome) ? "🟢 *[Desbloqueada]*" : `🪙 *${item.preco}*`;
+        } else if (item.tipo === "classe") {
+          status = classesCompradas.includes(item.nome) ? "🟢 *[Desbloqueada]*" : `🪙 *${item.preco}*`;
+        } else {
+          status = inventario.includes(item.nome) ? "📦 *[No Inventário]*" : `🪙 *${item.preco}*`;
+        }
 
-        textoLoja += `*🔹 [${id}]* ➔ ${item.nome}${jaTem}\n`;
-        textoLoja += `   └─ 🪙 Preço: *${item.preco}* moedas\n\n`;
+        // Formatação limpa de lista temática
+        textoLoja += `📌 *ID: ${id}* ➔ ${item.nome}\n`;
+        textoLoja += `   └─ Valor: ${status}\n\n`;
       }
 
-      textoLoja += `⚡ ─────────────────────── ⚡\n`;
+      textoLoja += `▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n`;
     } else {
-      // Menu Principal mais bonito e imersivo
-      textoLoja += `🏛️  *DIRETÓRIO INTERATIVO DA LOJA* 🏛️\n`;
-      textoLoja += `_Selecione um departamento digitando o comando correspondente:_\n\n`;
-      textoLoja += `🧬 \`${PREFIX}loja racas\`\n └─ _Desbloqueie linhagens místicas e novas heranças._\n\n`;
-      textoLoja += `🛡️ \`${PREFIX}loja classes\`\n └─ _Aprenda novos estilos e vocações de combate._\n\n`;
-      textoLoja += `🏅 \`${PREFIX}loja titulos\`\n └─ _Alcunhas gloriosas para ostentar no perfil._\n\n`;
-      textoLoja += `🐎 \`${PREFIX}loja montarias\`\n └─ _Compre animais de carga e feras colossais._\n\n`;
-      textoLoja += `🎩 \`${PREFIX}loja chapeus\`\n └─ _Equipamentos estéticos para a sua cabeça._\n\n`;
-      textoLoja += `📿 \`${PREFIX}loja acessorios\`\n └─ _Capas mágicas, anéis de mana e amuletos._\n\n`;
-      textoLoja += `🖼️ \`${PREFIX}loja molduras\`\n └─ _Bordas lendárias para destacar seu avatar._\n\n`;
-      textoLoja += `✨ \`${PREFIX}loja cosmeticos\`\n └─ _Auras brutais, efeitos de voz e pegadas de fogo._\n\n`;
-      textoLoja += `⚡ ─────────────────────── ⚡\n`;
-      textoLoja += `💡 *Dica:* Digite o comando acima e veja a lista completa sem se preocupar com páginas!`;
+      // Menu Principal reestilizado com símbolos medievais simétricos
+      textoLoja += `🏛️  *DIRETÓRIO INTERATIVO* 🏛️\n`;
+      textoLoja += `_Abra a lista digitando o comando correspondente:_\n\n`;
+      
+      textoLoja += `🧬 ➔ \`${PREFIX}loja racas\`\n`;
+      textoLoja += `   └─ _Linhagens lendárias e heranças de poder._\n\n`;
+      
+      textoLoja += `🛡️ ➔ \`${PREFIX}loja classes\`\n`;
+      textoLoja += `   └─ _Artes marciais e caminhos de cultos sagrados._\n\n`;
+      
+      textoLoja += `🏅 ➔ \`${PREFIX}loja titulos\`\n`;
+      textoLoja += `   └─ _Alcunhas gloriosas para impor respeito._\n\n`;
+      
+      textoLoja += `🐎 ➔ \`${PREFIX}loja montarias\`\n`;
+      textoLoja += `   └─ _Estábulo com feras e animais místicos de carga._\n\n`;
+      
+      textoLoja += `🎩 ➔ \`${PREFIX}loja chapeus\`\n`;
+      textoLoja += `   └─ _Equipamentos estéticos de cabeça._\n\n`;
+      
+      textoLoja += `📿 ➔ \`${PREFIX}loja acessorios\`\n`;
+      textoLoja += `   └─ _Joias rúnicas, capas lendárias e anéis mágicos._\n\n`;
+      
+      textoLoja += `🖼️ ➔ \`${PREFIX}loja molduras\`\n`;
+      textoLoja += `   └─ _Bordas imponentes para pintar seu avatar._\n\n`;
+      
+      textoLoja += `✨ ➔ \`${PREFIX}loja cosmeticos\`\n`;
+      textoLoja += `   └─ _Auras, efeitos de voz e ornamentos celestes._\n\n`;
+      
+      textoLoja += `📜 ═══════════════════ 📜\n`;
+      textoLoja += `💡 *Dica:* Não há paginação! O comando exibirá o departamento completo.`;
     }
 
-    textoLoja += `\n🛒 *Para Adquirir:* Digite \`${PREFIX}comprar [ID]\``;
+    textoLoja += `\n🛒 *Para Comprar:* Digite \`${PREFIX}comprar [ID]\``;
 
     await socket.sendMessage(remoteJid, { text: textoLoja });
   }
