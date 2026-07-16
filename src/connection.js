@@ -97,25 +97,23 @@ export async function connect() {
     shouldSyncHistoryMessage: () => false,
   });
 
+  // ==========================================
+  // ⚡ SEÇÃO DE CONEXÃO E PAREAMENTO AUTOMÁTICO
+  // ==========================================
   if (!socket.authState.creds.registered) {
     clearScreenWithBanner();
-    console.log(
-      'Informe o número do bot (SP/RJ exigem 9º dígito). \nExemplo: "+5511912345678", demais estados: "+554112345678":',
-    );
+    
+    // 1. Tenta buscar das variáveis de ambiente do Railway.
+    // 2. Se não existir no Railway, usa o seu número padrão configurado diretamente.
+    let phoneNumber = process.env.NUMERO_BOT || "5543996846448";
 
-    const phoneNumber = await question("Número: ");
-
-    if (!phoneNumber) {
-      errorLog(
-        'Número de telefone inválido! Tente novamente com o comando "npm start".',
-      );
-
-      process.exit(1);
-    }
+    infoLog(`🤖 Conectando automaticamente com o número: ${phoneNumber}`);
 
     const code = await socket.requestPairingCode(onlyNumbers(phoneNumber));
 
-    console.log(`Código de pareamento: ${formatPairingCode(code)}`);
+    console.log("\n==============================================");
+    console.log(`🔑 SEU CÓDIGO DE PAREAMENTO: ${formatPairingCode(code)}`);
+    console.log("==============================================\n");
   }
 
   socket.ev.on("connection.update", async (update) => {
