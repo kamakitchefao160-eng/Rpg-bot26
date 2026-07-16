@@ -10,26 +10,54 @@ function obterInformacaoPais(numero) {
     return { pais: "Brasil 🇧🇷", idioma: "Português (Brasil) 🇧🇷" };
   } else if (numero.startsWith("351")) {
     return { pais: "Portugal 🇵🇹", idioma: "Português (Portugal) 🇵🇹" };
-  } else if (numero.startsWith("1")) {
-    return { pais: "Estados Unidos 🇺🇸", idioma: "Inglês (US) 🇺🇸" };
-  } else if (numero.startsWith("34")) {
-    return { pais: "Espanha 🇪🇸", idioma: "Espanhol 🇪🇸" };
   }
   return { pais: "Desconhecido 🌐", idioma: "Não Identificado 🌐" };
 }
 
-// Formata tempo de jogo (ms para horas/minutos)
-function formatarTempoJogo(ms) {
-  if (!ms || isNaN(ms)) return "0h 0m";
-  const totalMinutos = Math.floor(ms / 60000);
-  const horas = Math.floor(totalMinutos / 60);
-  const minutos = totalMinutos % 60;
-  return `${horas}h ${minutos}m`;
+// Retorna a patente do Free Fire baseada em Kills
+function obterPatente(kills) {
+  const k = kills || 0;
+  if (k < 5) return "🟫 Bronze I";
+  if (k < 10) return "🟫 Bronze II";
+  if (k < 15) return "🟫 Bronze III";
+  
+  if (k < 23) return "⬜ Prata I";
+  if (k < 31) return "⬜ Prata II";
+  if (k < 40) return "⬜ Prata III";
+  
+  if (k < 50) return "🟨 Ouro I";
+  if (k < 60) return "🟨 Ouro II";
+  if (k < 70) return "🟨 Ouro III";
+  if (k < 80) return "🟨 Ouro IV";
+  
+  if (k < 92) return "🟦 Platina I";
+  if (k < 104) return "🟦 Platina II";
+  if (k < 116) return "🟦 Platina III";
+  if (k < 130) return "🟦 Platina IV";
+  
+  if (k < 147) return "💎 Diamante I";
+  if (k < 164) return "💎 Diamante II";
+  if (k < 181) return "💎 Diamante III";
+  if (k < 200) return "💎 Diamante IV";
+  
+  if (k < 220) return "🔴 Mestre ⭐️";
+  if (k < 240) return "🔴 Mestre ⭐️⭐️";
+  if (k < 260) return "🔴 Mestre ⭐️⭐️⭐️";
+  if (k < 280) return "🔴 Mestre ⭐️⭐️⭐️⭐️";
+  if (k < 300) return "🔴 Mestre ⭐️⭐️⭐️⭐️⭐️";
+  
+  if (k < 320) return "🔥 Elite ⭐️";
+  if (k < 340) return "🔥 Elite ⭐️⭐️";
+  if (k < 360) return "🔥 Elite ⭐️⭐️⭐️";
+  if (k < 380) return "🔥 Elite ⭐️⭐️⭐️⭐️";
+  if (k < 400) return "🔥 Elite ⭐️⭐️⭐️⭐️⭐️";
+  
+  return "👑 Desafiante";
 }
 
 export default {
   name: "perfil",
-  description: "Mostra sua ficha de herói atualizada",
+  description: "Mostra sua ficha com sua Patente e estatísticas de guilda",
   commands: ["perfil", "ficha"],
   usage: `${PREFIX}perfil`,
   
@@ -39,28 +67,24 @@ export default {
 
     let bancoRPG = {};
     if (fs.existsSync(dbPath)) {
-      try {
-        bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
-      } catch (e) {
-        bancoRPG = {};
-      }
+      try { bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8")); } catch { bancoRPG = {}; }
     }
 
     let ehNovoUsuario = false;
 
-    // Se o usuário não existir, registra ele com o bônus inicial de 200 moedas grátis!
     if (!bancoRPG[numeroLimpo]) {
       ehNovoUsuario = true;
       bancoRPG[numeroLimpo] = {
         nomeOficial: `Lutador_${numeroLimpo.slice(-4)}`,
-        raca: "Não definida (Escolha uma de graça!)", 
-        classe: "Não definida (Escolha uma de graça!)", 
+        raca: "Não definida", 
+        classe: "Não definida", 
+        habilidadeAtiva: "Nenhuma",
         titulo: "🌱 Aventureiro Novato",
         arma: "Nenhuma",
         moldura: "Nenhuma",
         consumivel: "Nenhum",
         montaria: "Nenhuma",
-        ouro: 200, // 200 moedas iniciais de graça
+        ouro: 200, 
         inventario: [],
         vitorias: 0,
         derrotas: 0,
@@ -78,63 +102,58 @@ export default {
 
     const dados = bancoRPG[numeroLimpo];
 
-    // Atualiza o tempo acumulado da sessão de jogo ativa
+    // Atualiza tempo de jogo ativo
     const agora = Date.now();
     const sessaoAtual = agora - (dados.ultimoAcesso || agora);
     dados.tempoAtivo = (dados.tempoAtivo || 0) + sessaoAtual;
     dados.ultimoAcesso = agora;
-
     fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
 
-    // Se for o primeiro acesso, envia um alerta de boas-vindas especial antes!
     if (ehNovoUsuario) {
-      const mensagemBoasVindas = `👋 *BEM-VINDO AO THE LEGENDARY ONLINE!* 🎉\n\n` +
-        `Notamos que esta é sua primeira vez jogando! Você acaba de receber:\n` +
-        `🪙 *+200 Moedas de Ouro* de bônus inicial!\n` +
-        `🧬 *1 Raça* de graça!\n` +
-        `⚔️ *1 Classe* de graça!\n\n` +
-        `Use os comandos do jogo para escolher suas especializações e começar sua jornada!`;
+      const msgBoasVindas = `👋 *BEM-VINDO AO THE LEGENDARY ONLINE!* 🎉\n\n` +
+        `Você acaba de receber:\n` +
+        `🪙 *+200 Moedas de Ouro* de graça!\n\n` +
+        `👉 Escolha sua primeira especialidade sem pagar nada:\n` +
+        `• Escolher Classe: *${PREFIX}classe [Guerreiro/Mago/Arqueiro]*\n` +
+        `• Escolher Raça: *${PREFIX}raca [Humano/Elfo/Orc]*`;
         
-      await socket.sendMessage(remoteJid, { text: mensagemBoasVindas, mentions: [userLid] });
+      await socket.sendMessage(remoteJid, { text: msgBoasVindas, mentions: [userLid] });
     }
 
     const mochilaVisivel = dados.inventario && dados.inventario.length > 0 
       ? dados.inventario.map(item => `  📦 ${item}`).join("\n") 
       : "   📦 Sua mochila está vazia no momento.";
 
+    const patenteDisplay = obterPatente(dados.kills);
+
     const mensagemFicha = `✨ ═════ 🌎 *THE LEGENDARY ONLINE* 🌎 ═════ ✨
-👋 Olá @${numeroLimpo}! Bem-vindo à sua central do jogador:
+👋 Olá @${numeroLimpo}! Bem-vindo ao seu painel:
 
-👑 *FICHA DO AVENTUREIRO*
-🌟 *Título:* ${dados.titulo || "🌱 Aventureiro Novato"}
+👑 *DADOS DO HERÓI*
+🏆 *Patente:* ${patenteDisplay}
 👤 *Nome:* ${dados.nomeOficial}
-🧬 *Raça:* ${dados.raca}
-⚔️ *Classe:* ${dados.classe}
-🛡️ *Guilda:* ${dados.guilda || "Sem Guilda 🛡️"}
+🧬 *Raça:* ${dados.raca || "Não definida"}
+⚔️ *Classe:* ${dados.classe || "Não definida"}
+🔥 *Habilidade:* ${dados.habilidadeAtiva || "Nenhuma"}
+🏰 *Guilda:* ${dados.guilda || "Sem Guilda 🛡️"}
 
-📊 *ESTATÍSTICAS DE BATALHA (KILLS & BATTLES)*
-⚔️ *Total de Lutas:* ${(dados.vitorias || 0) + (dados.derrotas || 0)}
-🏆 *Vitórias:* ${dados.vitorias || 0}
-💀 *Derrotas:* ${dados.derrotas || 0}
-🎯 *Monstros Derrotados (Kills):* ${dados.kills || 0}
-⏱️ *Tempo Ativo:* ${formatarTempoJogo(dados.tempoAtivo)}
+📊 *ESTATÍSTICAS DE COMBATE (KILLS & BATTLES)*
+⚔️ *Lutas Totais:* ${(dados.vitorias || 0) + (dados.derrotas || 0)}
+💀 *Vitórias:* ${dados.vitorias || 0}
+❌ *Derrotas:* ${dados.derrotas || 0}
+🎯 *Abates (Kills):* ${dados.kills || 0}
 
-🌎 *LOCALIZAÇÃO & CONEXÃO*
-🌍 *Origem:* ${pais}
+🌎 *SESSÃO*
+🌍 *País:* ${pais}
 🗣️ *Idioma:* ${idioma}
 
-🗡️ *EQUIPAMENTOS ATIVOS*
-🛡️ *Arma:* ${dados.arma || "Nenhuma"}
-🐎 *Montaria:* ${dados.montaria || "Nenhuma"}
-🧪 *Consumível:* ${dados.consumivel || "Nenhum"}
-
 🪙 *FINANÇAS*
-💰 *Saldo:* 🪙 *${dados.ouro || dados.gold || 0}* moedas de ouro
+💰 *Saldo:* 🪙 *${dados.ouro || 0}* ouro
 
 🎒 *MOCHILA*
 ${mochilaVisivel}
 
-⚡ _Explore horizontes usando ${PREFIX}aventura ou desafie inimigos com ${PREFIX}lutar!_
+⚡ _Desafie inimigos usando ${PREFIX}lutar!_
 ══════════════════════════════`;
 
     await socket.sendMessage(remoteJid, {
@@ -143,4 +162,3 @@ ${mochilaVisivel}
     });
   }
 };
-
