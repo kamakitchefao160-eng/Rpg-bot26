@@ -43,7 +43,7 @@ export default {
           { role: "system", content: contextoGeral },
           { role: "user", content: mensagemUsuario }
         ],
-        model: "llama3-8b-8192",
+        model: "llama-3.3-70b-versatile",
       });
 
       const resposta = chatCompletion.choices[0]?.message?.content || "Relaxa, afinal, eu sou o mais forte. 😉";
