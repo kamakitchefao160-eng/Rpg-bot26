@@ -49,7 +49,7 @@ export const PROXY_PASSWORD = "";
 export const OPENAI_API_KEY = "";
 
 // Configurações do RPG
-export const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
+export const GROQ_API_KEY = "SUA_CHAVE_GSK_AQUI_DENTRO"; // ✅ Coloque direto aqui!
 export const MARIDO_DA_RAIDEN = process.env.MARIDO_DA_RAIDEN || "5543996846448";
 export const PRECO_PASSE_ELITE = parseInt(process.env.PRECO_PASSE_ELITE) || 5000;
 export const CUSTO_GIRO_ROYALE = parseInt(process.env.CUSTO_GIRO_ROYALE) || 100;
