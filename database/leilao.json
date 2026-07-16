@@ -1,10 +1,9 @@
 {
   "ativo": false,
   "item": "",
-  "donoId": "",
+  "dono": "",
   "lanceAtual": 0,
-  "maiorLanceId": "",
-  "maiorLanceNome": "",
-  "tempoLimite": 0
+  "maiorLicitante": "",
+  "filaItens": [],
+  "etapaVenda": 0
 }
-
