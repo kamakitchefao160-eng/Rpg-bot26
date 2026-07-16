@@ -1,278 +1,213 @@
 import fs from "fs";
 import path from "path";
-import { PREFIX, DATABASE_DIR } from "../../config.js";
+import { fileURLToPath } from "url";
+import { PREFIX } from "../../config.js";
+import { isGroup } from "../../utils/index.js";
+import { HAB_CLASSES } from "../../utilitarios/habilidades.js";
+import { RACAS_RPG } from "../../utilitarios/racas.js";
 
-const dbPath = path.join(DATABASE_DIR, "rpg-usuarios.json");
-const guildaPath = path.join(DATABASE_DIR, "guildas.json");
+// Caminho absoluto seguro para a pasta "banco de dados"
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const pastaDatabase = path.resolve(__dirname, "../../../banco de dados");
+const dbPath = path.join(pastaDatabase, "rpg-usuarios.json");
 
-// Tempo limite em milissegundos para considerar o jogador online (15 minutos)
-const TEMPO_ONLINE_LIMITE = 15 * 60 * 1000; 
+export const BATALHAS_ATIVAS = new Map();
 
+// Função auxiliar para ler JSON com segurança contra travamentos
 function lerJSON(caminho) {
-  if (!fs.existsSync(caminho)) {
-    try {
-      fs.writeFileSync(caminho, JSON.stringify({}, null, 2));
-    } catch (e) {
-      console.log("Erro ao criar arquivo: ", e);
-    }
+  if (!fs.existsSync(caminho)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(caminho, "utf-8"));
+  } catch (e) {
+    console.error("Erro ao ler banco de dados no duelo:", e);
     return {};
-  }
-  try { 
-    return JSON.parse(fs.readFileSync(caminho, "utf-8")); 
-  } catch { 
-    return {}; 
   }
 }
 
+// Função auxiliar para salvar JSON com segurança
 function salvarJSON(caminho, dados) {
   try {
     fs.writeFileSync(caminho, JSON.stringify(dados, null, 2));
+    return true;
   } catch (e) {
-    console.log("Erro ao salvar arquivo: ", e);
+    console.error("Erro ao salvar banco de dados no duelo:", e);
+    return false;
   }
 }
 
-function obterStatusOnline(jogadorDados) {
-  if (!jogadorDados || !jogadorDados.ultimoAcesso) return "🔴 Off";
-  const agora = Date.now();
-  const diferenca = agora - jogadorDados.ultimoAcesso;
-  return diferenca < TEMPO_ONLINE_LIMITE ? "🟢 On" : "🔴 Off";
-}
-
 export default {
-  name: "guilda",
-  description: "Crie ou gerencie sua guilda no The Legendary Online",
-  commands: ["guilda", "g", "guildas"], 
-  usage: `${PREFIX}guilda`,
+  name: "duelo",
+  description: "Duelo interativo baseado na sua classe e raça equipadas",
+  commands: ["lutar", "duelo", "atacar"], // Mantém todos os apelidos funcionando
+  usage: `${PREFIX}duelo @jogador ou ${PREFIX}duelo [1, 2 ou 3] no seu turno`,
 
-  handle: async ({ args, socket, remoteJid, userLid }) => {
-    const numeroLimpo = userLid.split("@")[0];
-    const subComando = args[0]?.toLowerCase();
+  handle: async ({ socket, remoteJid, userLid, args, mentions, sendErrorReply }) => {
+    if (!isGroup(remoteJid)) return sendErrorReply("Este comando só pode ser usado em grupo.");
+    const jogadorId = userLid.split("@")[0];
 
-    let bancoRPG = lerJSON(dbPath);
-    let guildas = lerJSON(guildaPath);
+    // ───────────────────────────────────────────────────────────
+    // FASE 1: EXECUÇÃO DO TURNO
+    // ───────────────────────────────────────────────────────────
+    if (BATALHAS_ATIVAS.has(remoteJid)) {
+      const luta = BATALHAS_ATIVAS.get(remoteJid);
+      if (jogadorId !== luta.vezId) return; 
 
-    if (!bancoRPG[numeroLimpo]) {
-      return await socket.sendMessage(remoteJid, { text: "❌ Você precisa ter um perfil criado primeiro! Digite */perfil*." });
-    }
-
-    const jogador = bancoRPG[numeroLimpo];
-
-    // ==========================================
-    // COMANDO: LISTAR TODAS AS GUILDAS (GLOBAL)
-    // ==========================================
-    if (subComando === "lista" || subComando === "listar" || subComando === "todas" || subComando === "globais") {
-      const listaGuildas = Object.values(guildas);
-
-      if (listaGuildas.length === 0) {
-        return await socket.sendMessage(remoteJid, { text: "🏰 Nenhuma guilda foi criada ainda no servidor! Seja o primeiro usando */guilda criar*." });
+      const escolha = parseInt(args[0]);
+      if (!escolha || escolha < 1 || escolha > 3) {
+        return socket.sendMessage(remoteJid, { text: "❌ Escolha inválida! Digite: *1, 2 ou 3*." });
       }
 
-      let textoLista = `🏰 *GUILDAS REGISTRADAS - THE LEGENDARY ONLINE* 🏰\n\n`;
-      listaGuildas.forEach((g, index) => {
-        textoLista += `${index + 1}. ${g.emblema || "🛡️"} *${g.nome}*\n`;
-        textoLista += `   👑 Líder: @${g.lider}\n`;
-        textoLista += `   👥 Membros: ${g.membros.length}\n`;
-        textoLista += `   ─────────────────────────\n`;
-      });
+      clearTimeout(luta.timer); 
 
-      return await socket.sendMessage(remoteJid, {
-        text: textoLista,
-        mentions: listaGuildas.map(g => `${g.lider}@s.whatsapp.net`)
-      });
-    }
+      let atacante = luta.jogador1.id === luta.vezId ? luta.jogador1 : luta.jogador2;
+      let defensor = luta.jogador1.id === luta.vezId ? luta.jogador2 : luta.jogador1;
 
-    // ==========================================
-    // COMANDO: RANKING DE GUILDAS
-    // ==========================================
-    if (subComando === "rank" || subComando === "ranking") {
-      const listaGuildas = Object.values(guildas);
-
-      if (listaGuildas.length === 0) {
-        return await socket.sendMessage(remoteJid, { text: "🏰 Nenhuma guilda no ranking ainda!" });
-      }
-
-      const rankOrdenado = listaGuildas.sort((a, b) => b.membros.length - a.membros.length);
-
-      let textoRank = `🏆 *RANKING GLOBAL DE GUILDAS* 🏆\n`;
-      textoRank += `✨ *As maiores guildas do servidor* ✨\n\n`;
-
-      rankOrdenado.forEach((g, index) => {
-        let medalha = "⚔️";
-        if (index === 0) medalha = "🥇";
-        else if (index === 1) medalha = "🥈";
-        else if (index === 2) medalha = "🥉";
-
-        textoRank += `${medalha} *${index + 1}º Lugar:* ${g.emblema || "🛡️"} *${g.nome}*\n`;
-        textoRank += `   👥 Membros: ${g.membros.length} | 👑 Líder: @${g.lider}\n\n`;
-      });
-
-      return await socket.sendMessage(remoteJid, {
-        text: textoRank,
-        mentions: rankOrdenado.map(g => `${g.lider}@s.whatsapp.net`)
-      });
-    }
-
-    // ==========================================
-    // COMANDO: CRIAR GUILDA (Custo de ouro desativado para testes!)
-    // ==========================================
-    if (subComando === "criar") {
-      const emblema = args[1]; 
-      const nomeGuilda = args.slice(2).join(" ").trim(); 
-
-      if (!emblema || !nomeGuilda) {
-        return await socket.sendMessage(remoteJid, { 
-          text: `⚠️ Uso correto: *${PREFIX}guilda criar [Emoji] [Nome]*\nExemplo: *${PREFIX}guilda criar 🦅 Falcões de Prata*` 
-        });
-      }
-
-      const temGuilda = jogador.guilda && 
-                        jogador.guilda !== "Sem Guilda 🛡️" && 
-                        jogador.guilda !== "Sem Guilda" && 
-                        jogador.guilda.trim() !== "";
-
-      if (temGuilda) {
-        return await socket.sendMessage(remoteJid, { text: `❌ Você já faz parte da guilda *${jogador.guilda}*!` });
-      }
-
-      // Validação de ouro removida para você conseguir criar agora com os seus 200 de ouro!
-
-      const guildaExiste = Object.keys(guildas).some(nome => nome.toLowerCase() === nomeGuilda.toLowerCase());
-      if (guildaExiste) {
-        return await socket.sendMessage(remoteJid, { text: "❌ Já existe uma guilda registrada com esse nome!" });
-      }
-
-      jogador.guilda = nomeGuilda;
-
-      guildas[nomeGuilda] = {
-        nome: nomeGuilda,
-        emblema: emblema,
-        lider: numeroLimpo,
-        membros: [numeroLimpo]
-      };
-
-      salvarJSON(dbPath, bancoRPG);
-      salvarJSON(guildaPath, guildas);
-
-      return await socket.sendMessage(remoteJid, {
-        text: `🎉 *GUILDA CRIADA COM SUCESSO!* 🛡️\n\n🏰 *Nome:* ${nomeGuilda}\n✨ *Emblema:* ${emblema}\n👑 *Líder:* @${numeroLimpo}\n🪙 *Custo de criação:* Grátis (Modo de Teste)!`,
-        mentions: [userLid]
-      });
-    }
-
-    // ==========================================
-    // COMANDO: ENTRAR EM UMA GUILDA
-    // ==========================================
-    if (subComando === "entrar" || subComando === "recrutar") {
-      const nomeGuilda = args.slice(1).join(" ");
-      if (!nomeGuilda) {
-        return await socket.sendMessage(remoteJid, { text: `⚠️ Uso: *${PREFIX}guilda entrar [Nome da Guilda]*` });
-      }
-
-      const temGuilda = jogador.guilda && 
-                        jogador.guilda !== "Sem Guilda 🛡️" && 
-                        jogador.guilda !== "Sem Guilda" && 
-                        jogador.guilda.trim() !== "";
-
-      if (temGuilda) {
-        return await socket.sendMessage(remoteJid, { text: "❌ Você já está em uma guilda! Saia dela primeiro usando */guilda sair*." });
-      }
-
-      if (!guildas[nomeGuilda]) {
-        return await socket.sendMessage(remoteJid, { text: "❌ Essa guilda não existe!" });
-      }
-
-      jogador.guilda = nomeGuilda;
-      guildas[nomeGuilda].membros.push(numeroLimpo);
-
-      salvarJSON(dbPath, bancoRPG);
-      salvarJSON(guildaPath, guildas);
-
-      return await socket.sendMessage(remoteJid, {
-        text: `🛡️ @${numeroLimpo} agora faz parte da guilda *${guildas[nomeGuilda].emblema} ${nomeGuilda}*! Seja bem-vindo!`,
-        mentions: [userLid]
-      });
-    }
-
-    // ==========================================
-    // COMANDO: SAIR DA GUILDA
-    // ==========================================
-    if (subComando === "sair") {
-      const guildaAtual = jogador.guilda;
+      let msgTurno = `⚔️ *AÇÃO NA ARENA* ⚔️\n───────────────────────────\n`;
       
-      const temGuilda = guildaAtual && 
-                        guildaAtual !== "Sem Guilda 🛡️" && 
-                        guildaAtual !== "Sem Guilda" && 
-                        guildaAtual.trim() !== "";
+      const golpesClasse = HAB_CLASSES[atacante.classe] || HAB_CLASSES["Guerreiro"];
+      const passivaRacaAtacante = RACAS_RPG[atacante.raca] || { danoBonus: 0, criticoBonus: 0 };
 
-      if (!temGuilda) {
-        return await socket.sendMessage(remoteJid, { text: "❌ Você não faz parte de nenhuma guilda." });
-      }
-
-      const infoGuilda = guildas[guildaAtual];
-      if (infoGuilda) {
-        if (infoGuilda.lider === numeroLimpo) {
-          infoGuilda.membros.forEach(membro => {
-            if (bancoRPG[membro]) {
-              bancoRPG[membro].guilda = "Sem Guilda 🛡️";
-            }
-          });
-          delete guildas[guildaAtual];
-          salvarJSON(guildaPath, guildas);
-          salvarJSON(dbPath, bancoRPG);
-          return await socket.sendMessage(remoteJid, { text: `📢 A guilda *${infoGuilda.emblema} ${guildaAtual}* foi desfeita pelo líder @${numeroLimpo}.`, mentions: [userLid] });
+      if (escolha === 3) {
+        const p3 = golpesClasse.p3;
+        if (p3.curaBase) {
+          atacante.hp = Math.min(atacante.hpMax, atacante.hp + p3.curaBase);
+          msgTurno += `✨ *${atacante.nome}* usou *${p3.nome}* e recuperou *${p3.curaBase} HP*!\n`;
+        } else if (p3.escudoBase) {
+          atacante.escudo = Math.min(100, atacante.escudo + p3.escudoBase);
+          msgTurno += `🛡️ *${atacante.nome}* usou *${p3.nome}* e ganhou *${p3.escudoBase} de Escudo*!\n`;
         } else {
-          infoGuilda.membros = infoGuilda.membros.filter(m => m !== numeroLimpo);
-          jogador.guilda = "Sem Guilda 🛡️";
-          salvarJSON(guildaPath, guildas);
-          salvarJSON(dbPath, bancoRPG);
-          return await socket.sendMessage(remoteJid, { text: `🏃‍♂️ @${numeroLimpo} saiu da guilda *${infoGuilda.emblema} ${guildaAtual}*.`, mentions: [userLid] });
+          atacante.escudoAbsoluto = true;
+          msgTurno += `🛡️ *${atacante.nome}* ativou *${p3.nome}* e vai bloquear o próximo golpe!\n`;
+        }
+      } else {
+        const golpe = escolha === 1 ? golpesClasse.p1 : golpesClasse.p2;
+
+        if (defensor.escudoAbsoluto) {
+          msgTurno += `🛡️ *${defensor.nome}* bloqueou completamente o golpe *${golpe.nome}* com seu escudo absoluto!\n`;
+          defensor.escudoAbsoluto = false; 
+        } else {
+          const sorteio = Math.random() * 100;
+          let danoFinal = golpe.danoBase + (passivaRacaAtacante.danoBonus || 0);
+
+          if (sorteio <= 20) {
+            danoFinal = 0;
+            msgTurno += `💨 *${atacante.nome}* tentou usar *${golpe.nome}*, mas errou o golpe!\n`;
+          } else if (sorteio <= 45) {
+            danoFinal = Math.floor(danoFinal * 0.5);
+            msgTurno += `💥 *DE RASPÃO!* O golpe *${golpe.nome}* de *${atacante.nome}* pegou de raspão: Causou *${danoFinal} de dano*.\n`;
+          } else if (sorteio <= (90 - (passivaRacaAtacante.criticoBonus || 0))) {
+            msgTurno += `⚔️ *IMPACTO!* *${atacante.nome}* acertou *${golpe.nome}*: Causou *${danoFinal} de dano*.\n`;
+          } else {
+            danoFinal = Math.floor(danoFinal * 1.5);
+            msgTurno += `⚡ *🚨 CRÍTICO!* *${atacante.nome}* (Passiva de *${atacante.raca}*) acertou um ponto vital com *${golpe.nome}*: Causou *${danoFinal} de dano Letal*!\n`;
+          }
+
+          if (danoFinal > 0) {
+            if (defensor.escudo > 0) {
+              if (defensor.escudo >= danoFinal) {
+                defensor.escudo -= danoFinal;
+                msgTurno += `🛡️ O escudo de *${defensor.nome}* absorveu todo o dano! (Escudo Restante: ${defensor.escudo})\n`;
+                danoFinal = 0;
+              } else {
+                danoFinal -= defensor.escudo;
+                msgTurno += `🛡️ O escudo de *${defensor.nome}* quebrou mitigando *${defensor.escudo}* de dano!\n`;
+                defensor.escudo = 0;
+              }
+            }
+            defensor.hp -= danoFinal;
+          }
         }
       }
+
+      // Fim do Duelo - Vitória
+      if (defensor.hp <= 0) {
+        msgTurno += `\n💀 *${defensor.nome}* foi nocauteado!\n🏆 *VENCEDOR:* *${atacante.nome}*! (+150 Moedas de Ouro)`;
+        BATALHAS_ATIVAS.delete(remoteJid);
+
+        let bancoRPG = lerJSON(dbPath);
+        if (bancoRPG[atacante.id]) {
+          bancoRPG[atacante.id].ouro = (bancoRPG[atacante.id].ouro || 0) + 150;
+          salvarJSON(dbPath, bancoRPG);
+        }
+        return socket.sendMessage(remoteJid, { text: msgTurno });
+      }
+
+      luta.vezId = defensor.id;
+      luta.turnoAtual++;
+
+      let painel = `${msgTurno}\n───────────────────────────\n`;
+      painel += `⏳ *TURNO ${luta.turnoAtual} — VEZ DE @${defensor.id}* (⏱️ 30s)\n`;
+      painel += `🧬 Raça: *${defensor.raca}* | 🎭 Classe: *${defensor.classe}*\n\n`;
+      painel += `❤️ *${luta.jogador1.nome}:* ${Math.max(0, luta.jogador1.hp)} HP | 🛡️ Escudo: ${luta.jogador1.escudo}\n`;
+      painel += `❤️ *${luta.jogador2.nome}:* ${Math.max(0, luta.jogador2.hp)} HP | 🛡️ Escudo: ${luta.jogador2.escudo}\n`;
+      painel += `───────────────────────────\n`;
+      painel += `Digite: *1* (Ataque Básico), *2* (Habilidade) ou *3* (Defesa/Cura/Especial)`;
+
+      luta.timer = setTimeout(() => {
+        socket.sendMessage(remoteJid, { text: `⏱️ Tempo esgotado! @${defensor.id} demorou demais e perdeu.` });
+        BATALHAS_ATIVAS.delete(remoteJid);
+      }, 30000);
+
+      return socket.sendMessage(remoteJid, { text: painel, mentions: [luta.jogador1.id + "@s.whatsapp.net", luta.jogador2.id + "@s.whatsapp.net"] });
     }
 
-    // ==========================================
-    // MENU PADRÃO / EXIBIÇÃO DA GUILDA DO JOGADOR
-    // ==========================================
-    const guildaNome = jogador.guilda || "Sem Guilda 🛡️";
+    // ───────────────────────────────────────────────────────────
+    // FASE 2: INÍCIO DO DUELO
+    // ───────────────────────────────────────────────────────────
+    if (!mentions || mentions.length === 0) {
+      return sendErrorReply("❌ Desafie alguém marcando o usuário! Ex: `/duelo @jogador`");
+    }
     
-    const temGuildaMenu = guildaNome !== "Sem Guilda 🛡️" && 
-                         guildaNome !== "Sem Guilda" && 
-                         guildaNome.trim() !== "";
+    const defensorId = mentions[0].split("@")[0];
+    if (jogadorId === defensorId) return sendErrorReply("❌ Você não pode lutar contra si mesmo.");
 
-    if (!temGuildaMenu) {
-      return await socket.sendMessage(remoteJid, {
-        text: `🛡️ *CENTRAL DE GUILDAS - THE LEGENDARY ONLINE* 🏰\n\n` +
-             `Você ainda não tem uma guilda. Comande:\n` +
-             `• *${PREFIX}guilda criar [Emoji] [Nome]* (Grátis para testes!)\n` +
-             `• *${PREFIX}guilda entrar [Nome]* (Entra em uma guilda ativa)\n` +
-             `• *${PREFIX}guilda lista* (Lista todas as guildas globais)\n` +
-             `• *${PREFIX}guilda rank* (Ver o ranking de guildas)`
-      });
-    }
+    let bancoRPG = lerJSON(dbPath);
+    
+    const p1 = bancoRPG[jogadorId];
+    const p2 = bancoRPG[defensorId];
 
-    const info = guildas[guildaNome];
-    if (!info) return;
+    if (!p1 || !p2) return sendErrorReply("❌ Ambos os lutadores precisam ter conta no RPG para batalhar!");
 
-    const listaMembrosStatus = info.membros.map(membro => {
-      const dadosMembro = bancoRPG[membro];
-      const statusOnline = obterStatusOnline(dadosMembro);
-      const tagLider = membro === info.lider ? "👑 (Líder)" : "⚔️ (Membro)";
-      return `  ${statusOnline} • @${membro} ${tagLider}`;
-    }).join("\n");
+    const racaP1 = p1.raca || "Humano";
+    const racaP2 = p2.raca || "Humano";
+    const classeP1 = p1.classe || "Guerreiro";
+    const classeP2 = p2.classe || "Guerreiro";
 
-    const mensagemGuilda = `🏰 *GUILDA: ${info.nome}* ${info.emblema || "🛡️"}\n` +
-      `✨ ══════════════════════════ ✨\n\n` +
-      `👑 *Líder:* @${info.lider}\n` +
-      `👥 *Integrantes (${info.membros.length}):*\n` +
-      `${listaMembrosStatus}\n\n` +
-      `👉 Para sair, digite: *${PREFIX}guilda sair*\n` +
-      `👉 Veja outras em: *${PREFIX}guilda lista*\n` +
-      `✨ ══════════════════════════ ✨`;
+    const passivaP1 = RACAS_RPG[racaP1] || { hpBonus: 0 };
+    const passivaP2 = RACAS_RPG[racaP2] || { hpBonus: 0 };
 
-    return await socket.sendMessage(remoteJid, {
-      text: mensagemGuilda,
-      mentions: info.membros.map(m => `${m}@s.whatsapp.net`)
-    });
+    const hpMaxP1 = 100 + (passivaP1.hpBonus || 0);
+    const hpMaxP2 = 100 + (passivaP2.hpBonus || 0);
+
+    // Prioriza o nome customizado se houver
+    const nomeP1 = p1.personagem && p1.personagem !== "Não definido (Use /nome)" ? p1.personagem : (p1.nomeOficial || "Guerreiro 1");
+    const nomeP2 = p2.personagem && p2.personagem !== "Não definido (Use /nome)" ? p2.personagem : (p2.nomeOficial || "Guerreiro 2");
+
+    const novaLuta = {
+      vezId: jogadorId,
+      turnoAtual: 1,
+      jogador1: { id: jogadorId, nome: nomeP1, hp: hpMaxP1, hpMax: hpMaxP1, escudo: p1.escudo || 0, classe: classeP1, raca: racaP1, escudoAbsoluto: false },
+      jogador2: { id: defensorId, nome: nomeP2, hp: hpMaxP2, hpMax: hpMaxP2, escudo: p2.escudo || 0, classe: classeP2, raca: racaP2, escudoAbsoluto: false },
+      timer: null
+    };
+
+    BATALHAS_ATIVAS.set(remoteJid, novaLuta);
+
+    let painelInicial = `⚔️ *UM DUELO FOI INICIADO!* ⚔️\n───────────────────────────\n`;
+    painelInicial += `🔥 @${jogadorId} desafiou @${defensorId}!\n\n`;
+    painelInicial += `👤 *${nomeP1}* (${classeP1}) vs 👤 *${nomeP2}* (${classeP2})\n\n`;
+    painelInicial += `⏳ Vez de @${jogadorId}! Escolha sua ação digitando:\n`;
+    painelInicial += `👉 *1* para usar o Golpe Básico\n`;
+    painelInicial += `👉 *2* para usar a Habilidade Especial\n`;
+    painelInicial += `👉 *3* para Usar Defesa/Cura\n`;
+    painelInicial += `───────────────────────────\n⏱️ Você tem 30 segundos!`;
+
+    novaLuta.timer = setTimeout(() => {
+      socket.sendMessage(remoteJid, { text: `⏱️ Tempo esgotado! @${jogadorId} demorou demais para iniciar e o duelo foi cancelado.` });
+      BATALHAS_ATIVAS.delete(remoteJid);
+    }, 30000);
+
+    return socket.sendMessage(remoteJid, { text: painelInicial, mentions: [jogadorId + "@s.whatsapp.net", defensorId + "@s.whatsapp.net"] });
   }
 };
