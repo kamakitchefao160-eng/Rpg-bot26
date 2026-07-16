@@ -52,7 +52,7 @@ export default {
           { role: "system", content: `${contextoGeral}\n${contextoPersonalizado}` },
           { role: "user", content: mensagemUsuario }
         ],
-        model: "llama3-8b-8192",
+        model: "llama-3.3-70b-versatile",
       });
 
       const resposta = chatCompletion.choices[0]?.message?.content || "Estou sem tempo para bobagens.";
