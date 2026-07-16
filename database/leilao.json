@@ -1,8 +1,10 @@
 {
-  "leilaoAtivo": false,
-  "item": null,
-  "lanceMinimo": 0,
+  "ativo": false,
+  "item": "",
+  "donoId": "",
   "lanceAtual": 0,
-  "maiorLicitante": null,
-  "historico": []
+  "maiorLanceId": "",
+  "maiorLanceNome": "",
+  "tempoLimite": 0
 }
+
