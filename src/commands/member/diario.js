@@ -1,13 +1,14 @@
-import fs from "node:fs";
-import path from "node:path";
-import { DATABASE_DIR } from "../../config.js";
+import fs from "fs";
+import path from "path";
+import { PREFIX } from "../../config.js";
 
-const dbPath = path.join(DATABASE_DIR, "rpg-usuarios.json");
+const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
 
 export default {
   name: "diario",
   description: "Resgata sua recompensa diária de 100 moedas",
   commands: ["diario", "daily"],
+  usage: `${PREFIX}diario`,
 
   handle: async ({ socket, remoteJid, userLid, sendErrorReply }) => {
     const numeroLimpo = userLid.split("@")[0];
@@ -17,16 +18,14 @@ export default {
     let bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
     const player = bancoRPG[numeroLimpo];
 
-    if (!player) return sendErrorReply("❌ Crie sua conta primeiro com `/criar` ou `/perfil`.");
+    if (!player) return sendErrorReply(`❌ Crie sua conta primeiro com *${PREFIX}perfil*.`);
 
-    // Pega a data de hoje no fuso local
     const hoje = new Date().toISOString().split("T")[0];
 
     if (player.ultimoDiario === hoje) {
       return sendErrorReply("⏱️ Você já resgatou sua recompensa de hoje! Volte amanhã.");
     }
 
-    // Dá a recompensa e atualiza a trava de data
     player.ouro = (player.ouro || 0) + 100;
     player.ultimoDiario = hoje;
 
