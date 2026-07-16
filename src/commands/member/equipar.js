@@ -1,29 +1,36 @@
+
 import fs from "fs";
 import path from "path";
 import { PREFIX } from "../../config.js";
 import { isGroup } from "../../utils/index.js"; 
 
-// 🎯 IMPORTAÇÕES CORRIGIDAS:
-import { BATALHAS_ATIVAS } from "./lutar.js";
-import { HAB_CLASSES } from "../../utilitarios/habilidades.js";
-import { RACAS_RPG } from "../../utilitarios/racas.js";
+let BATALHAS_ATIVAS = null;
+try {
+  const moduloLutar = await import("./lutar.js");
+  if (moduloLutar && moduloLutar.BATALHAS_ATIVAS) {
+    BATALHAS_ATIVAS = moduloLutar.BATALHAS_ATIVAS;
+  }
+} catch (e) {
+  // Luta não carregada ou não implementada ainda
+}
 
-const dbPath = path.resolve("banco de dados", "rpg-usuarios.json");
+const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
 
 export default {
   name: "equipar",
   description: "Equipa ou desequipa uma classe, raça, título ou moldura",
   commands: ["equipar", "use", "desequipar"],
-  usage: `${PREFIX}equipar [Nome por extenso da Classe/Raça] ou ${PREFIX}equipar remover [titulo/moldura]`,
+  usage: `${PREFIX}equipar [Nome por extenso] ou ${PREFIX}equipar remover [titulo/moldura]`,
 
   handle: async ({ args, socket, remoteJid, userLid, sendErrorReply }) => {
+    if (!isGroup(remoteJid)) return sendErrorReply("Este comando só pode ser usado em grupo.");
+    
     const numeroLimpo = userLid.split("@")[0];
     const acao = args.join(" ").trim();
 
     if (!acao) return sendErrorReply(`❌ O que você deseja equipar? Ex: \`${PREFIX}equipar Samurai\` ou \`${PREFIX}equipar remover titulo\``);
 
-    // FIX: Agora funciona 100% sem dar erro de variável indefinida!
-    if (BATALHAS_ATIVAS?.has(remoteJid)) {
+    if (BATALHAS_ATIVAS && typeof BATALHAS_ATIVAS.has === "function" && BATALHAS_ATIVAS.has(remoteJid)) {
       return sendErrorReply("❌ Você não pode alterar seus equipamentos durante um combate ativo!");
     }
 
@@ -64,10 +71,10 @@ export default {
 
     const itemNoInventario = inventario.find(i => i.toLowerCase().includes(acao.toLowerCase()));
     if (itemNoInventario) {
-      if (itemNoInventario.includes("Sakura (Moldura)")) {
+      if (itemNoInventario.includes("Sakura (Moldura)") || itemNoInventario.includes("Moldura")) {
         p.molduraEquipada = "🌸✨";
         fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
-        return socket.sendMessage(remoteJid, { text: "🖼️ Moldura de Sakura equipada no seu perfil!" });
+        return socket.sendMessage(remoteJid, { text: "🖼️ Moldura equipada no seu perfil!" });
       } else {
         p.tituloEquipado = itemNoInventario;
         fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
@@ -75,6 +82,6 @@ export default {
       }
     }
 
-    return sendErrorReply("❌ Você não possui esse item comprado ou digitou o nome incorretamente. Lembre-se de digitar o nome por extenso (Ex: /equipar Samurai).");
+    return sendErrorReply("❌ Você não possui esse item comprado ou digitou o nome incorretamente. Lembre-se de digitar o nome por extenso.");
   }
 };
