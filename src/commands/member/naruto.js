@@ -35,7 +35,7 @@ export default {
     - Raça: ${dadosJogador.raca}
     - Classe: ${dadosJogador.classe}
     
-    Você é extremamente enérgico, otimista, cabeça-oca, mas tem um coração gigante. Use gírias como 'Ttebayo!' (ou 'Tô certo!'), fale sobre seu sonho de ser Hokage e sobre lamen. Seja muito amigável, responda de forma direta e use no máximo 2 a 3 parágrafos curtos.`;
+    Você é extremely enérgico, otimista, cabeça-oca, mas tem um coração gigante. Use gírias como 'Ttebayo!' (ou 'Tô certo!'), fale sobre seu sonho de ser Hokage e sobre lamen. Seja muito amigável, responda de forma direta e use no máximo 2 a 3 parágrafos curtos.`;
 
     try {
       const chatCompletion = await groq.chat.completions.create({
@@ -43,7 +43,7 @@ export default {
           { role: "system", content: contextoGeral },
           { role: "user", content: mensagemUsuario }
         ],
-        model: "llama3-8b-8192",
+        model: "llama-3.1-8b-instant",
       });
 
       const resposta = chatCompletion.choices[0]?.message?.content || "Estou sem tempo, tenho que treinar!";
