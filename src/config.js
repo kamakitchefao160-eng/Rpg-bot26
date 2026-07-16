@@ -22,7 +22,7 @@ export const OWNER_LID = "12345678901234567890@lid";
 
 // Diretórios
 export const COMMANDS_DIR = path.join(__dirname, "commands");
-export const DATABASE_DIR = path.resolve(__dirname, "..", "database");
+export const DATABASE_DIR = path.resolve(__dirname, "..", "banco de dados");
 export const ASSETS_DIR = path.resolve(__dirname, "..", "assets");
 export const TEMP_DIR = path.resolve(__dirname, "..", "assets", "temp");
 
