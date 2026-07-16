@@ -47,7 +47,7 @@ export default {
           { role: "system", content: contextoGeral },
           { role: "user", content: mensagemUsuario }
         ],
-        model: "model: "llama-3.1-8b-instant",
+        model: "llama-3.1-8b-instant", // ✅ Corrigido aqui!
       });
 
       const resposta = chatCompletion.choices[0]?.message?.content || "Suas palavras são apenas um reflexo da sua falta de compreensão sobre meus planos.";
