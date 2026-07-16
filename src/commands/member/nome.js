@@ -1,8 +1,9 @@
+// nome.js
 import fs from "fs";
 import path from "path";
-import { PREFIX } from "../../config.js";
+import { PREFIX, DATABASE_DIR } from "../../config.js";
 
-const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
+const dbPath = path.join(DATABASE_DIR, "rpg-usuarios.json");
 
 export default {
   name: "nome",
@@ -29,7 +30,6 @@ export default {
       return sendErrorReply(`❌ Crie seu perfil primeiro digitando *${PREFIX}perfil*`);
     }
 
-    // Altera o campo do personagem
     bancoRPG[numeroLimpo].personagem = novoNome;
     fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
 
