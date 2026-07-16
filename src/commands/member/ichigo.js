@@ -47,7 +47,7 @@ export default {
           { role: "system", content: contextoGeral },
           { role: "user", content: mensagemUsuario }
         ],
-        model: "llama-3.3-70b-versatile",
+        model: "llama-3.1-8b-instant", // ✅ Atualizado para o modelo instant rápido
       });
 
       const resposta = chatCompletion.choices[0]?.message?.content || "O que foi? Tem algum Hollow por perto?";
