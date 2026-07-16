@@ -1,8 +1,10 @@
+// presente.js
 import fs from "fs";
 import path from "path";
+import { DATABASE_DIR } from "../../config.js";
 import { ITENS_LOJA } from "./loja.js";
 
-const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
+const dbPath = path.join(DATABASE_DIR, "rpg-usuarios.json");
 
 export default {
   name: "presente",
@@ -13,7 +15,6 @@ export default {
   handle: async ({ args, socket, remoteJid, userLid, mentions, sendErrorReply }) => {
     if (!mentions || mentions.length === 0) return sendErrorReply("❌ Você deve marcar o jogador que receberá o presente.");
     
-    // Procura dinamicamente qual argumento é a ID numérica da loja
     const idItem = args.find(arg => !arg.includes("@") && !isNaN(parseInt(arg)));
     const itemLoja = ITENS_LOJA[idItem];
 
