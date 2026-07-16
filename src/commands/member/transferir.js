@@ -1,8 +1,9 @@
+// transferir.js
 import fs from "fs";
 import path from "path";
-import { PREFIX } from "../../config.js";
+import { PREFIX, DATABASE_DIR } from "../../config.js";
 
-const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
+const dbPath = path.join(DATABASE_DIR, "rpg-usuarios.json");
 
 export default {
   name: "transferir",
@@ -18,8 +19,6 @@ export default {
     }
 
     const destinatarioId = mentions[0].split("@")[0];
-    
-    // Filtra qual argumento representa a quantia (apenas números fora da menção)
     const quantia = parseInt(args.find(arg => !arg.includes("@") && !isNaN(parseInt(arg))));
 
     if (isNaN(quantia) || quantia <= 0) {
