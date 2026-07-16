@@ -10,8 +10,11 @@ const TEMPO_ONLINE_LIMITE = 15 * 60 * 1000;
 
 function lerJSON(caminho) {
   if (!fs.existsSync(caminho)) {
-    // Se o arquivo não existir, cria um objeto vazio para não quebrar
-    fs.writeFileSync(caminho, JSON.stringify({}, null, 2));
+    try {
+      fs.writeFileSync(caminho, JSON.stringify({}, null, 2));
+    } catch (e) {
+      console.log("Erro ao criar arquivo: ", e);
+    }
     return {};
   }
   try { 
@@ -22,10 +25,13 @@ function lerJSON(caminho) {
 }
 
 function salvarJSON(caminho, dados) {
-  fs.writeFileSync(caminho, JSON.stringify(dados, null, 2));
+  try {
+    fs.writeFileSync(caminho, JSON.stringify(dados, null, 2));
+  } catch (e) {
+    console.log("Erro ao salvar arquivo: ", e);
+  }
 }
 
-// Função para verificar se o jogador está online com base no último acesso dele
 function obterStatusOnline(jogadorDados) {
   if (!jogadorDados || !jogadorDados.ultimoAcesso) return "🔴 Off";
   const agora = Date.now();
@@ -35,8 +41,8 @@ function obterStatusOnline(jogadorDados) {
 
 export default {
   name: "guilda",
-  description: "Crie ou gerencie sua guilda no The Legendary Online com status dos membros",
-  commands: ["guilda", "g", "guildas"], // Ativando "/guildas" também!
+  description: "Crie ou gerencie sua guilda no The Legendary Online",
+  commands: ["guilda", "g", "guildas"], 
   usage: `${PREFIX}guilda`,
 
   handle: async ({ args, socket, remoteJid, userLid }) => {
@@ -86,7 +92,6 @@ export default {
         return await socket.sendMessage(remoteJid, { text: "🏰 Nenhuma guilda no ranking ainda!" });
       }
 
-      // Ordena pelo número de membros (do maior para o menor)
       const rankOrdenado = listaGuildas.sort((a, b) => b.membros.length - a.membros.length);
 
       let textoRank = `🏆 *RANKING GLOBAL DE GUILDAS* 🏆\n`;
@@ -109,7 +114,7 @@ export default {
     }
 
     // ==========================================
-    // COMANDO: CRIAR GUILDA
+    // COMANDO: CRIAR GUILDA (Custo de ouro desativado para testes!)
     // ==========================================
     if (subComando === "criar") {
       const emblema = args[1]; 
@@ -121,7 +126,6 @@ export default {
         });
       }
 
-      // Validação extremamente segura do status de guilda do usuário
       const temGuilda = jogador.guilda && 
                         jogador.guilda !== "Sem Guilda 🛡️" && 
                         jogador.guilda !== "Sem Guilda" && 
@@ -131,19 +135,13 @@ export default {
         return await socket.sendMessage(remoteJid, { text: `❌ Você já faz parte da guilda *${jogador.guilda}*!` });
       }
 
-      const ouroAtual = jogador.ouro || 0;
-      if (ouroAtual < 500) {
-        return await socket.sendMessage(remoteJid, { text: "❌ Criar uma guilda custa *🪙 500 moedas de ouro*!" });
-      }
+      // Validação de ouro removida para você conseguir criar agora com os seus 200 de ouro!
 
-      // Evita duplicidade de nomes ignorando maiúsculas e minúsculas
       const guildaExiste = Object.keys(guildas).some(nome => nome.toLowerCase() === nomeGuilda.toLowerCase());
       if (guildaExiste) {
         return await socket.sendMessage(remoteJid, { text: "❌ Já existe uma guilda registrada com esse nome!" });
       }
 
-      // Salva os novos dados do jogador e da guilda
-      jogador.ouro = ouroAtual - 500;
       jogador.guilda = nomeGuilda;
 
       guildas[nomeGuilda] = {
@@ -157,7 +155,7 @@ export default {
       salvarJSON(guildaPath, guildas);
 
       return await socket.sendMessage(remoteJid, {
-        text: `🎉 *GUILDA CRIADA COM SUCESSO!* 🛡️\n\n🏰 *Nome:* ${nomeGuilda}\n✨ *Emblema:* ${emblema}\n👑 *Líder:* @${numeroLimpo}\n🪙 *Custo de criação:* -500 Ouro.`,
+        text: `🎉 *GUILDA CRIADA COM SUCESSO!* 🛡️\n\n🏰 *Nome:* ${nomeGuilda}\n✨ *Emblema:* ${emblema}\n👑 *Líder:* @${numeroLimpo}\n🪙 *Custo de criação:* Grátis (Modo de Teste)!`,
         mentions: [userLid]
       });
     }
@@ -214,7 +212,6 @@ export default {
       const infoGuilda = guildas[guildaAtual];
       if (infoGuilda) {
         if (infoGuilda.lider === numeroLimpo) {
-          // Se o líder sair, a guilda inteira é desfeita de forma limpa
           infoGuilda.membros.forEach(membro => {
             if (bancoRPG[membro]) {
               bancoRPG[membro].guilda = "Sem Guilda 🛡️";
@@ -225,7 +222,6 @@ export default {
           salvarJSON(dbPath, bancoRPG);
           return await socket.sendMessage(remoteJid, { text: `📢 A guilda *${infoGuilda.emblema} ${guildaAtual}* foi desfeita pelo líder @${numeroLimpo}.`, mentions: [userLid] });
         } else {
-          // Membro comum saindo
           infoGuilda.membros = infoGuilda.membros.filter(m => m !== numeroLimpo);
           jogador.guilda = "Sem Guilda 🛡️";
           salvarJSON(guildaPath, guildas);
@@ -248,7 +244,7 @@ export default {
       return await socket.sendMessage(remoteJid, {
         text: `🛡️ *CENTRAL DE GUILDAS - THE LEGENDARY ONLINE* 🏰\n\n` +
              `Você ainda não tem uma guilda. Comande:\n` +
-             `• *${PREFIX}guilda criar [Emoji] [Nome]* (Custa 500 Ouro)\n` +
+             `• *${PREFIX}guilda criar [Emoji] [Nome]* (Grátis para testes!)\n` +
              `• *${PREFIX}guilda entrar [Nome]* (Entra em uma guilda ativa)\n` +
              `• *${PREFIX}guilda lista* (Lista todas as guildas globais)\n` +
              `• *${PREFIX}guilda rank* (Ver o ranking de guildas)`
@@ -258,7 +254,6 @@ export default {
     const info = guildas[guildaNome];
     if (!info) return;
 
-    // Constrói a lista de membros exibindo o status de presença de cada um
     const listaMembrosStatus = info.membros.map(membro => {
       const dadosMembro = bancoRPG[membro];
       const statusOnline = obterStatusOnline(dadosMembro);
