@@ -1,183 +1,174 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
+import { PREFIX } from "../../config.js";
+import { isGroup } from "../../utils/index.js";
 
-// Configuração dos caminhos dos arquivos JSON para salvar os dados
-const pastaDados = path.resolve('./database');
-const arquivoLeilao = path.join(pastaDados, 'leilao.json');
-const arquivoPlayers = path.join(pastaDados, 'players.json');
+const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
+const leilaoPath = path.join(process.cwd(), "banco de dados", "leilao.json");
 
-// Garante que a pasta database e os arquivos existam (Simula o mkdir automaticamente)
-if (!fs.existsSync(pastaDados)) {
-    fs.mkdirSync(pastaDados, { recursive: true });
-}
-if (!fs.existsSync(arquivoLeilao)) {
-    fs.writeFileSync(arquivoLeilao, JSON.stringify({ itensLeiloados: [] }), 'utf-8');
-}
-
-function lerBanco(arquivo) {
-    try {
-        return JSON.parse(fs.readFileSync(arquivo, 'utf-8'));
-    } catch {
-        return {};
-    }
-}
-
-function salvarBanco(arquivo, dados) {
-    fs.writeFileSync(arquivo, JSON.stringify(dados, null, 2), 'utf-8');
+// Garante que o arquivo de leilão exista
+if (!fs.existsSync(leilaoPath)) {
+  fs.writeFileSync(leilaoPath, JSON.stringify({ itensLeiloados: [] }, null, 2), "utf-8");
 }
 
 function verificarHorarioLeilao() {
-    const agora = new Date();
-    const diaDaSemana = agora.getDay(); // 5 = Sexta, 6 = Sábado
-    const horaAtual = agora.getHours();
+  const agora = new Date();
+  const diaDaSemana = agora.getDay(); // 5 = Sexta, 6 = Sábado
+  const horaAtual = agora.getHours();
 
-    if ((diaDaSemana === 5 && horaAtual >= 19) || (diaDaSemana === 6 && horaAtual >= 18)) {
-        return { aberto: true };
-    }
-    return { aberto: false };
+  if ((diaDaSemana === 5 && horaAtual >= 19) || (diaDaSemana === 6 && horaAtual >= 18)) {
+    return { aberto: true };
+  }
+  return { aberto: false };
 }
 
-// ==========================================
-// PROPRIEDADES QUE O TAKESHI BOT EXIGE:
-// ==========================================
-export const commands = ['leilao', 'leilão', 'lance', 'leiloar']; 
-export const description = 'Sistema de Leilão Semanal';
+export default {
+  name: "leilao",
+  description: "Sistema de Leilão Semanal de Itens do RPG",
+  commands: ["leilao", "leilão", "lance", "leiloar"],
+  usage: `${PREFIX}leilao`,
 
-// A FUNÇÃO QUE ESTAVA FALTANDO COM O NOME CORRETO PARA O HANDLER:
-export async function handle(sock, message, args) {
-    const jid = message.key?.remoteJid || message.chat;
-    if (!jid) return;
+  handle: async ({ args, socket, remoteJid, userLid, sendErrorReply }) => {
+    if (!isGroup(remoteJid)) return sendErrorReply("Este comando só pode ser usado em grupo.");
 
-    const sender = message.key.participant || message.key.remoteJid;
+    const jogadorId = userLid.split("@")[0];
     const { aberto } = verificarHorarioLeilao();
-    
-    const bancoLeilao = lerBanco(arquivoLeilao);
-    const bancoPlayers = lerBanco(arquivoPlayers);
 
-    if (!bancoPlayers[sender]) {
-        bancoPlayers[sender] = { nome: message.pushName || "Jogador", moedas: 1000, cofre: [] };
-        salvarBanco(arquivoPlayers, bancoPlayers);
-    }
-    
-    const jogador = bancoPlayers[sender];
+    if (!fs.existsSync(dbPath)) return sendErrorReply("❌ Banco de dados offline.");
+    let bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
+    let bancoLeilao = JSON.parse(fs.readFileSync(leilaoPath, "utf-8"));
+
+    const player = bancoRPG[jogadorId];
+    if (!player) return sendErrorReply(`❌ Crie sua conta primeiro digitando *${PREFIX}perfil*!`);
+
     const subComando = args[0]?.toLowerCase();
-
     const taxaAnuncio = 500;
     const incrementoMinimo = 200;
     const proibidos = ["raca", "classes", "raças", "classe"];
 
-    // 1. SUBCOMANDO: leiloar
-    if (subComando === 'leiloar') {
-        if (!aberto) return sock.sendMessage(jid, { text: "❌ O leilão está fechado! Abre sextas às 19h e sábados às 18h." });
-        if (bancoLeilao.itensLeiloados.length >= 10) return sock.sendMessage(jid, { text: "❌ O mercado de leilões está lotado! (Máx 10 itens ativos)." });
+    // 1. SUBCOMANDO: LEILOAR
+    if (subComando === "leiloar") {
+      if (!aberto) return sendErrorReply("❌ O leilão está fechado! Abre sextas às 19h e sábados às 18h.");
+      if (bancoLeilao.itensLeiloados.length >= 10) return sendErrorReply("❌ O mercado de leilões está lotado! (Máx 10 itens ativos).");
 
-        const nomeItem = args[1];
-        const tipoItem = args[2]?.toLowerCase();
-        const precoInicial = parseInt(args[3]);
+      const nomeItem = args[1];
+      const tipoItem = args[2]?.toLowerCase();
+      const precoInicial = parseInt(args[3]);
 
-        if (!nomeItem || !tipoItem || isNaN(precoInicial)) {
-            return sock.sendMessage(jid, { text: "❌ Use: `/leilao leiloar [Nome] [Tipo] [PreçoInicial]`\nExemplo: `/leilao leiloar Coroa chapeu 1000`" });
-        }
+      if (!nomeItem || !tipoItem || isNaN(precoInicial)) {
+        return sendErrorReply(`❌ Use: *${PREFIX}leilao leiloar [Nome] [Tipo] [PreçoInicial]*\nExemplo: *${PREFIX}leilao leiloar Coroa chapeu 1000*`);
+      }
 
-        if (proibidos.includes(tipoItem)) {
-            return sock.sendMessage(jid, { text: `❌ Erro: Itens do tipo ${tipoItem.toUpperCase()} não podem ser leiloados!` });
-        }
+      if (proibidos.includes(tipoItem)) {
+        return sendErrorReply(`❌ Erro: Itens do tipo ${tipoItem.toUpperCase()} não podem ser leiloados!`);
+      }
 
-        if (jogador.moedas < taxaAnuncio) {
-            return sock.sendMessage(jid, { text: `❌ Você precisa de ${taxaAnuncio} moedas de ouro para pagar a taxa.` });
-        }
+      const carteira = player.ouro || 0;
+      if (carteira < taxaAnuncio) {
+        return sendErrorReply(`❌ Você precisa de 🪙 ${taxaAnuncio} moedas de ouro para pagar a taxa de anúncio.`);
+      }
 
-        jogador.moedas -= taxaAnuncio;
-        const novoId = bancoLeilao.itensLeiloados.length + 1;
+      // Desconta a taxa e cria o item
+      player.ouro -= taxaAnuncio;
+      const novoId = bancoLeilao.itensLeiloados.length + 1;
 
-        bancoLeilao.itensLeiloados.push({
-            id: novoId,
-            donoJid: sender,
-            donoNome: jogador.nome,
-            item: nomeItem,
-            tipo: tipoItem,
-            lanceAtual: precoInicial,
-            ultimoLicitanteJid: null,
-            ultimoLicitanteNome: "Nenhum",
-            lanceMinimoProximo: precoInicial + incrementoMinimo
-        });
+      bancoLeilao.itensLeiloados.push({
+        id: novoId,
+        donoJid: jogadorId,
+        donoNome: player.nomeOficial || "Guerreiro",
+        item: nomeItem,
+        tipo: tipoItem,
+        lanceAtual: precoInicial,
+        ultimoLicitanteJid: null,
+        ultimoLicitanteNome: "Nenhum",
+        lanceMinimoProximo: precoInicial + incrementoMinimo
+      });
 
-        salvarBanco(arquivoPlayers, bancoPlayers);
-        salvarBanco(arquivoLeilao, bancoLeilao);
+      fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
+      fs.writeFileSync(leilaoPath, JSON.stringify(bancoLeilao, null, 2));
 
-        return sock.sendMessage(jid, { text: `✨ **Item Anunciado!** '${nomeItem}' entrou no leilão [ID: ${novoId}]. 500G cobrados de taxa.` });
+      return socket.sendMessage(remoteJid, { 
+        text: `✨ *Item Anunciado!* '${nomeItem}' entrou no leilão [ID: ${novoId}]. 🪙 500G cobrados de taxa de anúncio.` 
+      });
     }
 
-    // 2. SUBCOMANDO: lance
-    if (subComando === 'lance') {
-        if (!aberto) return sock.sendMessage(jid, { text: "❌ O leilão já fechou!" });
+    // 2. SUBCOMANDO: LANCE
+    if (subComando === "lance") {
+      if (!aberto) return sendErrorReply("❌ O leilão já fechou!");
 
-        const idLeilao = parseInt(args[1]);
-        const valorLance = parseInt(args[2]);
+      const idLeilao = parseInt(args[1]);
+      const valorLance = parseInt(args[2]);
 
-        if (isNaN(idLeilao) || isNaN(valorLance)) {
-            return sock.sendMessage(jid, { text: "❌ Use: `/leilao lance [ID] [Valor]`" });
-        }
+      if (isNaN(idLeilao) || isNaN(valorLance)) {
+        return sendErrorReply(`❌ Use: *${PREFIX}leilao lance [ID] [Valor]*`);
+      }
 
-        const item = bancoLeilao.itensLeiloados.find(i => i.id === idLeilao);
-        if (!item) return sock.sendMessage(jid, { text: "❌ ID de leilão inválido." });
+      const item = bancoLeilao.itensLeiloados.find(i => i.id === idLeilao);
+      if (!item) return sendErrorReply("❌ ID de leilão inválido.");
 
-        if (sender === item.donoJid) return sock.sendMessage(jid, { text: "❌ Você não pode dar lance no seu próprio item!" });
-        if (valorLance < item.lanceMinimoProximo) return sock.sendMessage(jid, { text: `❌ O lance mínimo para este item é ${item.lanceMinimoProximo} moedas.` });
-        if (jogador.moedas < valorLance) return sock.sendMessage(jid, { text: "❌ Saldo insuficiente." });
+      if (jogadorId === item.donoJid) return sendErrorReply("❌ Você não pode dar lance no seu próprio item!");
+      if (valorLance < item.lanceMinimoProximo) return sendErrorReply(`❌ O lance mínimo para este item é 🪙 ${item.lanceMinimoProximo} moedas.`);
+      
+      const carteira = player.ouro || 0;
+      if (carteira < valorLance) return sendErrorReply("❌ Saldo insuficiente em sua conta.");
 
-        if (item.ultimoLicitanteJid && bancoPlayers[item.ultimoLicitanteJid]) {
-            bancoPlayers[item.ultimoLicitanteJid].moedas += item.lanceAtual;
-        }
+      // Devolve o dinheiro para o último que deu lance
+      if (item.ultimoLicitanteJid && bancoRPG[item.ultimoLicitanteJid]) {
+        bancoRPG[item.ultimoLicitanteJid].ouro = (bancoRPG[item.ultimoLicitanteJid].ouro || 0) + item.lanceAtual;
+      }
 
-        jogador.moedas -= valorLance;
-        
-        item.lanceAtual = valorLance;
-        item.ultimoLicitanteJid = sender;
-        item.ultimoLicitanteNome = jogador.nome;
-        item.lanceMinimoProximo = valorLance + incrementoMinimo;
+      // Desconta o lance do jogador atual
+      player.ouro -= valorLance;
+      
+      item.lanceAtual = valorLance;
+      item.ultimoLicitanteJid = jogadorId;
+      item.ultimoLicitanteNome = player.nomeOficial || "Guerreiro";
+      item.lanceMinimoProximo = valorLance + incrementoMinimo;
 
-        salvarBanco(arquivoPlayers, bancoPlayers);
-        salvarBanco(arquivoLeilao, bancoLeilao);
+      fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
+      fs.writeFileSync(leilaoPath, JSON.stringify(bancoLeilao, null, 2));
 
-        return sock.sendMessage(jid, { text: `⚔️ **LANCE ACEITO!** ${jogador.nome} cobriu o lance para 🪙 ${valorLance} no item '${item.item}'!` });
+      return socket.sendMessage(remoteJid, { 
+        text: `⚔️ *LANCE ACEITO!* @${jogadorId} cobriu o lance para 🪙 *${valorLance}* no item *'${item.item}'*!` 
+      }, { mentions: [userLid] });
     }
 
-    // 3. MENU PRINCIPAL
+    // 3. MENU DO LEILÃO
     let layout = [];
     layout.push("⚖️ ═══════════════════════ ⚖️");
-    layout.push("🏛️  **CÂMARA DE LEILÕES** 🏛️");
+    layout.push("🏛️  *CÂMARA DE LEILÕES* 🏛️");
     layout.push("⚖️ ═══════════════════════ ⚖️");
 
     if (aberto) {
-        layout.push(`🟢 **Status:** ABERTO // 📦 **Slots Ocupados:** [ ${bancoLeilao.itensLeiloados.length} / 10 ]\n`);
-        
-        if (bancoLeilao.itensLeiloados.length === 0) {
-            layout.push("*Nenhum item sendo leiloado no momento.*\n");
-        } else {
-            bancoLeilao.itensLeiloados.forEach((item) => {
-                layout.push(`[${String(item.id).padStart(2, '0')}] 👑 **${item.item}** (${item.tipo.toUpperCase()})`);
-                layout.push(`├─ 👤 Vendedor: \`${item.donoNome}\``);
-                layout.push(`├─ 💰 Lance Atual: 🪙 ${item.lanceAtual} moedas`);
-                layout.push(`├─ 👤 Último Licitante: \`${item.ultimoLicitanteNome}\``);
-                layout.push(`└─ ⚡ Próximo Lance Mínimo: **${item.lanceMinimoProximo} moedas**\n`);
-            });
-        }
+      layout.push(`🟢 *Status:* ABERTO // 📦 *Slots Ocupados:* [ ${bancoLeilao.itensLeiloados.length} / 10 ]\n`);
+      
+      if (bancoLeilao.itensLeiloados.length === 0) {
+        layout.push("*Nenhum item sendo leiloado no momento.*\n");
+      } else {
+        bancoLeilao.itensLeiloados.forEach((item) => {
+          layout.push(`[${String(item.id).padStart(2, "0")}] 👑 *${item.item}* (${item.tipo.toUpperCase()})`);
+          layout.push(`├─ 👤 Vendedor: \`${item.donoNome}\``);
+          layout.push(`├─ 💰 Lance Atual: 🪙 ${item.lanceAtual} moedas`);
+          layout.push(`├─ 👤 Último Licitante: \`${item.ultimoLicitanteNome}\``);
+          layout.push(`└─ ⚡ Próximo Lance Mínimo: *${item.lanceMinimoProximo} moedas*\n`);
+        });
+      }
 
-        layout.push("─────────────────────────");
-        layout.push(`🎒 **Seu Saldo:** 🪙 ${jogador.moedas} moedas`);
-        layout.push("✍️ O que deseja fazer?\n");
-        layout.push("👉 `/leilao leiloar [nome] [tipo] [preco]`\n_(Taxa de 500 moedas)_");
-        layout.push("👉 `/leilao lance [ID] [valor]`");
+      layout.push("─────────────────────────");
+      layout.push(`🎒 *Seu Saldo:* 🪙 ${player.ouro || 0} moedas`);
+      layout.push("✍️ O que deseja fazer?\n");
+      layout.push(`👉 *${PREFIX}leilao leiloar [nome] [tipo] [preco]*\n_(Taxa de 500 moedas)_`);
+      layout.push(`👉 *${PREFIX}leilao lance [ID] [valor]*`);
     } else {
-        layout.push("🔴 **Status:** FECHADO\n");
-        layout.push("🔒 *O mercado de lances está trancado no momento.*\n");
-        layout.push("📅 **Próximas Aberturas:**");
-        layout.push("└─ 📅 **Sexta-feira:** Às 19:00h");
-        layout.push("└─ 📅 **Sábado:** Às 18:00h\n");
-        layout.push(`💰 *Taxa de anúncio:* 🪙 ${taxaAnuncio} moedas`);
-        layout.push("🚫 *Itens proibidos:* Raças e Classes.");
+      layout.push("🔴 *Status:* FECHADO\n");
+      layout.push("🔒 _O mercado de lances está trancado no momento._\n");
+      layout.push("📅 *Próximas Aberturas:*");
+      layout.push("└─ 📅 *Sexta-feira:* Às 19:00h");
+      layout.push("└─ 📅 *Sábado:* Às 18:00h\n");
+      layout.push(`💰 *Taxa de anúncio:* 🪙 ${taxaAnuncio} moedas`);
+      layout.push("🚫 *Itens proibidos:* Raças e Classes.");
     }
 
-    return sock.sendMessage(jid, { text: layout.join("\n") });
-}
+    return socket.sendMessage(remoteJid, { text: layout.join("\n") });
+  }
+};
