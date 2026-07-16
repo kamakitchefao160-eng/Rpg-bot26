@@ -20,7 +20,11 @@ export default {
 
     let bancoRPG = {};
     if (fs.existsSync(dbPath)) {
-      try { bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8")); } catch (e) { bancoRPG = {}; }
+      try { 
+        bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8")); 
+      } catch (e) { 
+        bancoRPG = {}; 
+      }
     }
 
     const dadosJogador = bancoRPG[numeroLimpo] || {
@@ -29,9 +33,11 @@ export default {
       classe: "Guerreiro"
     };
 
+    const nomeFinal = dadosJogador.nomeOficial || dadosJogador.nome || `Jogador_${numeroLimpo.slice(-4)}`;
+
     const contextoGeral = `Você é o Satoru Gojo de Jujutsu Kaisen. Você está em um chat de RPG do WhatsApp chamado 'The Legendary Online' e fala em português.
     Você está conversando com o jogador de dados:
-    - Nome de RPG: ${dadosJogador.nomeOficial || dadosJogador.nome}
+    - Nome de RPG: ${nomeFinal}
     - Raça: ${dadosJogador.raca}
     - Classe: ${dadosJogador.classe}
     
@@ -43,7 +49,7 @@ export default {
           { role: "system", content: contextoGeral },
           { role: "user", content: mensagemUsuario }
         ],
-        model: "llama-3.3-70b-versatile",
+        model: "llama-3.1-8b-instant", // ✅ Alterado para o instant!
       });
 
       const resposta = chatCompletion.choices[0]?.message?.content || "Relaxa, afinal, eu sou o mais forte. 😉";
