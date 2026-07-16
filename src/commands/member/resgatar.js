@@ -1,7 +1,9 @@
+// resgatar.js
 import fs from "node:fs";
 import path from "node:path";
+import { DATABASE_DIR } from "../../config.js";
 
-const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
+const dbPath = path.join(DATABASE_DIR, "rpg-usuarios.json");
 
 export default {
   name: "resgatar",
@@ -10,7 +12,6 @@ export default {
   usage: "/resgatar [CÓDIGO]",
 
   handle: async ({ socket, remoteJid, userLid, msg, sender, args, sendErrorReply }) => {
-    // Captura o ID do jogador de forma blindada
     const idBruto = userLid || sender || msg?.key?.participant || msg?.key?.remoteJid || "";
     
     if (!idBruto) {
@@ -38,7 +39,6 @@ export default {
     if (!player.inventario) player.inventario = [];
     let recompensaMsg = "";
 
-    // 🔴 VALIDAÇÃO DOS CÓDIGOS COM TEMA DE FESTA/PARABÉNS
     if (codigo === "YH4B-5789-8490") {
       const moedas = 1200000;
       player.ouro = (player.ouro || 0) + moedas;
@@ -58,13 +58,10 @@ export default {
       return sendErrorReply("❌ *Código Inválido ou Expirado!* \nVerifique se digitou certinho e tente de novo.");
     }
 
-    // Grava as alterações no banco de dados correto
     fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
 
-    // Envia a mensagem temática estourando confetes!
     await socket.sendMessage(remoteJid, {
       text: `🎁 ✨ *RESGATE REALIZADO COM SUCESSO!* ✨ 🎁\n\n${recompensaMsg}`
     });
   }
 }
-
