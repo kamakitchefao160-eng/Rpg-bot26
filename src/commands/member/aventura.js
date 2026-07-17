@@ -4,194 +4,221 @@ import { PREFIX, DATABASE_DIR } from "../../config.js";
 
 const dbPath = path.join(DATABASE_DIR, "rpg-usuarios.json");
 
-// ⚔️ TABELA INTERNA DE HABILIDADES/ATRIBUTOS DE CLASSES
+export const AVENTURAS_ATIVAS = new Map();
+
 const HAB_CLASSES = {
-  "Guerreiro": { danoBase: 25 }, "Mago": { danoBase: 22 }, "Assassino": { danoBase: 26 },
-  "Arqueiro": { danoBase: 24 }, "Samurai": { danoBase: 26 }, "Sacerdote / Clérigo": { danoBase: 18 },
-  "Paladino": { danoBase: 22 }, "Necromante": { danoBase: 20 }, "Ninja": { danoBase: 22 },
-  "Ladino / Larápio": { danoBase: 23 }, "Bardo": { danoBase: 19 }, "Bárbaro": { danoBase: 27 },
-  "Monge": { danoBase: 24 }, "Alquimista": { danoBase: 21 }, "Cavaleiro Rúnico": { danoBase: 25 },
-  "Druida": { danoBase: 20 }, "Lanceiro": { danoBase: 25 }, "Invocador (Summoner)": { danoBase: 22 },
-  "Atirador de Elite (Sniper)": { danoBase: 26 }, "Berserker": { danoBase: 28 }, "Cavaleiro da Morte": { danoBase: 26 },
-  "Bruxo": { danoBase: 23 }, "Feiticeiro": { danoBase: 22 }, "Caçador de Recompensas": { danoBase: 24 },
-  "Pirata": { danoBase: 23 }, "Mosqueteiro": { danoBase: 25 }, "Espadachim": { danoBase: 24 },
-  "Xamã": { danoBase: 20 }, "Domador de Feras": { danoBase: 21 }, "Ilusionista": { danoBase: 19 },
-  "Cavaleiro Sagrado": { danoBase: 24 }, "Guardião da Floresta": { danoBase: 22 }, "Pugilista": { danoBase: 25 },
-  "Mestre de Armas": { danoBase: 26 }, "Clérigo Sombrio": { danoBase: 21 }, "Geomante": { danoBase: 22 },
-  "Pirotecnista": { danoBase: 23 }, "Cronomante": { danoBase: 20 }, "Inquisidor": { danoBase: 24 },
-  "Algoz": { danoBase: 27 }
+  "Guerreiro": { p1: { nome: "👊 Golpe de Espada", danoBase: 25 }, p2: { nome: "💥 Impacto de Escudo", danoBase: 38 }, p3: { nome: "🛡️ Fortaleza de Aço", escudoBase: 40 } },
+  "Mago": { p1: { nome: "✨ Seta de Energia", danoBase: 22 }, p2: { nome: "🔥 Explosão de Fogo", danoBase: 45 }, p3: { nome: "🛡️ Barreira Arcana", escudoBase: 35 } },
+  "Assassino": { p1: { nome: "🗡️ Apunhalada", danoBase: 26 }, p2: { nome: "⚡ Ataque Furtivo", danoBase: 48 }, p3: { nome: "💨 Passos de Sombra", escudoBase: 30 } },
+  "Arqueiro": { p1: { nome: "🏹 Tiro Certeiro", danoBase: 24 }, p2: { nome: "💥 Disparo Perfurante", danoBase: 42 }, p3: { nome: "👟 Recuo Ágil", escudoBase: 30 } },
+  "Samurai": { p1: { nome: "⚔️ Corte Iaido", danoBase: 26 }, p2: { nome: "⚡ Golpe de Vento", danoBase: 43 }, p3: { nome: "🛡️ Postura do Fluxo", escudoBase: 35 } },
+  "Sacerdote / Clérigo": { p1: { nome: "☀️ Luz Punitiva", danoBase: 18 }, p2: { nome: "✨ Julgamento Sagrado", danoBase: 35 }, p3: { nome: "💚 Prece de Cura", curaBase: 35 } },
+  "Paladino": { p1: { nome: "🔨 Golpe da Justiça", danoBase: 22 }, p2: { nome: "💥 Martelo Divino", danoBase: 36 }, p3: { nome: "🛡️ Proteção Sagrada", escudoBase: 40 } },
+  "Necromante": { p1: { nome: "💀 Toque Sombrio", danoBase: 20 }, p2: { nome: "🔮 Explosão de Almas", danoBase: 41 }, p3: { nome: "🩸 Dreno de Vida", curaBase: 25 } },
+  "Ninja": { p1: { nome: "🎯 Shuriken Veloz", danoBase: 22 }, p2: { nome: "🔥 Jutsu de Fogo", danoBase: 44 }, p3: { nome: "🪵 Substituição", escudoBase: 35 } },
+  "Ladino / Larápio": { p1: { nome: "🗡️ Corte Rápido", danoBase: 23 }, p2: { nome: "🎰 Golpe de Sorte", danoBase: 46 }, p3: { nome: "💨 Bomba de Fumaça", escudoBase: 30 } }
 };
 
-// 🧬 TABELA INTERNA DE BÔNUS DE RAÇA
 const RACAS_RPG = {
   "Humano": { hpBonus: 0, danoBonus: 5 }, "Elfo": { hpBonus: 0, danoBonus: 3 }, "Oni (Demônio Oriental)": { hpBonus: 15, danoBonus: 5 },
   "Meio-Fera": { hpBonus: 5, danoBonus: 4 }, "Anão": { hpBonus: 25, danoBonus: 0 }, "Morto-Vivo": { hpBonus: 10, danoBonus: 3 },
   "Vampiro": { hpBonus: 0, danoBonus: 6 }, "Anjo Caído": { hpBonus: 5, danoBonus: 7 }, "Fada": { hpBonus: -10, danoBonus: 2 },
-  "Sereia / Tritão": { hpBonus: 10, danoBonus: 3 }, "Goblin": { hpBonus: -15, danoBonus: 1 }, "Orc": { hpBonus: 30, danoBonus: 2 },
-  "Ciborgue / Autômato": { hpBonus: 20, danoBonus: 4 }, "Espírito / Fantasma": { hpBonus: 0, danoBonus: 3 }, "Draconato (Meio-Dragão)": { hpBonus: 15, danoBonus: 6 },
-  "Elfo Negro (Drow)": { hpBonus: 0, danoBonus: 8 }, "Slime Humanóide": { hpBonus: 35, danoBonus: -5 }, "Metamorfo": { hpBonus: 5, danoBonus: 5 },
-  "Titã (Gigante)": { hpBonus: 50, danoBonus: 10 }, "Ser Estelar": { hpBonus: 10, danoBonus: 10 }, "Centauro": { hpBonus: 15, danoBonus: 5 },
-  "Minotauro": { hpBonus: 25, danoBonus: 7 }, "Lobisomem": { hpBonus: 20, danoBonus: 8 }, "Nefalim": { hpBonus: 15, danoBonus: 8 },
-  "Kitsune": { hpBonus: 5, danoBonus: 4 }, "Lizardfolk (Homem-Lagarto)": { hpBonus: 20, danoBonus: 3 }, "Gárgula": { hpBonus: 30, danoBonus: 2 },
-  "Sylph (Espírito do Ar)": { hpBonus: 0, danoBonus: 3 }, "Undine (Espírito da Água)": { hpBonus: 10, danoBonus: 2 }, "Salamandra (Espírito do Fogo)": { hpBonus: 5, danoBonus: 10 }
+  "Orc": { hpBonus: 30, danoBonus: 2 }
 };
 
-// 👹 LISTA EXPANDIDA COM 30 MONSTROS E CHEFES DIFÍCEIS
 const MONSTROS_DIFICEIS = [
   { nome: "Quimera de Fogo 🦁🔥", hp: 220, dano: 25 },
   { nome: "Lorde Vampiro Valerius 🧛‍♂️", hp: 250, dano: 28 },
   { nome: "Golem de Obsidiana 🗿", hp: 320, dano: 20 },
   { nome: "Cérbero dos Portões 🐕‍🦺🔥", hp: 240, dano: 26 },
-  { nome: "Necromante Ancião 🧙‍♂️💀", hp: 210, dano: 30 },
   { nome: "Dragão Vermelho Ancião 🐉", hp: 350, dano: 35 },
-  { nome: "Hydra das Cavernas 🐍", hp: 300, dano: 24 },
-  { nome: "Banshee Lamentadora 👻", hp: 180, dano: 32 },
   { nome: "Minotauro Berserker 🐂", hp: 280, dano: 27 },
-  { nome: "Leviatã dos Mares 🐋", hp: 340, dano: 26 },
-  { nome: "Lich Imortal 👑💀", hp: 230, dano: 34 },
-  { nome: "Demônio dos Portões do Caos 👺", hp: 290, dano: 31 },
-  { nome: "Espectro da Peste 🦠", hp: 200, dano: 29 },
-  { nome: "Guerreiro Caído do Purgatório ⚔️", hp: 260, dano: 28 },
-  { nome: "Colosso de Pedra Rúnica 🧱", hp: 360, dano: 18 },
-  { nome: "Beholder Vigilante 👁️", hp: 220, dano: 33 },
-  { nome: "Verme da Areia Gigante 🐛", hp: 310, dano: 23 },
-  { nome: "Aranha Viúva Negra Titânica 🕷️", hp: 215, dano: 30 },
-  { nome: "Ciclope Esmagador 👁️🪨", hp: 330, dano: 27 },
-  { nome: "Anjo Corrompido 👼🖤", hp: 250, dano: 32 },
-  { nome: "Elemental da Tempestade ⚡", hp: 230, dano: 30 },
-  { nome: "General Orc de Sangue 🐗", hp: 290, dano: 29 },
-  { nome: "Ent Milenar Corrompido 🌲", hp: 380, dano: 20 },
-  { nome: "Manticora das Estepes 🦂", hp: 240, dano: 28 },
-  { nome: "Sombra Devoradora de Almas 🌑", hp: 190, dano: 35 },
-  { nome: "Basilisco de Olhar de Pedra 🦎", hp: 260, dano: 27 },
-  { nome: "Gorgona Cabelo de Serpente 👩‍🐍", hp: 225, dano: 31 },
-  { nome: "Rei dos Goblins de Ferro 👑 Goblin", hp: 270, dano: 25 },
-  { nome: "Quetzalcoatl Cósmico 🐍✨", hp: 280, dano: 32 },
-  { nome: "Avatar do Vazio 👾", hp: 400, dano: 38 }
+  { nome: "Leviatã dos Mares 🐋", hp: 340, dano: 26 }
 ];
+
+function lerJSON(caminho) {
+  try { return JSON.parse(fs.readFileSync(caminho, "utf-8")); } catch { return {}; }
+}
+
+function salvarJSON(caminho, dados) {
+  try { fs.writeFileSync(caminho, JSON.stringify(dados, null, 2)); return true; } catch { return false; }
+}
 
 export default {
   name: "aventura",
-  description: "Explore mapas perigosos para enfrentar chefes e upar seu Passe de Batalha (Limite: 3 por dia)",
+  description: "Explore masmorras ativamente jogando em turnos contra chefes",
   commands: ["aventura", "explorar", "pve"],
-  usage: `${PREFIX}aventura`,
+  usage: `${PREFIX}aventura ou digitar 1, 2, 3 no seu turno`,
 
-  handle: async ({ socket, remoteJid, userLid }) => {
+  handle: async ({ socket, remoteJid, userLid, args }) => {
     const isGroup = remoteJid.endsWith("@g.us");
     if (!isGroup) return socket.sendMessage(remoteJid, { text: "❌ Este comando só pode ser usado em grupos." });
 
-    const jogadorId = userLid.split("@")[0];
+    const jogadorId = (userLid || remoteJid)?.split("@")[0];
 
-    if (!fs.existsSync(dbPath)) {
-      return socket.sendMessage(remoteJid, { text: "❌ O banco de dados de RPG não foi localizado." });
+    // FASE INTERATIVA (PRODUÇÃO DE TURNOS)
+    if (AVENTURAS_ATIVAS.has(remoteJid)) {
+      const aventura = AVENTURAS_ATIVAS.get(remoteJid);
+      if (jogadorId !== aventura.jogador.id) return;
+
+      const escolha = parseInt(args[0]);
+      if (!escolha || escolha < 1 || escolha > 3) {
+        return socket.sendMessage(remoteJid, { text: "❌ Escolha inválida! Digite apenas: 1, 2 ou 3." });
+      }
+
+      clearTimeout(aventura.timer);
+      let jog = aventura.jogador;
+      let boss = aventura.monstro;
+      let msgTurno = `⚔️ *TURNO ${aventura.turnoAtual} — SUA AÇÃO* ⚔️\n───────────────────────────\n`;
+
+      const golpesClasse = HAB_CLASSES[jog.classe] || HAB_CLASSES["Guerreiro"];
+      const passivaRaca = RACAS_RPG[jog.raca] || { danoBonus: 0 };
+
+      if (escolha === 3) {
+        const p3 = golpesClasse.p3;
+        if (p3.curaBase) {
+          jog.hp = Math.min(jog.hpMax, jog.hp + p3.curaBase);
+          msgTurno += `✨ *${jog.nomeOficial}* usou *${p3.nome}* e curou *${p3.curaBase} HP*!\n`;
+        } else {
+          jog.escudo = Math.min(200, jog.escudo + p3.escudoBase);
+          msgTurno += `🛡️ *${jog.nomeOficial}* usou *${p3.nome}* e obteve *${p3.escudoBase} de Escudo*!\n`;
+        }
+      } else {
+        const golpe = escolha === 1 ? golpesClasse.p1 : golpesClasse.p2;
+        let danoFinal = golpe.danoBase + (passivaRaca.danoBonus || 0);
+        let sorteio = Math.random() * 100;
+
+        if (sorteio <= 10) {
+          danoFinal = 0;
+          msgTurno += `💨 *${jog.nomeOficial}* errou o ataque! O chefe esquivou!\n`;
+        } else if (sorteio >= 85) {
+          danoFinal = Math.floor(danoFinal * 1.5);
+          msgTurno += `⚡ *🚨 CRÍTICO!* O golpe *${golpe.nome}* causou *${danoFinal} de dano*!\n`;
+        } else {
+          msgTurno += `💥 *${jog.nomeOficial}* causou *${danoFinal} de dano* no chefe com *${golpe.nome}*.\n`;
+        }
+        boss.hp = Math.max(0, boss.hp - danoFinal);
+      }
+
+      // Vitória
+      if (boss.hp <= 0) {
+        AVENTURAS_ATIVAS.delete(remoteJid);
+        let bancoRPG = lerJSON(dbPath);
+        const ouroSorteado = Math.floor(Math.random() * (120 - 45 + 1)) + 45;
+
+        if (bancoRPG[jog.id]) {
+          bancoRPG[jog.id].ouro = (bancoRPG[jog.id].ouro || 0) + ouroSorteado;
+          bancoRPG[jog.id].xp_passe = (bancoRPG[jog.id].xp_passe || 0) + 15;
+          bancoRPG[jog.id].limitesDiarios.aventuras += 1;
+
+          if (bancoRPG[jog.id].xp_passe >= 100) {
+            bancoRPG[jog.id].xp_passe -= 100;
+            bancoRPG[jog.id].nivel_passe = (bancoRPG[jog.id].nivel_passe || 1) + 1;
+            msgTurno += `\n🎉 *UP! SEU PASSE DE BATALHA SUBIU PARA O NÍVEL ${bancoRPG[jog.id].nivel_passe}!* 🎉\n`;
+          }
+          salvarJSON(dbPath, bancoRPG);
+          msgTurno += `\n📊 *Aventuras hoje:* ${bancoRPG[jog.id].limitesDiarios.aventuras}/3\n`;
+        }
+
+        msgTurno += `\n🏆 *VITÓRIA HEROICA!*\n💀 O *${boss.nome}* desmoronou!\n💰 Ouro: 🪙 +${ouroSorteado}\n🎫 Passe: +15 XP`;
+        return socket.sendMessage(remoteJid, { text: msgTurno });
+      }
+
+      // Contra-ataque do Chefe
+      let danoBoss = Math.floor(Math.random() * 10 + boss.dano);
+      if (jog.escudo > 0) {
+        if (jog.escudo >= danoBoss) {
+          jog.escudo -= danoBoss;
+          msgTurno += `👹 *Boss:* Bateu no seu escudo! (Restante: ${jog.escudo} Blindagem)\n`;
+          danoBoss = 0;
+        } else {
+          danoBoss -= jog.escudo;
+          msgTurno += `🛡️ *Defesa rompida!* O chefe quebrou seu escudo e tirou *${danoBoss}* do seu HP.\n`;
+          jog.escudo = 0;
+        }
+      } else {
+        msgTurno += `👹 *Boss:* Desferiu um golpe pesado tirando *${danoBoss} de HP*.\n`;
+      }
+
+      jog.hp = Math.max(0, jog.hp - danoBoss);
+
+      // Derrota
+      if (jog.hp <= 0) {
+        AVENTURAS_ATIVAS.delete(remoteJid);
+        let bancoRPG = lerJSON(dbPath);
+        if (bancoRPG[jog.id]) {
+          bancoRPG[jog.id].limitesDiarios.aventuras += 1;
+          salvarJSON(dbPath, bancoRPG);
+          msgTurno += `\n📊 *Aventuras hoje:* ${bancoRPG[jog.id].limitesDiarios.aventuras}/3\n`;
+        }
+        msgTurno += `\n💀 *DERROTA!* Você desmaiou e perdeu a exploração.`;
+        return socket.sendMessage(remoteJid, { text: msgTurno });
+      }
+
+      aventura.turnoAtual++;
+      let painel = `${msgTurno}\n───────────────────────────\n⏳ *VEZ DE ${jog.nomeOficial} — TURNO ${aventura.turnoAtual}*\n`;
+      painel += `❤️ *Seu HP:* ${jog.hp}/${jog.hpMax} | 🛡️ Escudo: ${jog.escudo}\n`;
+      painel += `👾 *HP do Boss:* ${boss.hp} HP\n───────────────────────────\n`;
+      painel += `Digite o número da ação:\n`;
+      painel += `👉 *1* - ${golpesClasse.p1.nome}\n`;
+      painel += `👉 *2* - ${golpesClasse.p2.nome}\n`;
+      painel += `👉 *3* - ${golpesClasse.p3.nome}\n`;
+
+      aventura.timer = setTimeout(() => {
+        socket.sendMessage(remoteJid, { text: `⏱️ Tempo esgotado! A masmorra desmoronou.` });
+        AVENTURAS_ATIVAS.delete(remoteJid);
+      }, 30000);
+
+      return socket.sendMessage(remoteJid, { text: painel });
     }
 
-    let bancoRPG = {};
-    try {
-      bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
-    } catch {
-      return socket.sendMessage(remoteJid, { text: "❌ Erro crítico ao processar os dados do servidor." });
-    }
-
+    // INICIAR NOVA AVENTURA
+    let bancoRPG = lerJSON(dbPath);
     const player = bancoRPG[jogadorId];
-    if (!player) {
-      return socket.sendMessage(remoteJid, { text: `❌ Você não possui um personagem! Digite \`${PREFIX}perfil\` para registrar.` });
-    }
 
-    // Gerenciador de limite diário básico
+    if (!player) return socket.sendMessage(remoteJid, { text: `❌ Use *${PREFIX}perfil* primeiro.` });
+
     const hoje = new Date().toISOString().slice(0, 10);
     if (!player.limitesDiarios) player.limitesDiarios = {};
     if (player.limitesDiarios.data !== hoje) {
-      player.limitesDiarios.data = Date.now().toString(); // Reseta para nova data se for diferente
+      player.limitesDiarios.data = hoje;
       player.limitesDiarios.aventuras = 0;
     }
 
     if (player.limitesDiarios.aventuras >= 3) {
-      return socket.sendMessage(remoteJid, { 
-        text: `⚠️ *LIMITE ATINGIDO!* @${jogadorId}, você já usou suas 3 explorações hoje. Descanse na taverna até amanhã!`,
-        mentions: [userLid]
-      });
+      return socket.sendMessage(remoteJid, { text: `⚠️ *LIMITE ATINGIDO (3/3)!* Volte amanhã.` });
     }
 
-    // Seleção do Chefe/Monstro aleatório
-    const monstro = MONSTROS_DIFICEIS[Math.floor(Math.random() * MONSTROS_DIFICEIS.length)];
-    
-    // Processamento de atributos baseados em Raça e Classe do Jogador
+    const monstroSorteado = MONSTROS_DIFICEIS[Math.floor(Math.random() * MONSTROS_DIFICEIS.length)];
     const pClasse = player.classe && player.classe !== "Não definida" ? player.classe : "Guerreiro";
     const pRaca = player.raca && player.raca !== "Não definida" ? player.raca : "Humano";
 
-    const passivaRaca = RACAS_RPG[pRaca] || { hpBonus: 0, danoBonus: 0 };
-    const passivaClasse = HAB_CLASSES[pClasse] || { danoBase: 25 };
+    const passivaRaca = RACAS_RPG[pRaca] || { hpBonus: 0 };
+    let hpCalculado = 220 + (passivaRaca.hpBonus || 0);
 
-    let playerHp = 220 + (passivaRaca.hpBonus || 0); // HP buffado para aguentar os monstros mais fortes
-    let playerHpMax = playerHp;
-    let danoBaseJogador = passivaClasse.danoBase + (passivaRaca.danoBonus || 0);
+    const novaAventura = {
+      turnoAtual: 1,
+      jogador: { id: jogadorId, nomeOficial: player.nomeOficial, hp: hpCalculado, hpMax: hpCalculado, escudo: 100, classe: pClasse, raca: pRaca },
+      monstro: { ...monstroSorteado },
+      timer: null
+    };
 
-    let monstroHp = monstro.hp;
+    AVENTURAS_ATIVAS.set(remoteJid, novaAventura);
+    const golpesClasse = HAB_CLASSES[pClasse] || HAB_CLASSES["Guerreiro"];
 
-    let logBatalha = `╔══════ ❖ ══════╗\n`;
-    logBatalha += `   🗺️  *EXPLORAÇÃO DE ELITE* 🗺️\n`;
-    logBatalha += `╚══════ ❖ ══════╝\n\n`;
-    logBatalha += `⚔️ @${jogadorId} adentrou masmorras profundas e encontrou: *${monstro.nome}*!\n`;
-    logBatalha += `📊 *Seu Status:* ${playerHp} HP | *Classe:* ${pClasse}\n`;
-    logBatalha += `───────────────────────────\n\n`;
+    let painelInicial = `╔══════ ❖ ══════╗\n   🗺️  *EXPLORAÇÃO POR TURNOS* \n╚══════ ❖ ══════╝\n\n`;
+    painelInicial += `⚔️ *${player.nomeOficial}* encontrou: *${novaAventura.monstro.nome}*!\n`;
+    painelInicial += `❤️ *Seu HP:* ${novaAventura.jogador.hp} | 🛡️ *Escudo:* 100\n───────────────────────────\n`;
+    painelInicial += `⏳ Envie apenas o número da sua ação:\n`;
+    painelInicial += `👉 *1* - ${golpesClasse.p1.nome}\n`;
+    painelInicial += `👉 *2* - ${golpesClasse.p2.nome}\n`;
+    painelInicial += `👉 *3* - ${golpesClasse.p3.nome}\n───────────────────────────\n⏱️ Reaja em até 30 segundos!`;
 
-    let turno = 1;
-    // Batalha simulada em turnos estendida para suportar monstros de alto HP
-    while (playerHp > 0 && monstroHp > 0 && turno <= 10) {
-      // Turno do Jogador
-      let danoCritico = Math.random() > 0.85 ? 1.5 : 1;
-      let danoPlayer = Math.floor((Math.random() * 15 + danoBaseJogador) * danoCritico);
-      monstroHp -= danoPlayer;
-      
-      logBatalha += `💥 *T${turno} (Você):* Golpeou com fúria causando ${danoCritico > 1 ? "⚡ *CRÍTICO* " : ""}*${danoPlayer} de dano*.\n`;
+    novaAventura.timer = setTimeout(() => {
+      socket.sendMessage(remoteJid, { text: `⏱️ Aventura cancelada por inatividade.` });
+      AVENTURAS_ATIVAS.delete(remoteJid);
+    }, 30000);
 
-      if (monstroHp <= 0) break;
-
-      // Turno do Monstro Boss
-      let danoMonstro = Math.floor(Math.random() * 12 + monstro.dano);
-      playerHp -= danoMonstro;
-      logBatalha += `👹 *T${turno} (${monstro.nome.split(" ")[0]}):* Contra-atacou aplicando *${danoMonstro} de dano*.\n\n`;
-      
-      turno++;
-    }
-
-    logBatalha += `───────────────────────────\n\n`;
-
-    // Consequências da exploração
-    if (monstroHp <= 0) {
-      const ouroSorteado = Math.floor(Math.random() * (120 - 45 + 1)) + 45;
-      
-      player.ouro = (player.ouro || 0) + ouroSorteado;
-      player.nivel_passe = player.nivel_passe || 1;
-      
-      // PROGRESSÃO DO PASSE DE BATALHA (+15 XP)
-      player.xp_passe = (player.xp_passe || 0) + 15;
-      
-      // Exemplo básico de UP de nível se acumular mais de 100 de XP
-      if (player.xp_passe >= 100) {
-        player.xp_passe -= 100;
-        player.nivel_passe += 1;
-        logBatalha += `🎉 *UP! SEU PASSE DE BATALHA SUBIU PARA O NÍVEL ${player.nivel_passe}!* 🎉\n\n`;
-      }
-
-      player.limitesDiarios.aventuras += 1;
-      
-      logBatalha += `🏆 *VITÓRIA HEROICA!*\n`;
-      logBatalha += `💀 O *${monstro.nome}* foi dizimado!\n`;
-      logBatalha += `💰 *Recompensa:* 🪙 +${ouroSorteado} Ouros\n`;
-      logBatalha += `🎫 *Passe de Batalha:* +15 XP obtidos\n`;
-    } else {
-      player.limitesDiarios.aventuras += 1;
-      logBatalha += `💀 *DERROTA E FUGA!*\n`;
-      logBatalha += `O *${monstro.nome}* desferiu um ataque devastador. Você recuou gastando poções de fuga.\n`;
-      logBatalha += `💡 _Tente comprar novos equipamentos ou trocar de classe para ficar mais forte!_\n`;
-    }
-
-    logBatalha += `\n📊 *Explorações diárias:* ${player.limitesDiarios.aventuras}/3`;
-
-    fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
-
-    return socket.sendMessage(remoteJid, { text: logBatalha, mentions: [userLid] });
+    return socket.sendMessage(remoteJid, { text: painelInicial, mentions: [userLid] });
   }
 };
