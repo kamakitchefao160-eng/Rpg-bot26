@@ -1,12 +1,8 @@
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
-import { PREFIX } from "../../../config.js";
+import { PREFIX, DATABASE_DIR } from "../../config.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const pastaDatabase = path.resolve(__dirname, "../../../banco de dados");
-const dbPath = path.join(pastaDatabase, "rpg-usuarios.json");
+const dbPath = path.join(DATABASE_DIR, "rpg-usuarios.json");
 
 export const BATALHAS_ATIVAS = new Map();
 
@@ -249,13 +245,6 @@ const RACAS_RPG = {
 };
 
 function lerJSON(caminho) {
-  if (!fs.existsSync(caminho)) {
-    if (!fs.existsSync(pastaDatabase)) {
-      fs.mkdirSync(pastaDatabase, { recursive: true });
-    }
-    fs.writeFileSync(caminho, JSON.stringify({}, null, 2));
-    return {};
-  }
   try {
     return JSON.parse(fs.readFileSync(caminho, "utf-8"));
   } catch {
@@ -347,13 +336,18 @@ export default {
       }
 
       if (defensor.hp <= 0) {
-        msgTurno += `\n💀 *${defensor.nome}* foi derrotado nas mãos de *${atacante.nome}*!\n🏆 *VENCEDOR:* *${atacante.nome}*! (+150 Ouro, +30 EXP)`;
+        msgTurno += `\n💀 *${defensor.nome}* foi derrotado nas mãos de *${atacante.nome}*!\n🏆 *VENCEDOR:* *${atacante.nome}*! (+150 Ouro, +1 Kill)`;
         BATALHAS_ATIVAS.delete(remoteJid);
 
         let bancoRPG = lerJSON(dbPath);
         if (bancoRPG[atacante.id]) {
           bancoRPG[atacante.id].ouro = (bancoRPG[atacante.id].ouro || 0) + 150;
-          bancoRPG[atacante.id].exp = (bancoRPG[atacante.id].exp || 0) + 30;
+          bancoRPG[atacante.id].vitorias = (bancoRPG[atacante.id].vitorias || 0) + 150;
+          bancoRPG[atacante.id].kills = (bancoRPG[atacante.id].kills || 0) + 1;
+          salvarJSON(dbPath, bancoRPG);
+        }
+        if (bancoRPG[defensor.id]) {
+          bancoRPG[defensor.id].derrotas = (bancoRPG[defensor.id].derrotas || 0) + 1;
           salvarJSON(dbPath, bancoRPG);
         }
         return socket.sendMessage(remoteJid, { text: msgTurno });
@@ -381,7 +375,7 @@ export default {
 
     // Início de Duelo
     if (!mentions || mentions.length === 0) {
-      return socket.sendMessage(remoteJid, { text: "❌ Mencione um oponente válido para desafiar! Ex: `/duelo @jogador`" });
+      return socket.sendMessage(remoteJid, { text: `❌ Mencione um oponente válido para desafiar! Ex: \`${PREFIX}duelo @jogador\`` });
     }
 
     const defensorId = mentions[0].split("@")[0];
@@ -397,22 +391,21 @@ export default {
       return socket.sendMessage(remoteJid, { text: "❌ Ambos os jogadores precisam ter um perfil de RPG ativo para duelar." });
     }
 
-    // Pega classe e raça registradas no perfil (ou usa padrões seguros se estiver em branco)
-    const classeP1 = p1.classe || "Guerreiro";
-    const classeP2 = p2.classe || "Guerreiro";
-    const racaP1 = p1.raca || "Humano";
-    const racaP2 = p2.raca || "Humano";
+    // Pega classe e raça corretas ou joga padrão seguro
+    const classeP1 = p1.classe && p1.classe !== "Não definida" ? p1.classe : "Guerreiro";
+    const classeP2 = p2.classe && p2.classe !== "Não definida" ? p2.classe : "Guerreiro";
+    const racaP1 = p1.raca && p1.raca !== "Não definida" ? p1.raca : "Humano";
+    const racaP2 = p2.raca && p2.raca !== "Não definida" ? p2.raca : "Humano";
 
     // Modificadores de raça aplicados à vida de 200 inicial
     const hpP1 = 200 + (RACAS_RPG[racaP1]?.hpBonus || 0);
     const hpP2 = 200 + (RACAS_RPG[racaP2]?.hpBonus || 0);
 
-    // Vida máxima inicial recalculada com o bônus, escudo padrão em 100
     const novaLuta = {
       vezId: jogadorId,
       turnoAtual: 1,
-      jogador1: { id: jogadorId, nome: p1.personagem || "Jogador 1", hp: hpP1, hpMax: hpP1, escudo: 100, classe: classeP1, raca: racaP1 },
-      jogador2: { id: defensorId, nome: p2.personagem || "Jogador 2", hp: hpP2, hpMax: hpP2, escudo: 100, classe: classeP2, raca: racaP2 },
+      jogador1: { id: jogadorId, nome: p1.nomeOficial || "Jogador 1", hp: hpP1, hpMax: hpP1, escudo: 100, classe: classeP1, raca: racaP1 },
+      jogador2: { id: defensorId, nome: p2.nomeOficial || "Jogador 2", hp: hpP2, hpMax: hpP2, escudo: 100, classe: classeP2, raca: racaP2 },
       timer: null
     };
 
