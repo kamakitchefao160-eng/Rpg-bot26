@@ -47,7 +47,7 @@ export default {
           { role: "system", content: contextoGeral },
           { role: "user", content: mensagemUsuario }
         ],
-        model: "llama3-8b-8192",
+       model: "llama-3.1-8b-instant",
       });
 
       const resposta = chatCompletion.choices[0]?.message?.content || "Ah, olá! Quer comprar alguns doces ou talvez algo um pouco mais perigoso?";
