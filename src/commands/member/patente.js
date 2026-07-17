@@ -7,7 +7,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const dbPath = path.join(DATABASE_DIR, "rpg-usuarios.json");
 
-// 📊 TABELA DE PROGRESSÃO (Baseada exatamente no seu sistema de patentes do perfil)
 const FASES_PATENTES = [
   { nome: "🟫 Bronze I", min: 0, max: 5 },
   { nome: "🟫 Bronze II", min: 5, max: 10 },
@@ -44,25 +43,9 @@ function lerJSON(caminho) {
   try { return JSON.parse(fs.readFileSync(caminho, "utf-8")); } catch { return {}; }
 }
 
-// 🟩 Gera a barra gráfica proporcional ao nível atual da patente
-function criarBarra(atual, minimo, maximo) {
-  if (maximo === Infinity) return "██████████ 100%";
-  const totalNecessario = maximo - minimo;
-  const progressoAtual = atual - minimo;
-  const porcentagem = Math.min(Math.floor((progressoAtual / totalNecessario) * 10), 10);
-  
-  let barra = "";
-  for (let i = 0; i < 10; i++) {
-    barra += i < porcentagem ? "█" : "░";
-  }
-  
-  const realPorcento = Math.min(Math.floor((progressoAtual / totalNecessario) * 100), 100);
-  return `${barra} ${realPorcento}%`;
-}
-
 export default {
   name: "patente",
-  description: "Exibe o progresso detalhado de patente e kills necessárias para evoluir",
+  description: "Exibe sua patente atual e a árvore completa de progressão",
   commands: ["patente", "patentes", "subirpatente"],
   usage: `${PREFIX}patente`,
 
@@ -77,35 +60,32 @@ export default {
 
     const totalKills = dados.kills || 0;
 
-    // Encontra a patente atual do usuário na tabela baseada nas regras de corte
+    // Identifica o index da patente atual
     let indexAtual = FASES_PATENTES.findIndex(p => totalKills >= p.min && totalKills < p.max);
     if (indexAtual === -1 && totalKills >= 400) {
-      indexAtual = FASES_PATENTES.length - 1; // Proteção para Desafiante
+      indexAtual = FASES_PATENTES.length - 1;
     }
 
     const patenteAtual = FASES_PATENTES[indexAtual];
-    const proximaPatente = FASES_PATENTES[indexAtual + 1];
 
-    let blocoEvolucao = "";
-    if (proximaPatente && patenteAtual.max !== Infinity) {
-      const killsFaltam = patenteAtual.max - totalKills;
-      const barraGrafica = criarBarra(totalKills, patenteAtual.min, patenteAtual.max);
-
-      blocoEvolucao += `📈 *Próximo Nível:* *${proximaPatente.nome}*\n`;
-      blocoEvolucao += `🎯 *Progresso da Patente:* \`[${barraGrafica}]\`\n`;
-      blocoEvolucao += `⚔️ *Requisito:* Faltam exatamente *${killsFaltam} kills* para subir!`;
-    } else {
-      blocoEvolucao += `🏆 *PATENTE MÁXIMA ATINGIDA!* Você é um *${patenteAtual.nome}* absoluto de elite!`;
-    }
-
-    let menu = `⚔️ ══════ ⚜️ *PROGRESSÃO MILITAR OFICIAL* ⚜️ ══════ ⚔️\n\n`;
+    let menu = `⚔️ ══════ ⚜️ *STATUS MILITAR* ⚜️ ══════ ⚔️\n\n`;
     menu += `👤 *Guerreiro:* @${numeroLimpo}\n`;
     menu += `🎖️ *Patente Atual:* *${patenteAtual.nome}*\n`;
     menu += `💀 *Total de Abates:* *${totalKills} Kills*\n`;
     menu += `───────────────────────────\n`;
-    menu += `${blocoEvolucao}\n`;
+    menu += `📈 *PROGRESSÃO DE PATENTES:*\n\n`;
+
+    // Monta a lista completa marcando com ✅ apenas a que o jogador pertence
+    FASES_PATENTES.forEach((patente, idx) => {
+      if (idx === indexAtual) {
+        menu += ` ✅ *${patente.nome}* <-\n`;
+      } else {
+        menu += ` ⬜ ${patente.nome}\n`;
+      }
+    });
+
     menu += `───────────────────────────\n`;
-    menu += `💡 _Continue acumulando abates nas suas jogadas diárias para subir no ranqueado!_`;
+    menu += `💡 _Derrote oponentes para subir na progressão militar!_`;
 
     return socket.sendMessage(remoteJid, { text: menu, mentions: [userLid] });
   }
