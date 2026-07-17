@@ -4,9 +4,6 @@ import { PREFIX, DATABASE_DIR } from "../../config.js";
 
 const dbPath = path.join(DATABASE_DIR, "rpg-usuarios.json");
 
-// 🔒 Trava de Segurança: ID do grupo oficial
-const LINK_CONVITE_PERMITIDO = "CRLHW3gOqRvIfo6jD6aSR"; 
-
 // 🎁 ESTRUTURA COMPLETA DE RECOMPENSAS (GRÁTIS E ELITE DE 1 A 50)
 const RECOMPENSAS_PASSE = {
   1: { gratis: "🪙 100 Ouros", elite: "🪙 500 Ouros" },
@@ -63,22 +60,15 @@ const RECOMPENSAS_PASSE = {
 
 export default {
   name: "passe",
-  description: "Gerencia seu Passe de Batalha Completo de 50 Níveis (Exclusivo do Grupo)",
+  description: "Gerencia seu Passe de Batalha Completo de 50 Níveis (Exclusivo para Grupos)",
   commands: ["passe", "bp", "resgatar"],
   usage: `${PREFIX}passe [resgatar / elite]`,
 
   handle: async ({ socket, remoteJid, userLid, args }) => {
-    // 🌍 VERIFICAÇÃO EXCLUSIVA DE GRUPO
-    try {
-      const codigoGrupoAtual = await socket.groupInviteCode(remoteJid);
-      if (codigoGrupoAtual !== LINK_CONVITE_PERMITIDO) {
-        return socket.sendMessage(remoteJid, { 
-          text: "❌ *Este comando é exclusivo do Grupo Oficial do The Legendary Online!*" 
-        });
-      }
-    } catch {
+    // 🌍 VERIFICAÇÃO SIMPLIFICADA E EFICIENTE DE GRUPO
+    if (!remoteJid.endsWith("@g.us")) {
       return socket.sendMessage(remoteJid, { 
-        text: "❌ *Este comando só pode ser utilizado dentro do grupo oficial do RPG!*" 
+        text: "❌ *Este comando só pode ser utilizado dentro de um grupo oficial do RPG!*" 
       });
     }
 
@@ -146,7 +136,7 @@ export default {
           dados.inventario.push(nivelPremios.gratis);
         }
 
-        // Trilha Elite (Só entrega se tiver pago os 20k)
+        // Trilha Elite
         if (dados.passe_elite) {
           recompensasColetadas.push(`👑 Nvl ${i} [ELITE]: ${nivelPremios.elite}`);
           if (nivelPremios.elite.includes("Ouros")) {
@@ -163,12 +153,12 @@ export default {
       let msgResgate = `🎁 *RECOMPENSAS COLETADAS E ENVIADAS PARA A MOCHILA!*\n\n`;
       msgResgate += recompensasColetadas.join("\n");
       if (!dados.passe_elite) {
-        msgResgate += `\n\n💡 _Dica: Se você comprar o Elite por 20.000 ouros, poderá coletar retroativamente os prêmios das caixas coroadas de todos os níveis passados!_`;
+        msgResgate += `\n\n💡 _Dica: Se você comprar o Elite por 20.000 ouros, poderá coletar retroativamente os prêmios de todos os níveis passados!_`;
       }
       return socket.sendMessage(remoteJid, { text: msgResgate });
     }
 
-    // PAINEL COM AS DUAS TRILHAS BEM SEPARADAS VISUALMENTE
+    // PAINEL DE EXIBIÇÃO
     let painel = `🌸 ══════ 🏆 *PASSE CEREJEIRA (NÍVEL 1 AO 50)* 🏆 ══════ 🌸\n\n`;
     painel += `👤 *Guerreiro:* @${numeroLimpo}\n`;
     painel += `📊 *Nível Atual:* **Nível ${dados.nivel_passe} / 50**\n`;
