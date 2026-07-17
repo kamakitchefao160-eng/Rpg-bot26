@@ -10,7 +10,7 @@ export default {
   commands: ["rank", "top", "placar"],
   usage: `${PREFIX}rank`,
 
-  handle: async ({ socket, remoteJid }) => {
+  handle: async ({ socket, remoteJid, userLid }) => { // <-- Adicionado userLid aqui para evitar novos erros de escopo
     if (!fs.existsSync(dbPath)) {
       return socket.sendMessage(remoteJid, { text: "❌ Nenhum jogador registrado no banco de dados ainda." });
     }
@@ -59,6 +59,7 @@ export default {
 
     painelRank += `───────────────────────────\n⚡ _Vença duelos para subir sua contagem de Kills no servidor!_`;
 
-    return socket.sendMessage(remoteJid, { text: painelRank, mentions: [userLid] });
+    // Corrigido para passar a array 'mencoes', marcando os jogadores do topo corretamente
+    return socket.sendMessage(remoteJid, { text: painelRank, mentions: mencoes });
   }
 };
