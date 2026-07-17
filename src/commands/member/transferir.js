@@ -1,4 +1,3 @@
-// transferir.js
 import fs from "fs";
 import path from "path";
 import { PREFIX, DATABASE_DIR } from "../../config.js";
@@ -14,39 +13,52 @@ export default {
   handle: async ({ args, socket, remoteJid, userLid, mentions, sendErrorReply }) => {
     const remetenteId = userLid.split("@")[0];
 
-    if (!mentions || mentions.length === 0 || !args[1]) {
-      return sendErrorReply(`❌ Uso incorreto! Exemplo: *${PREFIX}transferir @jogador 50*`);
+    if (!mentions || mentions.length === 0) {
+      return sendErrorReply(`❌ *Uso incorreto! Mencionamento obrigatório. Exemplo:* \`${PREFIX}transferir @jogador 50\``);
     }
 
     const destinatarioId = mentions[0].split("@")[0];
+    if (remetenteId === destinatarioId) {
+      return sendErrorReply("❌ *Você não pode enviar moedas para o seu próprio perfil.*");
+    }
+
+    // Pega o número que sobrou nos argumentos (valor da transferência)
     const quantia = parseInt(args.find(arg => !arg.includes("@") && !isNaN(parseInt(arg))));
 
     if (isNaN(quantia) || quantia <= 0) {
-      return sendErrorReply("❌ Insira uma quantia válida de ouro para transferir.");
+      return sendErrorReply("❌ *Por favor, informe uma quantidade numérica válida e maior que zero.*");
     }
 
-    if (remetenteId === destinatarioId) {
-      return sendErrorReply("❌ Você não pode transferir dinheiro para você mesmo.");
-    }
-
-    if (!fs.existsSync(dbPath)) return sendErrorReply("❌ Banco de dados offline.");
+    if (!fs.existsSync(dbPath)) return sendErrorReply("❌ *Banco de dados offline.*");
     let bancoRPG = JSON.parse(fs.readFileSync(dbPath, "utf-8"));
 
-    if (!bancoRPG[remetenteId]) return sendErrorReply("❌ Crie sua conta primeiro!");
-    if (!bancoRPG[destinatarioId]) return sendErrorReply("❌ O jogador de destino não possui uma conta no RPG.");
+    const remetente = bancoRPG[remetenteId];
+    const destinatario = bancoRPG[destinatarioId];
 
-    if (bancoRPG[remetenteId].ouro < quantia) {
-      return sendErrorReply(`❌ Você não tem saldo suficiente! Saldo atual: 🪙 ${bancoRPG[remetenteId].ouro}`);
+    if (!remetente) return sendErrorReply("❌ *Crie sua conta no RPG primeiro.*");
+    if (!destinatario) return sendErrorReply("❌ *O usuário de destino não foi localizado na nossa database.*");
+
+    const saldoRemetente = remetente.ouro || 0;
+    if (saldoRemetente < quantia) {
+      return sendErrorReply(`❌ *Você não tem ouro suficiente! Seu saldo atual:* *🪙 ${saldoRemetente}*`);
     }
 
-    bancoRPG[remetenteId].ouro -= quantia;
-    bancoRPG[destinatarioId].ouro += quantia;
+    // ATUALIZAÇÃO MANTENDO OS DADOS DE AMBOS INTACTOS
+    bancoRPG[remetenteId] = {
+      ...bancoRPG[remetenteId],
+      ouro: saldoRemetente - quantia
+    };
+
+    bancoRPG[destinatarioId] = {
+      ...bancoRPG[destinatarioId],
+      ouro: (destinatario.ouro || 0) + quantia
+    };
 
     fs.writeFileSync(dbPath, JSON.stringify(bancoRPG, null, 2));
 
     return await socket.sendMessage(remoteJid, {
-      text: `🪙 *TRANSFERÊNCIA REALIZADA!* \n\n@${remetenteId} enviou *${quantia} moedas* para @${destinatarioId} com sucesso!`,
-      mentions: [remetenteId + "@s.whatsapp.net", destinatarioId + "@s.whatsapp.net"]
+      text: `🪙 *TRANSAÇÃO BANCÁRIA REALIZADA!* 🪙\n───────────────────────────\n📤 *Remetente:* @${remetenteId}\n📥 *Destinatário:* @${destinatarioId}\n💰 *Valor transferido:* *🪙 ${quantia} moedas*\n───────────────────────────\n✅ _O montante foi depositado na conta de destino com sucesso._`,
+      mentions: [userLid, mentions[0]]
     });
   }
 };
