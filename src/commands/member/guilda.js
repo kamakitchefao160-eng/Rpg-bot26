@@ -1,19 +1,18 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-// 🟢 CORRIGIDO: Removido um "../" para achar o config.js na raiz
 import { PREFIX } from "../../config.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// 🟢 CORRIGIDO: Ajustado o caminho para a pasta banco de dados
 const pastaDatabase = path.resolve(__dirname, "../../../banco de dados");
 
 const dbPath = path.join(pastaDatabase, "rpg-usuarios.json");
 const guildaPath = path.join(pastaDatabase, "guildas.json");
+const correioPath = path.join(pastaDatabase, "correio.json");
 
-const LINK_GRUPO_PERMITIDO = "https://chat.whatsapp.com/DVg13nPP24p6FmcfRaqdZ4";
-const CODIGO_CONVITE_PERMITIDO = "DVg13nPP24p6FmcfRaqdZ4";
+// Cache temporário simples para marcar quem está online (interagiu nas últimas 2 horas)
+const usuariosAtivos = new Set();
 
 function lerJSON(caminho) {
   if (!fs.existsSync(caminho)) {
@@ -23,88 +22,81 @@ function lerJSON(caminho) {
     fs.writeFileSync(caminho, JSON.stringify({}, null, 2));
     return {};
   }
-  try { 
-    return JSON.parse(fs.readFileSync(caminho, "utf-8")); 
-  } catch { 
-    return {}; 
-  }
+  try { return JSON.parse(fs.readFileSync(caminho, "utf-8")); } catch { return {}; }
 }
 
 function salvarJSON(caminho, dados) {
-  try { 
-    fs.writeFileSync(caminho, JSON.stringify(dados, null, 2)); 
-    return true; 
-  } catch { 
-    return false; 
-  }
+  try { fs.writeFileSync(caminho, JSON.stringify(dados, null, 2)); return true; } catch { return false; }
 }
 
 export default {
   name: "guilda",
-  description: "Gerenciamento de Guildas do RPG (Exclusivo para o grupo oficial)",
+  description: "Sistema completo de gerenciamento de Guildas e Alianças",
   commands: ["guilda", "g", "guildas"],
   usage: `${PREFIX}guilda`,
 
-  handle: async ({ args, socket, remoteJid, userLid }) => {
+  handle: async ({ args, socket, remoteJid, userLid, mentions }) => {
     const isGroup = remoteJid.endsWith("@g.us");
-    
-    if (!isGroup) {
-      return socket.sendMessage(remoteJid, { text: "❌ Este comando só pode ser usado em grupo." });
-    }
-
-    try {
-      const codigoGrupoAtual = await socket.groupInviteCode(remoteJid);
-      if (codigoGrupoAtual !== CODIGO_CONVITE_PERMITIDO) {
-        return await socket.sendMessage(remoteJid, { 
-          text: `🛡️ *SISTEMA DE GUILDAS* 🛡️\n───────────────────────────\n❌ Este comando é exclusivo do grupo oficial de Guildas!\n\n👉 Entre no grupo correto para gerenciar sua guilda:\n${LINK_GRUPO_PERMITIDO}` 
-        });
-      }
-    } catch (erro) {
-      // Evita crash caso o bot não seja admin do grupo
-    }
+    if (!isGroup) return socket.sendMessage(remoteJid, { text: "❌ *Este comando só pode ser usado em grupos.*" });
 
     const jidUsuario = userLid || remoteJid; 
     const numeroLimpo = jidUsuario.split("@")[0];
+    
+    // Marca o usuário atual como Online
+    usuariosAtivos.add(numeroLimpo);
 
     let bancoRPG = lerJSON(dbPath);
     let guildas = lerJSON(guildaPath);
+    let correio = lerJSON(correioPath);
 
     if (!bancoRPG[numeroLimpo]) {
-      return await socket.sendMessage(remoteJid, { text: "❌ Crie o seu perfil de RPG primeiro para usar o sistema de guildas!" });
+      return socket.sendMessage(remoteJid, { text: "❌ *Crie seu perfil primeiro para entrar no sistema de alianças.*" });
     }
 
     const jogador = bancoRPG[numeroLimpo];
     const subComando = args[0]?.toLowerCase();
 
+    // 🌟 1. LISTA DE GUILDAS EXISTENTES
+    if (subComando === "lista" || subComando === "listar" || subComando === "entrar" && !args[1]) {
+      const listaChaves = Object.keys(guildas);
+      if (listaChaves.length === 0) {
+        return socket.sendMessage(remoteJid, { text: "🏰 *Nenhuma guilda registrada no servidor até o momento.*" });
+      }
+
+      let txtLista = `🏰 *GUILDAS REGISTRADAS NO RPG* 🏰\n───────────────────────────\n`;
+      listaChaves.forEach((g, idx) => {
+        const info = guildas[g];
+        txtLista += `*${idx + 1}.* ${info.emblema} *${info.nome}* — Membros: *${info.membros.length}*\n`;
+      });
+      txtLista += `───────────────────────────\n💡 *Para entrar, peça para o líder te convidar via:* \`${PREFIX}guilda convidar @jogador\``;
+      return socket.sendMessage(remoteJid, { text: txtLista });
+    }
+
+    // 🌟 2. CRIAR GUILDA
     if (subComando === "criar") {
       const emblema = args[1];
       const nomeGuilda = args.slice(2).join(" ").trim();
 
       if (!emblema || !nomeGuilda) {
-        return await socket.sendMessage(remoteJid, { 
-          text: `⚠️ *Uso correto:* \`${PREFIX}guilda criar [Emoji] [Nome da Guilda]\`\n\n*Exemplo:* \`${PREFIX}guilda criar 🛡️ Cavaleiros\`` 
-        });
+        return socket.sendMessage(remoteJid, { text: `⚠️ *Uso correto:* \`${PREFIX}guilda criar [Emoji] [Nome da Guilda]\`` });
       }
 
-      const temGuilda = jogador.guilda && jogador.guilda !== "Sem Guilda 🛡️" && jogador.guilda !== "Sem Guilda";
-      if (temGuilda) {
-        return await socket.sendMessage(remoteJid, { text: `❌ Você já pertence à guilda *${jogador.guilda}*! Saia dela antes de criar uma nova.` });
+      if (jogador.guilda && jogador.guilda !== "Sem Guilda") {
+        return socket.sendMessage(remoteJid, { text: `❌ *Você já faz parte da guilda* *${jogador.guilda}*!` });
       }
 
-      const custo = 500;
-      const saldoAtual = jogador.ouro || 0;
-      if (saldoAtual < custo) {
-        return await socket.sendMessage(remoteJid, { text: `❌ Você precisa de pelo menos *${custo} de Ouro*! Seu saldo atual: *${saldoAtual}*` });
+      const custo = 1000;
+      if ((jogador.ouro || 0) < custo) {
+        return socket.sendMessage(remoteJid, { text: `❌ *Você precisa de pelo menos* *🪙 ${custo} de Ouro*!` });
       }
 
-      const existe = Object.keys(guildas).some(g => g.toLowerCase() === nomeGuilda.toLowerCase());
-      if (existe) {
-        return await socket.sendMessage(remoteJid, { text: "❌ Já existe uma guilda registrada com esse nome." });
+      if (guildas[nomeGuilda]) {
+        return socket.sendMessage(remoteJid, { text: "❌ *Uma guilda com este nome já existe.*" });
       }
 
-      jogador.ouro = saldoAtual - custo;
-      jogador.guilda = nomeGuilda;
-      
+      bancoRPG[numeroLimpo].ouro -= custo;
+      bancoRPG[numeroLimpo].guilda = nomeGuilda;
+
       guildas[nomeGuilda] = {
         nome: nomeGuilda,
         emblema: emblema,
@@ -116,92 +108,132 @@ export default {
       salvarJSON(dbPath, bancoRPG);
       salvarJSON(guildaPath, guildas);
 
-      return await socket.sendMessage(remoteJid, { 
-        text: `🎉 *GUILDA CRIADA!* 🎉\n───────────────────────────\n🏰 A guilda *${nomeGuilda}* ${emblema} foi fundada com sucesso!\n👑 Líder: @${numeroLimpo}\n💰 Custo: -500 Ouro\n───────────────────────────\nSeus amigos podem entrar usando:\n👉 \`${PREFIX}guilda entrar ${nomeGuilda}\``, 
-        mentions: [jidUsuario] 
+      return socket.sendMessage(remoteJid, {
+        text: `🎉 *GUILDA FUNDADA!* 🎉\n───────────────────────────\n🏰 *Nome:* *${nomeGuilda}* ${emblema}\n👑 *Líder Executivo:* @${numeroLimpo}\n💰 *Taxa de criação:* *-1000 Ouro*\n───────────────────────────`,
+        mentions: [jidUsuario]
       });
     }
 
-    if (subComando === "entrar") {
-      const nomeGuilda = args.slice(1).join(" ").trim();
-      if (!nomeGuilda) {
-        return await socket.sendMessage(remoteJid, { text: `⚠️ Uso correto: \`${PREFIX}guilda entrar [Nome da Guilda]\`` });
+    // 🌟 3. SISTEMA DE CONVITE (LÍDER ENVIA PRO CORREIO)
+    if (subComando === "convidar" || subComando === "convite") {
+      const gNome = jogador.guilda;
+      if (!gNome || gNome === "Sem Guilda" || !guildas[gNome]) {
+        return socket.sendMessage(remoteJid, { text: "❌ *Você não gerencia nenhuma guilda.*" });
       }
 
-      const chaveGuilda = Object.keys(guildas).find(g => g.toLowerCase() === nomeGuilda.toLowerCase());
-      if (!chaveGuilda) {
-        return await socket.sendMessage(remoteJid, { text: "❌ Essa guilda não foi encontrada. Verifique o nome digitado!" });
+      if (guildas[gNome].lider !== numeroLimpo) {
+        return socket.sendMessage(remoteJid, { text: "❌ *Apenas o Líder da guilda pode recrutar novos membros.*" });
       }
 
-      const temGuilda = jogador.guilda && jogador.guilda !== "Sem Guilda 🛡️" && jogador.guilda !== "Sem Guilda";
-      if (temGuilda) {
-        return await socket.sendMessage(remoteJid, { text: `❌ Você já está na guilda *${jogador.guilda}*. Digite \`${PREFIX}guilda sair\` antes de tentar entrar em outra.` });
+      if (!mentions || mentions.length === 0) {
+        return socket.sendMessage(remoteJid, { text: "❌ *Marque o jogador que deseja convidar.*" });
       }
 
-      jogador.guilda = chaveGuilda;
-      if (!guildas[chaveGuilda].membros.includes(numeroLimpo)) {
-        guildas[chaveGuilda].membros.push(numeroLimpo);
+      const alvoId = mentions[0].split("@")[0];
+      if (guildas[gNome].membros.includes(alvoId)) {
+        return socket.sendMessage(remoteJid, { text: "❌ *Este jogador já está na sua guilda.*" });
       }
+
+      if (!correio[alvoId]) correio[alvoId] = [];
+      
+      // Adiciona o convite na caixa de correio do destinatário
+      correio[alvoId].push({
+        tipo: "guilda",
+        remetente: numeroLimpo,
+        guilda: gNome,
+        texto: `Você foi convidado para se juntar à guilda **${gNome}** ${guildas[gNome].emblema}.`
+      });
+
+      salvarJSON(correioPath, correio);
+
+      return socket.sendMessage(remoteJid, {
+        text: `📬 *CONVITE ENVIADO!* O convite para a guilda *${gNome}* foi postado na caixa de correio de @${alvoId}.`,
+        mentions: [mentions[0]]
+      });
+    }
+
+    // 🌟 4. REMOVER/EXPULSAR MEMBRO (APENAS LÍDER)
+    if (subComando === "remover" || subComando === "expulsar") {
+      const gNome = jogador.guilda;
+      if (!gNome || gNome === "Sem Guilda" || !guildas[gNome]) {
+        return socket.sendMessage(remoteJid, { text: "❌ *Você não possui guilda.*" });
+      }
+
+      if (guildas[gNome].lider !== numeroLimpo) {
+        return socket.sendMessage(remoteJid, { text: "❌ *Comando restrito ao Líder da guilda.*" });
+      }
+
+      if (!mentions || mentions.length === 0) {
+        return socket.sendMessage(remoteJid, { text: "❌ *Marque o membro que deseja expulsar.*" });
+      }
+
+      const alvoId = mentions[0].split("@")[0];
+      if (alvoId === numeroLimpo) {
+        return socket.sendMessage(remoteJid, { text: "❌ *Você não pode se remover. Use /guilda sair se deseja desmanchar a guilda.*" });
+      }
+
+      if (!guildas[gNome].membros.includes(alvoId)) {
+        return socket.sendMessage(remoteJid, { text: "❌ *Este jogador não pertence à sua guilda.*" });
+      }
+
+      guildas[gNome].membros = guildas[gNome].membros.filter(m => m !== alvoId);
+      if (bancoRPG[alvoId]) bancoRPG[alvoId].guilda = "Sem Guilda";
 
       salvarJSON(dbPath, bancoRPG);
       salvarJSON(guildaPath, guildas);
 
-      return await socket.sendMessage(remoteJid, { 
-        text: `🛡️ @${numeroLimpo} agora é o mais novo membro aliado à guilda *${chaveGuilda}* ${guildas[chaveGuilda].emblema}!`, 
-        mentions: [jidUsuario] 
+      return socket.sendMessage(remoteJid, {
+        text: `🚨 *MEMBRO EXPULSO!* @${alvoId} foi removido da aliança por decisão do líder.`,
+        mentions: [mentions[0]]
       });
     }
 
+    // 🌟 5. SAIR DA GUILDA
     if (subComando === "sair") {
       const gNome = jogador.guilda;
-      const temGuilda = gNome && gNome !== "Sem Guilda 🛡️" && gNome !== "Sem Guilda";
-      if (!temGuilda || !guildas[gNome]) {
-        return await socket.sendMessage(remoteJid, { text: "❌ Você não está em nenhuma guilda no momento." });
+      if (!gNome || gNome === "Sem Guilda" || !guildas[gNome]) {
+        return socket.sendMessage(remoteJid, { text: "❌ *Você não está em nenhuma guilda.*" });
       }
 
-      const info = guildas[gNome];
-
-      if (info.lider === numeroLimpo) {
-        for (const membro of info.membros) {
-          if (bancoRPG[membro]) {
-            bancoRPG[membro].guilda = "Sem Guilda";
-          }
-        }
+      if (guildas[gNome].lider === numeroLimpo) {
+        // Se o líder sair, deleta a guilda e limpa o registro de todos
+        guildas[gNome].membros.forEach(m => {
+          if (bancoRPG[m]) bancoRPG[m].guilda = "Sem Guilda";
+        });
         delete guildas[gNome];
-        
         salvarJSON(dbPath, bancoRPG);
         salvarJSON(guildaPath, guildas);
-
-        return await socket.sendMessage(remoteJid, { text: `🚨 O líder @${numeroLimpo} desfez a guilda *${gNome}*. Todos os membros agora estão sem guilda!`, mentions: [jidUsuario] });
+        return socket.sendMessage(remoteJid, { text: `💥 *A guilda ${gNome} foi completamente dissolvida pelo líder.*` });
       } else {
-        info.membros = info.membros.filter(m => m !== numeroLimpo);
-        jogador.guilda = "Sem Guilda";
-
+        guildas[gNome].membros = guildas[gNome].membros.filter(m => m !== numeroLimpo);
+        bancoRPG[numeroLimpo].guilda = "Sem Guilda";
         salvarJSON(dbPath, bancoRPG);
         salvarJSON(guildaPath, guildas);
-
-        return await socket.sendMessage(remoteJid, { text: `🏃 @${numeroLimpo} abandonou a guilda *${gNome}*.`, mentions: [jidUsuario] });
+        return socket.sendMessage(remoteJid, { text: `🏃 *Você abandonou a guilda ${gNome}.*` });
       }
     }
 
-    const gNome = jogador.guilda || "Sem Guilda";
-    if (gNome === "Sem Guilda" || gNome === "Sem Guilda 🛡️" || !guildas[gNome]) {
-      return await socket.sendMessage(remoteJid, {
-        text: `🏰 *CENTRAL DE GUILDAS - THE LEGENDARY RPG* 🏰\n───────────────────────────\nVocê não possui alianças ativas.\n\n*Ações Disponíveis:*\n• \`${PREFIX}guilda criar [Emoji] [Nome]\` *(Custo: 500 Ouro)*\n• \`${PREFIX}guilda entrar [Nome da Guilda]\` *(Juntar-se)*`
+    // 🌟 MENU PRINCIPAL / VISUALIZAÇÃO DA SUA GUILDA
+    const minhaGuilda = jogador.guilda;
+    if (!minhaGuilda || minhaGuilda === "Sem Guilda" || !guildas[minhaGuilda]) {
+      return socket.sendMessage(remoteJid, {
+        text: `🏰 *SISTEMA DE ALIANÇAS - RPG* 🏰\n───────────────────────────\n*Status:* Você está sem afiliação.\n\n*Ações:* \n• \`${PREFIX}guilda criar [Emoji] [Nome]\`\n• \`${PREFIX}guilda lista\` *(Ver corporações)*`
       });
     }
 
-    const info = guildas[gNome];
-    const mentores = info.membros.map(m => m + "@s.whatsapp.net");
-    if (!mentores.includes(info.lider + "@s.whatsapp.net")) {
-      mentores.push(info.lider + "@s.whatsapp.net");
-    }
+    const info = guildas[minhaGuilda];
+    const listaMarcacoes = info.membros.map(m => m + "@s.whatsapp.net");
 
-    let listaMembros = info.membros.map((m, index) => `${index + 1}. @${m}`).join("\n");
+    let stringMembros = "";
+    info.membros.forEach((m, i) => {
+      const status = usuariosAtivos.has(m) ? "🟢 *On*" : "🔴 *Off*";
+      const cargo = m === info.lider ? "👑 *Líder*" : "🛡️ *Membro*";
+      stringMembros += `  *${i + 1}.* @${m} — ${cargo} [${status}]\n`;
+    });
 
-    return await socket.sendMessage(remoteJid, {
-      text: `🏰 *GUILDA:* ${info.nome} ${info.emblema}\n───────────────────────────\n👑 *Líder:* @${info.lider}\n⭐ *Pontos de Guerra:* ${info.pontosGuerra || 0}\n👥 *Membros (${info.membros.length}):*\n${listaMembros}\n───────────────────────────\n💡 Para sair, digite: \`${PREFIX}guilda sair\``,
-      mentions: mentores
+    return socket.sendMessage(remoteJid, {
+      text: `🏰 *GUILDA:* *${info.nome}* ${info.emblema}\n───────────────────────────\n⭐ *Pontos de Guerra:* *${info.pontosGuerra || 0}*\n👥 *Quadro de Integrantes (${info.membros.length}):*\n${stringMembros}\n───────────────────────────\n💡 *Painel Administrativo:*\n• Convide novos guerreiros: \`${PREFIX}guilda convidar @jogador\`\n• Desvincular-se da guilda: \`${PREFIX}guilda sair\``,
+      mentions: listaMarcacoes
     });
   }
 };
