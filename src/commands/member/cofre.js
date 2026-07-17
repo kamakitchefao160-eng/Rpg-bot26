@@ -1,22 +1,34 @@
 import fs from "fs";
 import path from "path";
 import { PREFIX } from "../../config.js";
-import { ITENS_LOJA } from "./loja.js"; // Importa dinamicamente a sua tabela de itens da loja normal
+import { ITENS_LOJA } from "./loja.js"; 
 
 const dbPath = path.join(process.cwd(), "banco de dados", "rpg-usuarios.json");
 
-// Dicionário estendido para mapear itens de eventos ou da Loja% que não estão na loja padrão
+// Dicionário para mapear itens de eventos, passe ou recompensas que não estão na loja padrão
 const ITENS_EXTRAS_EVENTO = {
   "katana evolutiva lvl 1 (raríssimo)": "arma",
   "katana evolutiva (padrão)": "arma",
   "katana evolutiva (upgrade)": "arma",
+  "katana evolutiva (fogo)": "arma",
+  "katana evolutiva (trovão)": "arma",
+  "katana evolutiva (vácuo)": "arma",
+  "katana evolutiva celestial (imperial)": "arma",
   "katana lendária": "arma",
   "espada antiga": "arma",
   "cajado do infinito": "arma",
+  "caixa suprema x1": "consumivel",
   "caixa suprema x2": "consumivel",
+  "caixa suprema x3": "consumivel",
+  "caixa suprema x4": "consumivel",
+  "caixa suprema cósmica x5": "consumivel",
   "caixa de armas suprema": "consumivel",
   "emblema lendário de cerejeira": "emblema",
-  "emblema cerejeira x5": "emblema"
+  "emblema cerejeira x2": "emblema",
+  "emblema cerejeira x5": "emblema",
+  "emblema cerejeira x8": "emblema",
+  "emblema cerejeira x10": "emblema",
+  "emblema cerejeira x15": "emblema"
 };
 
 export default {
@@ -51,13 +63,21 @@ export default {
     const cosmeticos = [];
     const armasEOutros = [];
 
+    // Se o usuário tiver itens equipados atualmente nas propriedades diretas, adiciona ao topo da lista da categoria
+    if (dados.titulo) titulos.push(`🏅 ${dados.titulo} *(Equipado)*`);
+    if (dados.moldura) molduras.push(`🖼️ ${dados.moldura} *(Equipada)*`);
+    if (dados.arma) armasEOutros.push(`⚔️ ${dados.arma} *(Equipada)*`);
+
     // Varre o inventário geral e distribui conforme o tipo da loja ou extras
     inventario.forEach(item => {
       const nomeMinusculo = item.toLowerCase().trim();
       
-      // Busca se o item pertence à sua tabela de itens da loja.js
+      // Remove tags extras de busca para bater com a loja
       const itemLoja = Object.values(ITENS_LOJA).find(i => i.nome.toLowerCase().trim() === nomeMinusculo);
       const tipoDefinido = itemLoja ? itemLoja.tipo : ITENS_EXTRAS_EVENTO[nomeMinusculo];
+
+      // Evita duplicar se já estiver listado como equipado direto
+      if (item === dados.titulo || item === dados.moldura || item === dados.arma) return;
 
       if (tipoDefinido === "titulo") titulos.push(`🏅 ${item}`);
       else if (tipoDefinido === "montaria") montarias.push(`🐎 ${item}`);
@@ -90,7 +110,7 @@ export default {
     corpoCofre += classes.length > 0 ? classes.map(i => `  • ${i}`).join("\n") + "\n" : "  _Nenhuma classe extra adquirida._\n";
     corpoCofre += `\n`;
 
-    // ⚔️ Arsenal, Artefatos e Itens da Loja%
+    // ⚔️ Arsenal, Artefatos e Itens da Loja
     corpoCofre += `⚔️ *ARSENAL & RECURSOS ESPECIAIS*:\n`;
     corpoCofre += armasEOutros.length > 0 ? armasEOutros.map(i => `  • ${i}`).join("\n") + "\n" : "  _Nenhum artefato bélico guardado._\n";
     corpoCofre += `\n`;
